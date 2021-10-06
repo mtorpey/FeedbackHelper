@@ -23,7 +23,7 @@ Please ensure that you have Maven installed on your machine. Please follow the g
 Then follow the [instructions on how to install Maven](https://maven.apache.org/install.html) on your machine.
 
 ## Compiling and Running
-- Once Maven is installed and you have verified the installation is working, please navigate to the directory of the project `CS5099-Project/`.
+- Once Maven is installed and you have verified the installation is working, please navigate to the root directory of the project.
 - Type `mvn package` to build the jar from the source files.
 - After about 30-40 seconds you should a message saying the build was successful. 
 - Then navigate to the `target/` folder.
