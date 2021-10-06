@@ -27,7 +27,7 @@ Then follow the [instructions on how to install Maven](https://maven.apache.org/
 - Type `mvn package` to build the jar from the source files.
 - After about 30-40 seconds you should a message saying the build was successful. 
 - Then navigate to the `target/` folder.
-- Within this folder look for the `JAR` named `CS5099-Project-1.0-SNAPSHOT-jar-with-dependencies.jar`
+- Within this folder look for the `JAR` named `FeedbackHelperTool-<version>-jar-with-dependencies.jar`
 - You can copy this `JAR` to anywhere on your system and rename it if you wish. Just ensure that it has a `.jar` extension.
 - Double click the `JAR` to run the tool. 
     - If the double click run does not work or the tool seems to be behaving oddly, try run the tool from the command line by running `java -jar <jar_name>.jar`.

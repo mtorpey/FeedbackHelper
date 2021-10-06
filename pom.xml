@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.bhuvanbezawada</groupId>
-    <artifactId>CS5099-Project</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>FeedbackHelperTool</artifactId>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <properties>
