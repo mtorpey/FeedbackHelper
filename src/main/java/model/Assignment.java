@@ -269,19 +269,34 @@ public class Assignment implements Serializable {
      * Set a list of the student ids.
      *
      * @param studentManifestFile The student list file to read from.
+     * @param assignmentDirectoryPath The assignment directory.
      */
-    public void setStudentIds(File studentManifestFile) {
-        // Read the file and store the student id and feedback document in a map
-        try (BufferedReader reader = new BufferedReader(new FileReader(studentManifestFile))) {
-            while (reader.ready()) {
-                String studentId = reader.readLine().trim();
-                if (!studentId.isEmpty()) {
-                    FeedbackDocument feedbackDocument = new FeedbackDocument(this, studentId);
-                    this.studentIdAndFeedbackDocumentMap.put(studentId, feedbackDocument);
+    public void setStudentIds(File studentManifestFile, String assignmentDirectoryPath) {
+        //if manifest is undefined try to guess from directories in the assignment dir
+        if (studentManifestFile == null) {
+            for (File f : new File(assignmentDirectoryPath).listFiles()) {
+                //skip files, only look at dirs
+                if (!f.isDirectory()) continue;
+                try {
+                    Integer studentId = Integer.valueOf(f.getName());
+                    FeedbackDocument feedbackDocument = new FeedbackDocument(this, studentId.toString());
+                    this.studentIdAndFeedbackDocumentMap.put(studentId.toString(), feedbackDocument);
+                } catch(NumberFormatException exception) {
                 }
             }
-        } catch (IOException e) {
-            System.err.println("Something went wrong when loading the file: " + studentManifestFile);
+        } else {
+            // Read the file and store the student id and feedback document in a map
+            try (BufferedReader reader = new BufferedReader(new FileReader(studentManifestFile))) {
+                while (reader.ready()) {
+                    String studentId = reader.readLine().trim();
+                    if (!studentId.isEmpty()) {
+                        FeedbackDocument feedbackDocument = new FeedbackDocument(this, studentId);
+                        this.studentIdAndFeedbackDocumentMap.put(studentId, feedbackDocument);
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("Something went wrong when loading the file: " + studentManifestFile);
+            }
         }
     }
 

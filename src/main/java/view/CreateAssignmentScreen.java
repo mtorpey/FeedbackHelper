@@ -161,24 +161,26 @@ public class CreateAssignmentScreen {
             int lineSpacing = (Integer) ((JComboBox<Integer>) this.editableComponents.get("headingLineSpacing")).getSelectedItem();
             String lineMarker = (String) ((JComboBox<String>) this.editableComponents.get("lineMarker")).getSelectedItem();
 
-            // Ensure student list exists before creating the feedback screen
-            if (this.studentManifestFile != null && this.studentManifestFile.exists()) {
-                // Setup assignment and db for it
-                new Thread(LoadingScreens::showLoadingScreen).start();
-                this.createAssignmentScreen.dispose();
+            // If no student list exists before creating the feedback screen, inform the user that the 
+            // software will try to guess
+            if (this.studentManifestFile == null || !this.studentManifestFile.exists())
+                JOptionPane.showMessageDialog(this.createAssignmentScreen,
+                        "No student manifest file defined! Will try to guess student ids by directory names in " +
+                                "the assignment directory!", "Warning!", JOptionPane.WARNING_MESSAGE);
 
-                // Create the assignment
-                Assignment assignment = this.controller.createAssignment(assignmentTitle, assignmentHeadings, this.studentManifestFile, assignmentDirectoryPath);
-                this.controller.setAssignmentPreferences(HEADING_STYLES.get(headingStyle), UNDERLINE_STYLES.get(headingUnderlineStyle), lineSpacing, lineMarker);
-                this.controller.saveAssignment(assignment, assignment.getAssignmentTitle()
-                        .toLowerCase()
-                        .replace(" ", "-"));
+            // Setup assignment and db for it
+            new Thread(LoadingScreens::showLoadingScreen).start();
+            this.createAssignmentScreen.dispose();
 
-                // Create the feedback screen
-                new FeedbackScreen(this.controller, assignment);
-            } else {
-                JOptionPane.showMessageDialog(this.createAssignmentScreen, "Please select a student manifest form!", "Error!", JOptionPane.ERROR_MESSAGE);
-            }
+            // Create the assignment
+            Assignment assignment = this.controller.createAssignment(assignmentTitle, assignmentHeadings, this.studentManifestFile, assignmentDirectoryPath);
+            this.controller.setAssignmentPreferences(HEADING_STYLES.get(headingStyle), UNDERLINE_STYLES.get(headingUnderlineStyle), lineSpacing, lineMarker);
+            this.controller.saveAssignment(assignment, assignment.getAssignmentTitle()
+                    .toLowerCase()
+                    .replace(" ", "-"));
+
+            // Create the feedback screen
+            new FeedbackScreen(this.controller, assignment);
         });
 
         // On back button press go back to the setup options screen
