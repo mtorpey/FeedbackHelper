@@ -115,7 +115,7 @@ public class AppModel implements IAppModel {
         Assignment assignment = new Assignment();
         assignment.setAssignmentTitle(assignmentTitle);
         assignment.setAssignmentHeadings(assignmentHeadings);
-        assignment.setStudentIds(studentManifestFile);
+        assignment.setStudentIds(studentManifestFile, assignmentDirectoryPath);
         assignment.setAssignmentDirectoryPath(assignmentDirectoryPath);
 
         // Create the assignment directory if it does not exist
