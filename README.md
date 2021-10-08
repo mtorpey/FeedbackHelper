@@ -3,9 +3,9 @@ by Bhuvan Bezawada
 
 Originally written as part of a CS5099 project at the University of St Andrews
 
-This fork maintained by Michael Young
+Later contributions by Johannes Zelger
 
-minor contributions from Johannes Zelger
+This fork maintained by Michael Young
 
 ## Project Overview
 This tool was developed as part of the project component of the MSc Computer Science degree at the University of St Andrews.
