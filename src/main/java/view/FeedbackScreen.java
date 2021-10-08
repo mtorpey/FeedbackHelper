@@ -14,25 +14,24 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Feedback Screen Class.
  */
 public class FeedbackScreen implements PropertyChangeListener {
-
     // Class variable
     private static final int INSIGHT_LEVEL = 3;
+
+    // Scrollar speeds
+    private static final int SCROLL_SPEED = 15;
+    
+    //Remember Scrolling, not ideal because reset at restart, but quick fix that helps a lot
+    private static Map<String, Integer> scrollbarValues= new HashMap();
 
     // Instance variables
     private final IAppController controller;
@@ -188,6 +187,9 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Make the panel scrollable
         this.editorPanelScrollPane.add(this.editorPanel);
         this.editorPanelScrollPane.getViewport().setView(this.editorPanel);
+        this.editorPanelScrollPane.getVerticalScrollBar().setUnitIncrement(SCROLL_SPEED);
+
+        SwingUtilities.invokeLater(() -> this.editorPanelScrollPane.getVerticalScrollBar().setValue(0));
     }
 
     /**
@@ -212,6 +214,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         this.previewPanel = new PreviewPanel(previewBoxes);
         this.previewPanelScrollPane.add(this.previewPanel);
         this.previewPanelScrollPane.getViewport().setView(this.previewPanel);
+        this.previewPanelScrollPane.getVerticalScrollBar().setUnitIncrement(SCROLL_SPEED);
 
         // Set scroll position to top
         // The following line is adapted from: https://stackoverflow.com/questions/1166072/setting-scroll-bar-on-a-jscrollpane
@@ -297,7 +300,12 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Perform action based on the incoming message
         switch (event.getPropertyName()) {
             case "docViewChange":
+                scrollbarValues.put(controller.getLastDocumentInView(), 
+                        this.editorPanelScrollPane.getVerticalScrollBar().getValue());
                 performDocumentViewChange(event);
+                SwingUtilities.invokeLater(() -> this.editorPanelScrollPane.getVerticalScrollBar()
+                        .setValue(scrollbarValues
+                                .getOrDefault(event.getNewValue(), 0)));
                 break;
             case "saveDoc":
                 performDocumentSave(event);
