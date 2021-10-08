@@ -7,6 +7,9 @@ import controller.IAppController;
  */
 public class AppView implements IAppView {
 
+    // Scrollar speeds
+    public static final int SCROLL_SPEED = 15;
+
     // Instance variable
     private final IAppController controller;
 

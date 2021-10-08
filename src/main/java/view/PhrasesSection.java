@@ -44,6 +44,7 @@ public class PhrasesSection extends JPanel {
      */
     public void addPhrasesPanel(PhrasesPanel phrasesPanel) {
         JScrollPane phrasesPanelScrollPane = new JScrollPane(phrasesPanel);
+        phrasesPanelScrollPane.getVerticalScrollBar().setUnitIncrement(AppView.SCROLL_SPEED);
         this.phrasesPanelsByType.put(phrasesPanel.getPhraseType(), phrasesPanel);
         this.tabbedPane.addTab(phrasesPanel.getPhraseType().getPhraseTypeAsString(), phrasesPanelScrollPane);
         this.updatePhrasesSection();

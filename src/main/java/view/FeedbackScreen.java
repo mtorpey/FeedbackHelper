@@ -26,9 +26,6 @@ import java.util.List;
 public class FeedbackScreen implements PropertyChangeListener {
     // Class variable
     private static final int INSIGHT_LEVEL = 3;
-
-    // Scrollar speeds
-    private static final int SCROLL_SPEED = 15;
     
     //Remember Scrolling, not ideal because reset at restart, but quick fix that helps a lot
     private static Map<String, Integer> scrollbarValues= new HashMap();
@@ -187,7 +184,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Make the panel scrollable
         this.editorPanelScrollPane.add(this.editorPanel);
         this.editorPanelScrollPane.getViewport().setView(this.editorPanel);
-        this.editorPanelScrollPane.getVerticalScrollBar().setUnitIncrement(SCROLL_SPEED);
+        this.editorPanelScrollPane.getVerticalScrollBar().setUnitIncrement(AppView.SCROLL_SPEED);
 
         SwingUtilities.invokeLater(() -> this.editorPanelScrollPane.getVerticalScrollBar().setValue(0));
     }
@@ -214,7 +211,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         this.previewPanel = new PreviewPanel(previewBoxes);
         this.previewPanelScrollPane.add(this.previewPanel);
         this.previewPanelScrollPane.getViewport().setView(this.previewPanel);
-        this.previewPanelScrollPane.getVerticalScrollBar().setUnitIncrement(SCROLL_SPEED);
+        this.previewPanelScrollPane.getVerticalScrollBar().setUnitIncrement(AppView.SCROLL_SPEED);
 
         // Set scroll position to top
         // The following line is adapted from: https://stackoverflow.com/questions/1166072/setting-scroll-bar-on-a-jscrollpane
