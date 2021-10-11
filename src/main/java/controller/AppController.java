@@ -38,6 +38,9 @@ public class AppController implements IAppController {
     private final IDocumentDatabase documentDatabase;
     private final IGraphDatabase graphDatabase;
     private final StanfordCoreNLP nlp;
+    
+    
+    private final Map<String, String> sentiments;
 
     /**
      * Constructor.
@@ -49,6 +52,7 @@ public class AppController implements IAppController {
         this.documentDatabase = new DocumentDatabaseManager();
         this.graphDatabase = new GraphDatabaseManager();
         this.nlp = NLPPipeline.getPipeline();
+        this.sentiments = new HashMap<>();
     }
 
     /**
@@ -451,6 +455,10 @@ public class AppController implements IAppController {
      */
     @Override
     public String getPhraseSentiment(String phrase) {
+        if(this.sentiments.containsKey(phrase)) {
+            return this.sentiments.get(phrase);
+        }
+        
         // Get the annotated version of the phrase
         CoreDocument coreDocument = new CoreDocument(phrase);
         nlp.annotate(coreDocument);
@@ -461,7 +469,8 @@ public class AppController implements IAppController {
             return Sentiment.getOverallSentimentOfSentences(sentenceList).sentimentAsString;
         }
 
-        // Single sentence, so return the first value
+        // Single sentence, so return the first value and store for faster fetch later
+        this.sentiments.put(phrase, sentenceList.get(0).sentiment());
         return sentenceList.get(0).sentiment();
     }
 
