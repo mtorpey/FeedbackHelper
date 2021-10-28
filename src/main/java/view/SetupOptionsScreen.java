@@ -115,11 +115,7 @@ public class SetupOptionsScreen {
                 // Check file exists
                 if (configFile.exists()) {
                     this.setupOptionsScreen.dispose();
-                    new Thread(LoadingScreens::showLoadingScreen).start();
-
-                    // Create the assignment using the config file
-                    Assignment assignment = this.controller.createAssignmentFromConfig(configFilePath);
-                    new FeedbackScreen(this.controller, assignment);
+                    new CreateAssignmentScreen(this.controller, configFilePath);
                 } else {
                     JOptionPane.showMessageDialog(this.setupOptionsScreen, "Please select a JSON config file!", "Error", JOptionPane.ERROR_MESSAGE);
                 }

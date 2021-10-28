@@ -466,7 +466,9 @@ public class AppController implements IAppController {
         // Check if multiple sentences need to be evaluated
         List<CoreSentence> sentenceList = coreDocument.sentences();
         if (sentenceList.size() > 1) {
-            return Sentiment.getOverallSentimentOfSentences(sentenceList).sentimentAsString;
+            String setiment =  Sentiment.getOverallSentimentOfSentences(sentenceList).sentimentAsString;
+            this.sentiments.put(phrase, setiment);
+            return setiment;
         }
 
         // Single sentence, so return the first value and store for faster fetch later
