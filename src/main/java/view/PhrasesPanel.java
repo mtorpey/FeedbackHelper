@@ -127,4 +127,15 @@ public class PhrasesPanel extends JPanel {
         }
     }
 
+    /**
+     * Show phrase boxes that match a given search query, and hide all others.
+     *
+     * @param query The search query to filter by.
+     */
+    public void filterByString(String query) {
+        for (PhraseBox phraseBox : this.phraseBoxes) {
+            phraseBox.setVisibleBySearchQuery(query);
+        }
+    }
+
 }

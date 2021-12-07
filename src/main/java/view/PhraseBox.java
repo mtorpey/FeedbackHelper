@@ -152,6 +152,21 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
     }
 
     /**
+     * Make this box visible if and only if its phrase matches the provided
+     * search query.
+     *
+     * A phrase matches the search if it contains the query as a substring, case
+     * insensitive.
+     *
+     * @param query The search query to check.
+     */
+    public void setVisibleBySearchQuery(String query) {
+        String contents = this.getPhrase().toLowerCase();
+        query = query.toLowerCase();
+        this.setVisible(contents.contains(query));
+    }
+
+    /**
      * Compare this phrase box to another.
      *
      * @param o The other phrase box to compare to.

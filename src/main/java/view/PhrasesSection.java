@@ -13,11 +13,12 @@ import java.util.Map;
 /**
  * Phrases Section Class.
  */
-public class PhrasesSection extends JPanel {
+public class PhrasesSection extends JPanel implements SearchBox.Listener {
 
     // Instance variables
     private final IAppController controller;
     private JTabbedPane tabbedPane;
+    private SearchBox searchBox;
     private List<JScrollPane> phrasesPanelScrollPanes;
     private Map<PhraseType, PhrasesPanel> phrasesPanelsByType;
 
@@ -34,8 +35,17 @@ public class PhrasesSection extends JPanel {
 
         // Set layout, pane and visibility
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        this.setupSearchBox();
         this.setupTabbedPane();
         this.setVisible(true);
+    }
+
+    /**
+     * Add a search box that can be used to filter phrases.
+     */
+    private void setupSearchBox() {
+        this.searchBox = new SearchBox(this);
+        this.add(searchBox);
     }
 
     /**
@@ -75,6 +85,7 @@ public class PhrasesSection extends JPanel {
             SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
             scrollPane.getVerticalScrollBar().setValue(0);
         }
+        this.searchBox.clear();  // new phrase added, so current search is over
     }
 
     /**
@@ -156,6 +167,20 @@ public class PhrasesSection extends JPanel {
      */
     public void addInsightToInsightPanel(LinkedPhrases linkedPhrases) {
         this.phrasesPanelsByType.get(PhraseType.INSIGHTS).addInsightBox(linkedPhrases);
+    }
+
+    /**
+     * Filter the displayed phrases by the contents of the search box.
+     *
+     * This is called whenever the search box is modified by the user, and is
+     * part of the SearchBox.Listener interface.
+     *
+     * @param query The string to use as a filter.
+     */
+    public void searchBoxUpdate(String query) {
+        for (PhrasesPanel panel : this.phrasesPanelsByType.values()) {
+            panel.filterByString(query);
+        }
     }
 
 }
