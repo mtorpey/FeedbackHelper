@@ -28,7 +28,7 @@ public class FeedbackScreen implements PropertyChangeListener {
     private static final int INSIGHT_LEVEL = 3;
     
     //Remember Scrolling, not ideal because reset at restart, but quick fix that helps a lot
-    private static Map<String, Integer> scrollbarValues= new HashMap();
+    private static Map<String, Integer> scrollbarValues = new HashMap();
 
     // Instance variables
     private final IAppController controller;
