@@ -115,6 +115,7 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
      */
     public void updatePhraseCounter(PhraseType phraseType, String phrase, int phraseCount) {
         this.phrasesPanelsByType.get(phraseType).updatePhraseCounter(phrase, phraseCount);
+        this.searchBox.clear();  // new phrase added, so current search is over
     }
 
     /**
