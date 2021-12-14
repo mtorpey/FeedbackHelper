@@ -26,6 +26,9 @@ import java.util.stream.Collectors;
  */
 public class AppModel implements IAppModel {
 
+    /** Name of file used when writing out grades. */
+    private final String GRADES_FILENAME = "grades.csv";
+
     // Messages
     private final String PHRASE_PANEL_CHANGE_MESSAGE = "phrasePanelChange";
     private final String OLD_VALUE_DUMMY_MESSAGE = "oldValue";
@@ -383,7 +386,7 @@ public class AppModel implements IAppModel {
         }
 
         // Write out the student ids and grades, one per line
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputDirectory + File.separator + "grades.txt"))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputDirectory + File.separator + GRADES_FILENAME))) {
             for (FeedbackDocument feedbackDocument : assignment.getFeedbackDocuments()) {
                 writer.write(feedbackDocument.getStudentId() + "," + feedbackDocument.getGrade());
                 writer.newLine();
