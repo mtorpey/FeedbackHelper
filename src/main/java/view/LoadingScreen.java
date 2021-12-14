@@ -14,7 +14,7 @@ import java.awt.Toolkit;
  * and then delete it after a period of time; hence there are no public
  * constructors.
  */
-public class LoadingScreens extends JWindow {
+public class LoadingScreen extends JWindow {
 
     // Image file paths - both images are custom made, so no licence is needed
     private static final String SPLASH_SCREEN = "/splashscreen.png";
@@ -40,7 +40,7 @@ public class LoadingScreens extends JWindow {
      * https://www.tutorialspoint.com/how-can-we-implement-a-splash-screen-using-jwindow-in-java
      */
     private static void showScreen(String imagePath, int time) {
-        LoadingScreens loadingScreen = new LoadingScreens(imagePath);
+        LoadingScreen loadingScreen = new LoadingScreen(imagePath);
         try {
             Thread.sleep(time);
             loadingScreen.dispose();
@@ -60,7 +60,7 @@ public class LoadingScreens extends JWindow {
      *
      * @param imagePath Path to the image file to be displayed.
      */
-    private LoadingScreens(String imagePath) {
+    private LoadingScreen(String imagePath) {
         // Create the loading window
         imageIcon = new ImageIcon(SetupOptionsScreen.class.getResource(imagePath));
         this.setSize(imageIcon.getIconWidth(), imageIcon.getIconHeight());

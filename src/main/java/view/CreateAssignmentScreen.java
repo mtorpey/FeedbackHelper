@@ -168,7 +168,7 @@ public class CreateAssignmentScreen {
 								"the assignment directory!", "Warning!", JOptionPane.WARNING_MESSAGE);
 
 			// Setup assignment and db for it
-			new Thread(LoadingScreens::showLoadingScreen).start();
+			new Thread(LoadingScreen::showLoadingScreen).start();
 			this.createAssignmentScreen.dispose();
 
 			// Create the assignment
