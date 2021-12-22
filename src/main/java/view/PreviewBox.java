@@ -7,7 +7,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -77,7 +76,7 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
         // Set properties
         this.textPane = new JTextArea();
         this.textPane.setRows(5);
-        this.textPane.setBackground(Color.WHITE);
+        this.textPane.setBackground(Configuration.COLOR_PREVIEW_BOX_BACKGROUND);
         this.textPane.setBorder(unselectedBorder);
         this.textPane.setEditable(false);
         this.textPane.setLineWrap(false);

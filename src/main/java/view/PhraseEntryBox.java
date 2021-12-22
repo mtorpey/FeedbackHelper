@@ -7,7 +7,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Image;
 
 /**
@@ -73,7 +72,7 @@ public class PhraseEntryBox extends JPanel {
     public void disablePhraseEntryBox() {
         this.submitButton.setEnabled(false);
         this.textArea.setEditable(false);
-        this.textArea.setCaretColor(Color.WHITE);
+        this.textArea.setCaretColor(Configuration.COLOR_CARET_DISABLED);
 
         // Refresh the UI
         this.repaint();
@@ -86,7 +85,7 @@ public class PhraseEntryBox extends JPanel {
     public void enablePhraseEntryBox() {
         this.submitButton.setEnabled(true);
         this.textArea.setEditable(true);
-        this.textArea.setCaretColor(Color.BLACK);
+        this.textArea.setCaretColor(Configuration.COLOR_CARET_ENABLED);
 
         // Refresh the UI
         this.repaint();

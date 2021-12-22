@@ -4,7 +4,6 @@ import controller.IAppController;
 import model.LinkedPhrases;
 
 import javax.swing.*;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -125,17 +124,17 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
         this.tabbedPane.addChangeListener(l -> {
             // Set text colour
             if (this.tabbedPane.getTabCount() > 0) {
-                this.tabbedPane.setForeground(Color.BLACK);
+                this.tabbedPane.setForeground(Configuration.COLOR_PHRASES_TEXT);
             }
 
             // Set un-highlighted colour
             for (int i = 0; i < this.tabbedPane.getTabCount(); i++) {
-                this.tabbedPane.setBackgroundAt(i, Color.LIGHT_GRAY);
+                this.tabbedPane.setBackgroundAt(i, Configuration.COLOR_PHRASES_BACKGROUND_UNHIGHLIGHTED);
             }
 
             // Set selected colour
             if (this.tabbedPane.getSelectedIndex() >= 0) {
-                this.tabbedPane.setBackgroundAt(this.tabbedPane.getSelectedIndex(), Color.BLUE);
+                this.tabbedPane.setBackgroundAt(this.tabbedPane.getSelectedIndex(), Configuration.COLOR_PHRASES_BACKGROUND_HIGHLIGHTED);
 
                 if (this.tabbedPane.getSelectedIndex() == 0) {
                     this.controller.setCurrentPhrasePanelInView(PhraseType.CUSTOM);

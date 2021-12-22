@@ -7,7 +7,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -89,7 +88,7 @@ public class FeedbackBox extends JPanel {
         // Create the text area and set properties
         this.textArea = new JTextArea();
         this.textArea.setRows(10);
-        this.textArea.setBackground(Color.WHITE);
+        this.textArea.setBackground(Configuration.COLOR_FEEDBACK_BOX_BACKGROUND);
         this.textArea.setEditable(true);
         this.textArea.setLineWrap(true);
         this.textArea.setWrapStyleWord(true);

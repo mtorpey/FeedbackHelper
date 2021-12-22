@@ -9,7 +9,6 @@ import javax.swing.JTextArea;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import java.awt.Color;
 import java.awt.Dimension;
 
 /**
@@ -37,7 +36,7 @@ public class InsightBox extends JPanel {
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         this.setBorder(new CompoundBorder(
                 new EmptyBorder(20, 10, 0, 10),
-                new LineBorder(Color.black, 1)
+                new LineBorder(Configuration.COLOR_INSIGHT_BORDER, 1)
         ));
 
         // Setup components
@@ -64,7 +63,7 @@ public class InsightBox extends JPanel {
      */
     private void setupInfoText() {
         JTextArea infoText = new JTextArea("The following phrases have been paired together " + this.linkedPhrases.getCount() + " times.");
-        infoText.setBackground(Color.WHITE);
+        infoText.setBackground(Configuration.COLOR_INFO_AREA_BACKGROUND);
         infoText.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
         infoText.setWrapStyleWord(true);
         infoText.setLineWrap(true);
