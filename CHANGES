@@ -1,0 +1,13 @@
+This file describes changes to FeedbackHelper since the initial release.
+
+1.1 (2021-12-22)
+  - Tool will now guess student IDs based on directory structure, if manifest file not specified (Johannes).
+  - A search box is now available to allow the user to filter used phrases (Michael).
+  - Settings can now be edited in the manual screen after loading from a config file (Johannes).
+  - Improved scrolling (Johannes).
+  - Sentiments are now cached to improve performance (Johannes).
+  - Loading screens now display more reliably across platforms (Michael).
+  - Grades output file extension is now csv instead of txt (Michael).
+
+1.0 (2021-10-06)
+  - Initial release with source code as submitted by Bhuvan for CS5099 project.

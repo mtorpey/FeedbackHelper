@@ -3,7 +3,7 @@ by Bhuvan Bezawada
 
 Originally written as part of a CS5099 project at the University of St Andrews
 
-Later contributions by Johannes Zelger
+Later contributions by Johannes Zelger and Michael Young
 
 This fork maintained by Michael Young
 
@@ -43,4 +43,4 @@ Then follow the [instructions on how to install Maven](https://maven.apache.org/
 - The user guide can be found at [this link](https://drive.google.com/file/d/1UgDoxDrzht1C-oGnEB52T9OMwwsOnGq9/view).
 
 ## Copyright
-Copyright (C) 2020-21 by Bhuvan Bezawada
+Copyright (C) 2020-21 by Bhuvan Bezawada and contributors
