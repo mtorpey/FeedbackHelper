@@ -1,5 +1,9 @@
 This file describes changes to FeedbackHelper since the initial release.
 
+1.2 (2022-05-12)
+  - Maven execution option "mvn exec:java" added (Michael).
+  - Performance improvement for adding feedback to big projects (Michael).
+
 1.1 (2021-12-22)
   - Tool will now guess student IDs based on directory structure, if manifest file not specified (Johannes).
   - A search box is now available to allow the user to filter used phrases (Michael).
