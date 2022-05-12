@@ -570,15 +570,17 @@ public class AppController implements IAppController {
         // Perform updates
         removalsFromList.forEach(appModel::removePhraseFromView);
         additionsToList.forEach(appModel::addNewPhraseToView);
-        stayedSameList.forEach(appModel::updatePhraseCounterInView);
+        stayedSameList.forEach(appModel::updatePhraseCounterInView);  // takes some time
 
         // Update custom panel
         resetPhrasesPanel(PhraseType.CUSTOM);
-        showCustomPhrases();
+        showCustomPhrases();  // takes a long time on startup for big sets
 
         // Update insights panel
-        resetPhrasesPanel(PhraseType.INSIGHTS);
-        showInsights();
+        //resetPhrasesPanel(PhraseType.INSIGHTS);
+        //showInsights();
+        // This gets very expensive on big data sets, so we don't do it here.
+        // Now we only do it when switching to the Insights window.
     }
 
     /**
