@@ -49,7 +49,7 @@
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j</artifactId>
-            <version>4.0.0</version>
+            <version>5.1.0</version>
         </dependency>
 
         <dependency>

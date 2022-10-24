@@ -15,8 +15,8 @@ import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.TransactionFailureException;
 
-import java.io.File;
-import java.nio.file.Path;
+import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAME;
+
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,12 +42,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public boolean openGraphDatabase(String databasePath) {
-        Path p = Paths.get(databasePath);
-        String databaseName = p.getName(p.getNameCount() - 1).toString();
-        String databaseDirectory = databasePath.substring(0, databasePath.length() - databaseName.length());
-            
-        managementService = new DatabaseManagementServiceBuilder(new File(databaseDirectory)).build();
-        graphDb = managementService.database(databaseName);
+        managementService = new DatabaseManagementServiceBuilder(Paths.get(databasePath)).build();
+        graphDb = managementService.database(DEFAULT_DATABASE_NAME);
         return graphDb != null;
     }
 
