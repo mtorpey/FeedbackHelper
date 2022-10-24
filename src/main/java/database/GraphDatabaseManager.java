@@ -4,6 +4,9 @@ import model.LinkedPhrases;
 import model.Pair;
 import model.Phrase;
 import model.Utilities;
+
+import org.neo4j.dbms.api.DatabaseManagementService;
+import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
@@ -11,9 +14,10 @@ import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.TransactionFailureException;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,7 +30,8 @@ import java.util.stream.Collectors;
  */
 public class GraphDatabaseManager implements IGraphDatabase {
 
-    // Graph database variable
+    // For creating a database
+    private DatabaseManagementService managementService;
     private GraphDatabaseService graphDb;
 
     /**
@@ -37,7 +42,12 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public boolean openGraphDatabase(String databasePath) {
-        graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(databasePath));
+        Path p = Paths.get(databasePath);
+        String databaseName = p.getName(p.getNameCount() - 1).toString();
+        String databaseDirectory = databasePath.substring(0, databasePath.length() - databaseName.length());
+            
+        managementService = new DatabaseManagementServiceBuilder(new File(databaseDirectory)).build();
+        graphDb = managementService.database(databaseName);
         return graphDb != null;
     }
 
@@ -75,17 +85,17 @@ public class GraphDatabaseManager implements IGraphDatabase {
                 }
 
                 // Create heading nodes with properties
-                Node node = graphDb.createNode();
+                Node node = tx.createNode();
                 node.addLabel(Label.label("Heading"));
                 node.setProperty("heading", currentHeading);
                 node.setProperty("followed_by", nextHeading);
             }
 
             // Setup a node for the custom phrases
-            createCustomPhrasesNode();
+            createCustomPhrasesNode(tx);
 
             // Commit
-            tx.success();
+            tx.commit();
         } catch (TransactionFailureException e) {
             e.printStackTrace();
         }
@@ -101,11 +111,11 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     private void addNewPhrase(Phrase phrase) {
         try (Transaction tx = graphDb.beginTx()) {
-            Node phraseNode = graphDb.createNode();
+            Node phraseNode = tx.createNode();
             phraseNode.addLabel(Label.label("Phrase"));
             phraseNode.setProperty("phrase", phrase.getPhraseAsString());
             phraseNode.setProperty("usageCount", phrase.getUsageCount());
-            tx.success();
+            tx.commit();
         }
     }
 
@@ -131,8 +141,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
 
         // Execute the query
         try (Transaction tx = graphDb.beginTx()) {
-            graphDb.execute(query, params);
-            tx.success();
+            tx.execute(query, params);
+            tx.commit();
         }
     }
 
@@ -157,8 +167,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
 
         // Execute the query
         try (Transaction tx = graphDb.beginTx()) {
-            graphDb.execute(query, params);
-            tx.success();
+            tx.execute(query, params);
+            tx.commit();
         }
     }
 
@@ -245,8 +255,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
 
         // Execute the query
         try (Transaction tx = graphDb.beginTx()) {
-            graphDb.execute(query, params);
-            tx.success();
+            tx.execute(query, params);
+            tx.commit();
         }
     }
 
@@ -273,7 +283,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
         // Execute the query
         try (Transaction tx = graphDb.beginTx()) {
             // Get the results
-            Result results = graphDb.execute(query, params);
+            Result results = tx.execute(query, params);
 
             // Pull out nodes
             results.stream().forEach(result -> {
@@ -295,8 +305,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
     /**
      * Create the custom phrases node.
      */
-    private void createCustomPhrasesNode() {
-        Node node = graphDb.createNode();
+    private void createCustomPhrasesNode(Transaction tx) {
+        Node node = tx.createNode();
         node.addLabel(Label.label("Custom"));
         node.setProperty("nodeName", "customPhrases");
     }
@@ -325,8 +335,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
 
         // Execute the query
         try (Transaction tx = graphDb.beginTx()) {
-            graphDb.execute(query, params);
-            tx.success();
+            tx.execute(query, params);
+            tx.commit();
         }
     }
 
@@ -352,7 +362,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
         // Execute the query
         try (Transaction tx = graphDb.beginTx()) {
             // Get the results
-            Result results = graphDb.execute(query, params);
+            Result results = tx.execute(query, params);
 
             // Pull out objects from the results
             results.stream().forEach(result -> {
@@ -396,8 +406,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
 
         // Execute query
         try (Transaction tx = graphDb.beginTx()) {
-            graphDb.execute(query, params);
-            tx.success();
+            tx.execute(query, params);
+            tx.commit();
         }
     }
 
@@ -425,7 +435,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
         // Execute the query
         boolean retVal = false;
         try (Transaction tx = graphDb.beginTx()) {
-            Result results = graphDb.execute(query, params);
+            Result results = tx.execute(query, params);
             retVal = results.hasNext();
         }
 
@@ -456,8 +466,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
 
         // Execute the query
         try (Transaction tx = graphDb.beginTx()) {
-            graphDb.execute(query, params);
-            tx.success();
+            tx.execute(query, params);
+            tx.commit();
         }
     }
 
@@ -519,7 +529,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
         // Execute the query
         try (Transaction tx = graphDb.beginTx()) {
             // Get the results
-            Result results = graphDb.execute(query, params);
+            Result results = tx.execute(query, params);
 
             // Pull out objects from the results
             results.stream().forEach(result -> {
