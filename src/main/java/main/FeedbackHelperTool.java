@@ -8,6 +8,11 @@ import view.AppView;
 import view.IAppView;
 import view.LoadingScreen;
 
+import java.util.Collection;
+import org.neo4j.configuration.*;
+import org.neo4j.service.Services;
+
+
 /**
  * Feedback Helper Tool Main Class.
  */
@@ -37,6 +42,29 @@ public class FeedbackHelperTool {
 
         // Start the view
         view.start();
+
+        testSettingsLoaders();
+    }
+
+    private void testSettingsLoaders() {
+
+        final Collection DEFAULT_SETTING_CLASSES =
+            Services.loadAll(SettingsDeclaration.class).stream()
+            .map(c -> c.getClass())
+            .toList();
+        
+        final Collection DEFAULT_GROUP_SETTING_CLASSES =
+            Services.loadAll(GroupSetting.class).stream()
+            .map(c -> c.getClass())
+            .toList();
+        
+        final Collection DEFAULT_SETTING_MIGRATORS =
+            Services.loadAll(SettingMigrator.class);
+        
+        System.out.println(String.format("Settings loader triple: (%d, %d, %d)",
+                                         DEFAULT_SETTING_CLASSES.size(),
+                                         DEFAULT_GROUP_SETTING_CLASSES.size(),
+                                         DEFAULT_SETTING_MIGRATORS.size()));
     }
 
 }
