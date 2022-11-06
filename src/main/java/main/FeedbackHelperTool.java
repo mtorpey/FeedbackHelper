@@ -8,7 +8,9 @@ import view.AppView;
 import view.IAppView;
 import view.LoadingScreen;
 
+import java.lang.ClassNotFoundException;
 import java.util.Collection;
+import java.util.ServiceLoader;
 import org.neo4j.configuration.*;
 import org.neo4j.service.Services;
 
@@ -32,6 +34,9 @@ public class FeedbackHelperTool {
      * Start the program.
      */
     public void start() {
+        testClassLoader();
+        testSettingsLoaders();
+        
         // Show splash screen
         new Thread(LoadingScreen::showSplashScreen).start();
 
@@ -43,9 +48,33 @@ public class FeedbackHelperTool {
         // Start the view
         view.start();
 
-        testSettingsLoaders();
     }
 
+    private void testClassLoader() {
+        try {
+            Thread.currentThread().getContextClassLoader().loadClass("org.neo4j.configuration.GraphDatabaseSettings");
+            Services.class.getClassLoader().loadClass("org.neo4j.configuration.GraphDatabaseSettings");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.out.println(Services.class.getClassLoader());
+        System.out.println(GraphDatabaseSettings.class.getClassLoader());
+        System.out.println(Services.class.getClassLoader() == GraphDatabaseSettings.class.getClassLoader());
+        System.out.println("Services.class loader: " +
+                           ServiceLoader
+                           .load(SettingsDeclaration.class, Services.class.getClassLoader())
+                           .stream()
+                           .count()
+                           );
+        System.out.println("Context loader: " +
+                           ServiceLoader
+                           .load(SettingsDeclaration.class, Thread.currentThread().getContextClassLoader())
+                           .stream()
+                           .count()
+                           );
+        
+    }
+    
     private void testSettingsLoaders() {
 
         final Collection DEFAULT_SETTING_CLASSES =
