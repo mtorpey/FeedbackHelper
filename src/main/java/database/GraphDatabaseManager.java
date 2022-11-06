@@ -7,8 +7,6 @@ import model.Utilities;
 
 import org.neo4j.dbms.api.DatabaseManagementService;
 import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
-import org.neo4j.dbms.api.DatabaseManagementServiceBuilderImplementation;
-import org.neo4j.configuration.GraphDatabaseSettings;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
@@ -44,9 +42,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public boolean openGraphDatabase(String databasePath) {
-        DatabaseManagementServiceBuilder builder = new DatabaseManagementServiceBuilder(Paths.get(databasePath));
-        builder.setConfig(GraphDatabaseSettings.strict_config_validation, false);
-        managementService = builder.build();
+        managementService = new DatabaseManagementServiceBuilder(Paths.get(databasePath)).build();
         graphDb = managementService.database(DEFAULT_DATABASE_NAME);
         return graphDb != null;
     }
