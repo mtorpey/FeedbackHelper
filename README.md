@@ -1,9 +1,9 @@
-# Feedback Helper Tool
+# Feedback Helper
 by Bhuvan Bezawada
 
 Originally written as part of a CS5099 project at the University of St Andrews
 
-Later contributions by Johannes Zelger and Michael Young
+Later contributions by Michael Young and Johannes Zelger
 
 This fork maintained by Michael Young
 
@@ -19,18 +19,22 @@ The tool is built in Java and depends on some external libraries, namely:
 ## How to run
 The easiest way to get the tool running is to use the binary release from Github.
 - Go to the [releases page](https://github.com/mtorpey/FeedbackHelper/releases).
-- Download `FeedbackHelperTool-<version>-jar-with-dependencies.jar`.
+- Download `FeedbackHelper-<version>-complete.jar`.
 - You can copy this `JAR` to anywhere on your system and rename it if you wish. Just ensure that it has a `.jar` extension.
-- Double click the `JAR` to run the tool. 
+- Double click the `JAR` to run the tool.
     - If double-clicking does not work or the tool seems to be behaving oddly, try run the tool from the command line by running `java -jar <jar_name>.jar`.
     - You might need to set the file to be executable, which you can do from a Unix command-line with `chmod +x <jar_name>.jar`.
 
 ## Prerequisites
 ### Java
-Please have Java 8 or higher installed on your machine. Please follow the guidance given at this [link](https://www.java.com/en/download/help/index_installing.html) for instructions on how to obtain a copy of the Java SDK.
+Feedback Helper requires Java 17 or higher.  Debian/Ubuntu users can install Java 17 with `sudo apt install openjdk-17-jdk`, while Windows and Mac users might download it from [Amazon Corretto](https://aws.amazon.com/corretto/).
+
+You can check what Java version you have installed by running `java --version` on the command line.
+
+If you have an older version of Java and don't want to upgrade, you might still be able to use the 1.2 release of the Feedback Helper, which has most of the same features.
 
 ### Maven
-If compiling from source, please ensure that you have Maven installed on your machine. Please follow the guidance given at the [download page](https://maven.apache.org/download.cgi) for instructions on how to obtain a copy of Maven. 
+If compiling from source, please ensure that you have Maven installed on your machine. Please follow the guidance given at the [download page](https://maven.apache.org/download.cgi) for instructions on how to obtain a copy of Maven.
 Then follow the [instructions on how to install Maven](https://maven.apache.org/install.html) on your machine.
 
 ## Compiling from source
@@ -42,16 +46,16 @@ To compile and run the software from source, download this repository and do the
 Or to create an executable jar, do the following:
 - Navigate to the root directory of the project.
 - Type `mvn package` to build the jar from the source files.
-- After about 30-40 seconds you should a message saying the build was successful. 
+- After about 30 seconds you should a message saying the build was successful.
 - Then navigate to the `target/` folder.
-- Within this folder look for the `JAR` named `FeedbackHelperTool-<version>-jar-with-dependencies.jar`
+- Within this folder look for the `JAR` named `FeedbackHelper-<version>-complete.jar`
 
 ## Running Tests
-- Junit was used to write tests for the software.
+- JUnit was used to write tests for the software.
 - To run the tests, please ensure you have the prerequisites mentioned above.
 - Then run `mvn test`.
 
-## User Guide 
+## User Guide
 - The user guide can be found at [this link](https://drive.google.com/file/d/1UgDoxDrzht1C-oGnEB52T9OMwwsOnGq9/view).
 
 ## Copyright

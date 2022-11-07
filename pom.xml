@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.bhuvanbezawada</groupId>
-    <artifactId>FeedbackHelperTool</artifactId>
+    <artifactId>FeedbackHelper</artifactId>
     <version>2.0</version>
     <packaging>jar</packaging>
 

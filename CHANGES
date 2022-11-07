@@ -1,5 +1,12 @@
 This file describes changes to FeedbackHelper since the initial release.
 
+2.0 (2022-11-07)
+  - Targets Java 17 instead of Java 11.
+  - neo4j dependency updated from 3.5.1 to 5.1.0 to allow Java >11.
+  - Java versions below 17 are no longer supported.
+  - Breaking: assignments created with FeedbackHelper 1.x will not work.
+  - Generated JAR files now have a more concise filename.
+
 1.2 (2022-05-12)
   - Maven execution option "mvn exec:java" added (Michael).
   - Performance improvement for adding feedback to big projects (Michael).
