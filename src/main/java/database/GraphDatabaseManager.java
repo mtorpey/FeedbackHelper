@@ -5,18 +5,6 @@ import model.Pair;
 import model.Phrase;
 import model.Utilities;
 
-import org.neo4j.dbms.api.DatabaseManagementService;
-import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Label;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.Result;
-import org.neo4j.graphdb.Transaction;
-import org.neo4j.graphdb.TransactionFailureException;
-
-import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAME;
-
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,14 +13,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import java.io.File;
+import java.io.IOException;
+
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.node.*;
+
 /**
  * Graph Database Manager Class.
  */
 public class GraphDatabaseManager implements IGraphDatabase {
 
-    // For creating a database
-    private DatabaseManagementService managementService;
-    private GraphDatabaseService graphDb;
+    // Helper objects for reading and writing JSON
+    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
+
+    private File database;
 
     /**
      * Open the database.
@@ -42,9 +38,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public boolean openGraphDatabase(String databasePath) {
-        managementService = new DatabaseManagementServiceBuilder(Paths.get(databasePath)).build();
-        graphDb = managementService.database(DEFAULT_DATABASE_NAME);
-        return graphDb != null;
+        database = new File(databasePath);
+        return database.exists();
     }
 
     /**
@@ -55,7 +50,22 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public boolean createGraphDatabase(String databasePath) {
-        return openGraphDatabase(databasePath);
+        // File should not exist yet
+        if (openGraphDatabase(databasePath)) {
+            return false;
+        }
+
+        try {
+            // Create a new file with an empty JSON object
+            database.createNewFile();
+            ObjectNode root = mapper.createObjectNode();
+            writer.writeValue(database, root);
+        } catch (IOException e) {
+            e.printStackTrace();  // TODO
+            return false;
+        }
+
+        return true;
     }
 
     /**
