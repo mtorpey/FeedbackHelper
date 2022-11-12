@@ -21,12 +21,20 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- * Graph Database Manager Class.
+ * Database manager for phrases, including their headings and usage counts.
+ *
+ * This used to use a graph database system, neo4j.  This was changed for
+ * simplicity, and now uses a simple json store that outputs to a single file.
+ *
+ * The structure of the file is as follows.  The overall database is a single
+ * JSON object, with two keys: used_phrases and custom_phrases.  used_phrases is
+ * an object with a key for each heading.  The value for each heading, and the
+ * value for custom_phrases, is an object with the used phrases as keys and
+ * their usage counts as their values.
  */
 public class GraphDatabaseManager implements IGraphDatabase {
 
     private static final String FILE_SUFFIX = "-phrases.json";
-
     private static final String USED_PHRASES_KEY = "used_phrases";
     private static final String CUSTOM_PHRASES_KEY = "custom_phrases";
 
@@ -35,7 +43,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
     private JSONObject database;
 
     /**
-     * Open the database.
+     * Try to open an existing database.
      *
      * @param databasePath The database file to open, without the filename suffix.
      * @return True if the database was successfully opened, false otherwise.
@@ -48,11 +56,12 @@ public class GraphDatabaseManager implements IGraphDatabase {
             loadFromFile();
             return true;
         }
+        // Does not exist yet
         return false;
     }
 
     /**
-     * Create a database.
+     * Create a database.  See also setUpGraphDatabaseForAssignment.
      *
      * @param databasePath The database file to create, without the filename suffix.
      * @return True if the database was successfully opened, false otherwise.
@@ -60,18 +69,18 @@ public class GraphDatabaseManager implements IGraphDatabase {
     @Override
     public boolean createGraphDatabase(String databasePath) {
         // File should not exist yet
-        if (openGraphDatabase(databasePath)) {
+        if (openGraphDatabase(databasePath)) {  // initialises databaseFile
             return false;
         }
 
-        // Empty JSON object
+        // Start with an empty JSON object
         database = new JSONObject();
         dumpToFile();
         return true;
     }
 
     /**
-     * Setup the graph database for an assignment.
+     * Setup the graph database for an assignment, after it has been created.
      *
      * @param headings A list of headings to be used in the assignment feedback documents.
      */
@@ -88,11 +97,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
         dumpToFile();
     }
 
-
-    /* PHRASE MANAGEMENT OPERATIONS */
-
     /**
-     * Update phrase.
+     * Update the count for the given phrase, adding it if not already present.
      *
      * @param heading The heading the phrase belongs to.
      * @param phrase  The phrase to update.
@@ -101,6 +107,18 @@ public class GraphDatabaseManager implements IGraphDatabase {
     public void updatePhrase(String heading, Phrase phrase) {
         getHeadingObject(heading).put(phrase.getPhraseAsString(), phrase.getUsageCount());
         dumpToFile();
+    }
+
+    /**
+     * Add a phrase for a given heading.  Identical to updatePhrase in this
+     * implementation.
+     *
+     * @param heading The heading the phrase belongs to.
+     * @param phrase  The phrase to add.
+     */
+    @Override
+    public void addPhraseForHeading(final String heading, Phrase phrase) {
+        updatePhrase(heading, phrase);  // adds a new entry if it does not exist already
     }
 
     /**
@@ -115,9 +133,68 @@ public class GraphDatabaseManager implements IGraphDatabase {
         dumpToFile();
     }
 
+    /* Return the JSON object corresponding to a particular heading. */
     private JSONObject getHeadingObject(String heading) {
         JSONObject usedPhrases = (JSONObject) database.get(USED_PHRASES_KEY);
         return (JSONObject) usedPhrases.get(heading);
+    }
+
+    /**
+     * Add a phrase to the custom node.
+     *
+     * @param phrase The phrase to add.
+     */
+    @Override
+    public void addPhraseToCustomNode(Phrase phrase) {
+        getCustomObject().put(phrase.getPhraseAsString(), phrase.getUsageCount());
+        dumpToFile();
+    }
+
+    /* Return the JSON object corresponding to custom phrases. */
+    private JSONObject getCustomObject() {
+        return (JSONObject) database.get(CUSTOM_PHRASES_KEY);
+    }
+
+    /**
+     * Get the phrases for a given heading.
+     *
+     * @param heading The heading the phrases are for.
+     * @return A list of phrases for the given heading.
+     */
+    @Override
+    public List<Phrase> getPhrasesForHeading(String heading) {
+        return getPhrasesFromObject(getHeadingObject(heading));
+    }
+
+    /**
+     * Get a list of the custom phrases.
+     *
+     * @return The list of custom phrases.
+     */
+    @Override
+    public List<Phrase> getCustomPhrases() {
+        return getPhrasesFromObject(getCustomObject());
+    }
+
+    /*
+     * Return the phrases stored in the given JSON object.
+     *
+     * @param object Either some heading or the custom phrases.
+     */
+    public List<Phrase> getPhrasesFromObject(JSONObject object) {
+        List<Phrase> phrases = new ArrayList<>();
+
+        // Read from the JSON object
+        for (String phraseString: (Set<String>) object.keySet()) {
+            Phrase phrase = new Phrase(phraseString);
+            int count = ((Number) object.get(phraseString)).intValue();  // hopefully less than 4 billion
+            phrase.setUsageCount(count);
+            phrases.add(phrase);
+        }
+
+        // Sort phrases into ascending order
+        Collections.sort(phrases);
+        return phrases;
     }
 
     /**
@@ -178,76 +255,32 @@ public class GraphDatabaseManager implements IGraphDatabase {
         });
     }
 
-    /**
-     * Add a phrase for a given heading.
-     *
-     * @param heading The heading the phrase belongs to.
-     * @param phrase  The phrase to add.
-     */
-    @Override
-    public void addPhraseForHeading(final String heading, Phrase phrase) {
-        updatePhrase(heading, phrase);  // this will add a new entry if it does not exist already
-    }
-
-    /**
-     * Get the phrases for a given heading.
-     *
-     * @param heading The heading the phrases are for.
-     * @return A list of phrases for the given heading.
-     */
-    @Override
-    public List<Phrase> getPhrasesForHeading(String heading) {
-        return getPhrasesFromObject(getHeadingObject(heading));
-    }
-
-    public List<Phrase> getPhrasesFromObject(JSONObject object) {
-        List<Phrase> phrases = new ArrayList<>();
-
-        // Read from the JSON object
-        for (String phraseString: (Set<String>) object.keySet()) {
-            Phrase phrase = new Phrase(phraseString);
-            int count = ((Number) object.get(phraseString)).intValue();  // hopefully less than 4 billion
-            phrase.setUsageCount(count);
-            phrases.add(phrase);
+    /* Populate the JSON model from the file. */
+    private void loadFromFile() {
+        try {
+            database = (JSONObject) new JSONParser().parse(new FileReader(databaseFile));
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
         }
-        
-        // Sort phrases into ascending order
-        Collections.sort(phrases);
-        return phrases;        
     }
 
-    /* CUSTOM PHRASE METHODS */
+    /* Write out the JSON model to the file. */
+    private void dumpToFile() {
+        try (FileWriter writer = new FileWriter(databaseFile)) {
+            writer.write(database.toJSONString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-    /**
-     * Add a phrase to the custom node.
+    /*
+     * LINKED PHRASE METHODS
      *
-     * @param phrase The phrase to add.
+     * This functionality is being removed, so most methods here do nothing.
      */
-    @Override
-    public void addPhraseToCustomNode(Phrase phrase) {
-        getCustomObject().put(phrase.getPhraseAsString(), phrase.getUsageCount());
-        dumpToFile();
-    }
-
-    private JSONObject getCustomObject() {
-        return (JSONObject) database.get(CUSTOM_PHRASES_KEY);
-    }
 
     /**
-     * Get a list of the custom phrases.
-     *
-     * @return The list of custom phrases.
-     */
-    @Override
-    public List<Phrase> getCustomPhrases() {
-        return getPhrasesFromObject(getCustomObject());
-    }
-
-
-    /* LINKED PHRASE METHODS */
-
-    /**
-     * Update the link usage count.
+     * Update the link usage count.  Does nothing in this implementation.
      *
      * @param heading The heading the phrases belong to.
      * @param first   The first phrase in the pair.
@@ -259,7 +292,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
     }
 
     /**
-     * Check if a link exists between two phrases.
+     * Check if a link exists between two phrases.  Does nothing in this implementation.
      *
      * @param heading The heading the phrases are for.
      * @param first   The first phrase in the pair.
@@ -271,7 +304,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
     }
 
     /**
-     * Create a link between two phrases.
+     * Create a link between two phrases.  Does nothing in this implementation.
      *
      * @param heading The heading the phrases are for.
      * @param first   The first phrase of the pair.
@@ -328,20 +361,4 @@ public class GraphDatabaseManager implements IGraphDatabase {
         return linkedPhrasesList;
     }
 
-    private void loadFromFile() {
-        try {
-            database = (JSONObject) new JSONParser().parse(new FileReader(databaseFile));
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void dumpToFile() {
-        try (FileWriter writer = new FileWriter(databaseFile)) {
-            writer.write(database.toJSONString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
 }
