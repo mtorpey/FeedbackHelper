@@ -93,7 +93,7 @@ public class AppController implements IAppController {
         documentDatabase.createFeedbackDocuments(assignment);
 
         // Create the graph database
-        graphDatabase.createGraphDatabase(assignment.getAssignmentDirectoryPath() + File.separator + "graphDB" + File.separator + assignment.getDatabaseName());
+        graphDatabase.createGraphDatabase(assignment.getAssignmentDirectoryPath() + File.separator + assignment.getDatabaseName());
         graphDatabase.setUpGraphDatabaseForAssignment(assignment.getAssignmentHeadings());
 
         return assignment;
@@ -121,7 +121,7 @@ public class AppController implements IAppController {
         documentDatabase.createFeedbackDocuments(assignment);
 
         // Setup the graph database
-        graphDatabase.createGraphDatabase(assignment.getAssignmentDirectoryPath() + File.separator + "graphDB" + File.separator + assignment.getDatabaseName());
+        graphDatabase.createGraphDatabase(assignment.getAssignmentDirectoryPath() + File.separator + assignment.getDatabaseName());
         graphDatabase.setUpGraphDatabaseForAssignment(assignment.getAssignmentHeadings());
 
         return assignment;
@@ -218,7 +218,7 @@ public class AppController implements IAppController {
     private void loadFeedbackDocuments(Assignment assignment) {
         // Open the databases
         documentDatabase.openDocumentDatabase(assignment.getAssignmentDirectoryPath() + File.separator + assignment.getDatabaseName());
-        graphDatabase.openGraphDatabase(assignment.getAssignmentDirectoryPath() + File.separator + "graphDB" + File.separator + assignment.getDatabaseName());
+        graphDatabase.openGraphDatabase(assignment.getAssignmentDirectoryPath() + assignment.getDatabaseName());
 
         // Get the feedback documents from the document database
         List<FeedbackDocument> feedbackDocuments = documentDatabase.loadFeedbackDocumentsForAssignment(assignment);

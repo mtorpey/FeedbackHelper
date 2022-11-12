@@ -5,30 +5,34 @@ import model.Pair;
 import model.Phrase;
 import model.Utilities;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.node.*;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  * Graph Database Manager Class.
  */
 public class GraphDatabaseManager implements IGraphDatabase {
 
-    // Helper objects for reading and writing JSON
-    private static final ObjectMapper mapper = new ObjectMapper();
-    private static final ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
+    private static final String FILE_SUFFIX = "-phrases.json";
 
-    private File database;
+    private static final String USED_PHRASES_KEY = "used_phrases";
+    private static final String CUSTOM_PHRASES_KEY = "custom_phrases";
+
+    // Database is a JSON object, which is written to disk regularly
+    private File databaseFile;
+    private JSONObject database;
 
     /**
      * Open the database.
@@ -38,8 +42,13 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public boolean openGraphDatabase(String databasePath) {
-        database = new File(databasePath);
-        return database.exists();
+        databaseFile = new File(databasePath + FILE_SUFFIX);
+        if (databaseFile.exists()) {
+            // Load the database into memory
+            loadFromFile();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -55,16 +64,9 @@ public class GraphDatabaseManager implements IGraphDatabase {
             return false;
         }
 
-        try {
-            // Create a new file with an empty JSON object
-            database.createNewFile();
-            ObjectNode root = mapper.createObjectNode();
-            writer.writeValue(database, root);
-        } catch (IOException e) {
-            e.printStackTrace();  // TODO
-            return false;
-        }
-
+        // Empty JSON object
+        database = new JSONObject();
+        dumpToFile();
         return true;
     }
 
@@ -75,55 +77,19 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public void setUpGraphDatabaseForAssignment(List<String> headings) {
-        // Run the transaction
-        try (Transaction tx = graphDb.beginTx()) {
-            // Setup nodes for the headings
-            for (int i = 0; i < headings.size(); i++) {
-                // Current heading
-                String currentHeading = headings.get(i);
-                String nextHeading;
-
-                // Figure out next heading
-                if (i + 1 >= headings.size()) {
-                    nextHeading = "null";
-                } else {
-                    nextHeading = headings.get(i + 1);
-                }
-
-                // Create heading nodes with properties
-                Node node = tx.createNode();
-                node.addLabel(Label.label("Heading"));
-                node.setProperty("heading", currentHeading);
-                node.setProperty("followed_by", nextHeading);
-            }
-
-            // Setup a node for the custom phrases
-            createCustomPhrasesNode(tx);
-
-            // Commit
-            tx.commit();
-        } catch (TransactionFailureException e) {
-            e.printStackTrace();
+        JSONObject usedPhrases = new JSONObject();
+        for (String heading: headings) {
+            usedPhrases.put(heading, new JSONObject());
         }
+
+        database.put(USED_PHRASES_KEY, usedPhrases);
+        database.put(CUSTOM_PHRASES_KEY, new JSONObject());
+
+        dumpToFile();
     }
 
 
     /* PHRASE MANAGEMENT OPERATIONS */
-
-    /**
-     * Add a new node.
-     *
-     * @param phrase The phrase to add.
-     */
-    private void addNewPhrase(Phrase phrase) {
-        try (Transaction tx = graphDb.beginTx()) {
-            Node phraseNode = tx.createNode();
-            phraseNode.addLabel(Label.label("Phrase"));
-            phraseNode.setProperty("phrase", phrase.getPhraseAsString());
-            phraseNode.setProperty("usageCount", phrase.getUsageCount());
-            tx.commit();
-        }
-    }
 
     /**
      * Update phrase.
@@ -133,23 +99,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public void updatePhrase(String heading, Phrase phrase) {
-        // Store parameters
-        Map<String, Object> params = new HashMap<>();
-        params.put("heading", heading);
-        params.put("phrase", phrase.getPhraseAsString());
-        params.put("usageCount", phrase.getUsageCount());
-
-        // Create query
-        String query =
-                "MATCH (h:Heading {heading: $heading}) " +
-                        "MATCH (p:Phrase {phrase: $phrase}) " +
-                        "SET p.usageCount = $usageCount";
-
-        // Execute the query
-        try (Transaction tx = graphDb.beginTx()) {
-            tx.execute(query, params);
-            tx.commit();
-        }
+        getHeadingObject(heading).put(phrase.getPhraseAsString(), phrase.getUsageCount());
+        dumpToFile();
     }
 
     /**
@@ -160,22 +111,13 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public void removePhrase(String heading, String phrase) {
-        // Store parameters
-        Map<String, Object> params = new HashMap<>();
-        params.put("heading", heading);
-        params.put("phrase", phrase);
+        getHeadingObject(heading).remove(phrase);
+        dumpToFile();
+    }
 
-        // Create query
-        String query =
-                "MATCH (h:Heading {heading: $heading}) " +
-                        "MATCH (p:Phrase {phrase: $phrase})" +
-                        "DETACH DELETE p";
-
-        // Execute the query
-        try (Transaction tx = graphDb.beginTx()) {
-            tx.execute(query, params);
-            tx.commit();
-        }
+    private JSONObject getHeadingObject(String heading) {
+        JSONObject usedPhrases = (JSONObject) database.get(USED_PHRASES_KEY);
+        return (JSONObject) usedPhrases.get(heading);
     }
 
     /**
@@ -244,26 +186,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public void addPhraseForHeading(final String heading, Phrase phrase) {
-        // Create a phrase node
-        addNewPhrase(phrase);
-
-        // Store parameters
-        Map<String, Object> params = new HashMap<>();
-        params.put("heading", heading);
-        params.put("phrase", phrase.getPhraseAsString());
-        params.put("usageCount", phrase.getUsageCount());
-
-        // Create query
-        String query =
-                "MATCH (h:Heading {heading: $heading}) " +
-                        "MATCH (p:Phrase {phrase: $phrase, usageCount: $usageCount}) " +
-                        "CREATE (h)-[rel:CONTAINS]->(p)";
-
-        // Execute the query
-        try (Transaction tx = graphDb.beginTx()) {
-            tx.execute(query, params);
-            tx.commit();
-        }
+        updatePhrase(heading, phrase);  // this will add a new entry if it does not exist already
     }
 
     /**
@@ -274,48 +197,26 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public List<Phrase> getPhrasesForHeading(String heading) {
-        // Store parameters
-        Map<String, Object> params = new HashMap<>();
-        params.put("heading", heading);
-
-        // Create query
-        String query =
-                "MATCH (h:Heading {heading: $heading}) -[rel:CONTAINS]-> (p:Phrase)" +
-                        "RETURN h, p";
-
-        // List of phrases to populate
-        List<Phrase> phrasesForHeading = new ArrayList<>();
-
-        // Execute the query
-        try (Transaction tx = graphDb.beginTx()) {
-            // Get the results
-            Result results = tx.execute(query, params);
-
-            // Pull out nodes
-            results.stream().forEach(result -> {
-                Node node = (Node) result.get("p");
-                Phrase phrase = new Phrase(node.getProperty("phrase").toString());
-                phrase.setUsageCount(Integer.parseInt(node.getProperty("usageCount").toString()));
-                phrasesForHeading.add(phrase);
-            });
-
-            // Sort phrases into ascending order
-            Collections.sort(phrasesForHeading);
-            return phrasesForHeading;
-        }
+        return getPhrasesFromObject(getHeadingObject(heading));
     }
 
+    public List<Phrase> getPhrasesFromObject(JSONObject object) {
+        List<Phrase> phrases = new ArrayList<>();
+
+        // Read from the JSON object
+        for (String phraseString: (Set<String>) object.keySet()) {
+            Phrase phrase = new Phrase(phraseString);
+            int count = ((Number) object.get(phraseString)).intValue();  // hopefully less than 4 billion
+            phrase.setUsageCount(count);
+            phrases.add(phrase);
+        }
+        
+        // Sort phrases into ascending order
+        Collections.sort(phrases);
+        return phrases;        
+    }
 
     /* CUSTOM PHRASE METHODS */
-
-    /**
-     * Create the custom phrases node.
-     */
-    private void createCustomPhrasesNode(Transaction tx) {
-        Node node = tx.createNode();
-        node.addLabel(Label.label("Custom"));
-        node.setProperty("nodeName", "customPhrases");
-    }
 
     /**
      * Add a phrase to the custom node.
@@ -324,26 +225,12 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public void addPhraseToCustomNode(Phrase phrase) {
-        // Put custom phrase into the db
-        addNewPhrase(phrase);
+        getCustomObject().put(phrase.getPhraseAsString(), phrase.getUsageCount());
+        dumpToFile();
+    }
 
-        // Store parameters
-        Map<String, Object> params = new HashMap<>();
-        params.put("nodeName", "customPhrases");
-        params.put("phrase", phrase.getPhraseAsString());
-        params.put("usageCount", phrase.getUsageCount());
-
-        // Create query
-        String query =
-                "MATCH (n:Custom {nodeName: $nodeName}) " +
-                        "MATCH (p:Phrase {phrase: $phrase, usageCount: $usageCount}) " +
-                        "CREATE (n)-[rel:CONTAINS]->(p)";
-
-        // Execute the query
-        try (Transaction tx = graphDb.beginTx()) {
-            tx.execute(query, params);
-            tx.commit();
-        }
+    private JSONObject getCustomObject() {
+        return (JSONObject) database.get(CUSTOM_PHRASES_KEY);
     }
 
     /**
@@ -353,36 +240,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public List<Phrase> getCustomPhrases() {
-        // Store parameters
-        Map<String, Object> params = new HashMap<>();
-        params.put("nodeName", "customPhrases");
-
-        // Create query
-        String query =
-                "MATCH (n:Custom {nodeName: $nodeName}) -[rel:CONTAINS]-> (p:Phrase)" +
-                        "RETURN n, p";
-
-        // List of phrases to populate
-        List<Phrase> customPhrasesList = new ArrayList<>();
-
-        // Execute the query
-        try (Transaction tx = graphDb.beginTx()) {
-            // Get the results
-            Result results = tx.execute(query, params);
-
-            // Pull out objects from the results
-            results.stream().forEach(result -> {
-                Node node = (Node) result.get("p");
-                Phrase phrase = new Phrase(node.getProperty("phrase").toString());
-                phrase.setUsageCount(Integer.parseInt(node.getProperty("usageCount").toString()));
-                customPhrasesList.add(phrase);
-            });
-
-            // Sort phrases into ascending order
-            Collections.sort(customPhrasesList);
-        }
-
-        return customPhrasesList;
+        return getPhrasesFromObject(getCustomObject());
     }
 
 
@@ -397,24 +255,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
      * @param update  The update value.
      */
     private void updateLinkUsageCount(String heading, String first, String second, int update) {
-        // Store parameters
-        Map<String, Object> params = new HashMap<>();
-        params.put("heading", heading);
-        params.put("phrase1", first);
-        params.put("phrase2", second);
-        params.put("update", update);
-
-        // Create query
-        String query =
-                "MATCH (h:Heading {heading: $heading}) " +
-                        "MATCH (p1:Phrase {phrase: $phrase1}) -[rel:FOLLOWED_BY]-> (p2:Phrase {phrase: $phrase2}) " +
-                        "SET rel.usage = rel.usage + $update";
-
-        // Execute query
-        try (Transaction tx = graphDb.beginTx()) {
-            tx.execute(query, params);
-            tx.commit();
-        }
+        // Do nothing
     }
 
     /**
@@ -426,26 +267,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
      * @return True if the link exists, false otherwise.
      */
     private boolean linkExists(String heading, String first, String second) {
-        // Store parameters
-        Map<String, Object> params = new HashMap<>();
-        params.put("heading", heading);
-        params.put("phrase1", first);
-        params.put("phrase2", second);
-
-        // Create query
-        String query =
-                "MATCH (h:Heading {heading: $heading}) " +
-                        "MATCH (p1:Phrase {phrase: $phrase1}) -[rel:FOLLOWED_BY]-> (p2:Phrase {phrase: $phrase2})" +
-                        "RETURN p1.phrase, p2.phrase";
-
-        // Execute the query
-        boolean retVal = false;
-        try (Transaction tx = graphDb.beginTx()) {
-            Result results = tx.execute(query, params);
-            retVal = results.hasNext();
-        }
-
-        return retVal;
+        return false;
     }
 
     /**
@@ -456,25 +278,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
      * @param second  The second phrase of the pair.
      */
     private void createFollowedByLink(String heading, String first, String second) {
-        // Store parameters
-        Map<String, Object> params = new HashMap<>();
-        params.put("heading", heading);
-        params.put("phrase1", first);
-        params.put("phrase2", second);
-
-        // Create query
-        String query =
-                "MATCH (h:Heading {heading: $heading}) " +
-                        "MATCH (p1:Phrase {phrase: $phrase1}) " +
-                        "MATCH (p2:Phrase {phrase: $phrase2}) " +
-                        "CREATE (p1)-[rel:FOLLOWED_BY]->(p2)" +
-                        "SET rel.usage = 1";
-
-        // Execute the query
-        try (Transaction tx = graphDb.beginTx()) {
-            tx.execute(query, params);
-            tx.commit();
-        }
+        // Do nothing
     }
 
     /**
@@ -519,49 +323,25 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public List<LinkedPhrases> getLinkedPhrases(String heading) {
-        // Store parameters
-        Map<String, Object> params = new HashMap<>();
-        params.put("heading", heading);
-
-        // Create query
-        String query =
-                "MATCH (h:Heading {heading: $heading}) " +
-                        "MATCH (p1:Phrase) -[rel:FOLLOWED_BY]-> (p2:Phrase) " +
-                        "RETURN h, p1, p2, rel";
-
-        // List of linked phrases to populate
+        // Empty list
         List<LinkedPhrases> linkedPhrasesList = new ArrayList<LinkedPhrases>();
-
-        // Execute the query
-        try (Transaction tx = graphDb.beginTx()) {
-            // Get the results
-            Result results = tx.execute(query, params);
-
-            // Pull out objects from the results
-            results.stream().forEach(result -> {
-                // Pull out nodes and relationship
-                Node p1 = (Node) result.get("p1");
-                Node p2 = (Node) result.get("p2");
-                Relationship rel = (Relationship) result.get("rel");
-
-                // Construct phrase 1
-                Phrase phrase1 = new Phrase(p1.getProperty("phrase").toString());
-                phrase1.setUsageCount(Integer.parseInt(p1.getProperty("usageCount").toString()));
-
-                // Construct phrase 2
-                Phrase phrase2 = new Phrase(p2.getProperty("phrase").toString());
-                phrase2.setUsageCount(Integer.parseInt(p2.getProperty("usageCount").toString()));
-
-                // Get the usage count
-                int usage = Integer.parseInt(rel.getProperty("usage").toString());
-
-                // Create the linked phrases object and store it
-                LinkedPhrases linkedPhrases = new LinkedPhrases(phrase1, phrase2, usage);
-                linkedPhrasesList.add(linkedPhrases);
-            });
-        }
-
         return linkedPhrasesList;
     }
 
+    private void loadFromFile() {
+        try {
+            database = (JSONObject) new JSONParser().parse(new FileReader(databaseFile));
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void dumpToFile() {
+        try (FileWriter writer = new FileWriter(databaseFile)) {
+            writer.write(database.toJSONString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
 }
