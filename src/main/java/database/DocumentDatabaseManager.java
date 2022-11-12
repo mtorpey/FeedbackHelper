@@ -17,6 +17,8 @@ import java.util.Map;
  */
 public class DocumentDatabaseManager implements IDocumentDatabase {
 
+    private static final String FILE_SUFFIX = "-documents.no2";
+
     // Database variable
     private Nitrite databaseConnection;
 
@@ -44,14 +46,14 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
     /**
      * Open the database.
      *
-     * @param databasePath The database file to open.
+     * @param databasePath The database file to open, without the filename suffix.
      * @return True if the database was successfully opened, false otherwise.
      */
     @Override
     public boolean openDocumentDatabase(String databasePath) {
         this.databaseConnection = Nitrite.builder()
                 .compressed()
-                .filePath(databasePath)
+                .filePath(databasePath + FILE_SUFFIX)
                 .openOrCreate("user", "password");
 
         return !this.databaseConnection.isClosed();
@@ -60,7 +62,7 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
     /**
      * Create a database.
      *
-     * @param databasePath The database file to create.
+     * @param databasePath The database file to create, without the filename suffix.
      * @return True if the database was successfully opened, false otherwise.
      */
     @Override

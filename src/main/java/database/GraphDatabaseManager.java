@@ -37,7 +37,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
     /**
      * Open the database.
      *
-     * @param databasePath The database file to open.
+     * @param databasePath The database file to open, without the filename suffix.
      * @return True if the database was successfully opened, false otherwise.
      */
     @Override
@@ -54,7 +54,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
     /**
      * Create a database.
      *
-     * @param databasePath The database file to create.
+     * @param databasePath The database file to create, without the filename suffix.
      * @return True if the database was successfully opened, false otherwise.
      */
     @Override

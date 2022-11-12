@@ -241,7 +241,7 @@ public class Assignment implements Serializable {
      */
     public void setAssignmentTitle(String assignmentTitle) {
         this.assignmentTitle = assignmentTitle;
-        this.databaseName = assignmentTitle.replace(" ", "-").toLowerCase() + ".db";
+        this.databaseName = assignmentTitle.replace(" ", "-").toLowerCase();  // no extension
         this.databaseCollectionName = assignmentTitle.replace(" ", "-").toLowerCase() + "-feedback-docs";
     }
 
