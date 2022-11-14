@@ -27,11 +27,9 @@ The easiest way to get the tool running is to use the binary release from Github
 
 ## Prerequisites
 ### Java
-Feedback Helper requires Java 17 or higher.  Debian/Ubuntu users can install Java 17 with `sudo apt install openjdk-17-jdk`, while Windows and Mac users might download it from [Amazon Corretto](https://aws.amazon.com/corretto/).
+Feedback Helper requires Java to be installed on your machine.  Debian/Ubuntu users can install a recent Java version with `sudo apt install default-jdk`, while Windows and Mac users might download it from [Amazon Corretto](https://aws.amazon.com/corretto/).
 
-You can check what Java version you have installed by running `java --version` on the command line.
-
-If you have an older version of Java and don't want to upgrade, you might still be able to use the 1.2 release of the Feedback Helper, which has most of the same features.
+Any Java version 8 or higher should be sufficient.  Java 17 is recommended.  You can check what version you are running with `java --version`.
 
 ### Maven
 If compiling from source, please ensure that you have Maven installed on your machine. Please follow the guidance given at the [download page](https://maven.apache.org/download.cgi) for instructions on how to obtain a copy of Maven.

@@ -1,5 +1,12 @@
 This file describes changes to FeedbackHelper since the initial release.
 
+3.0-rc.1 (2022-11-14)
+  - Phrases database is now a simple json file, <assignment>-phrases.json
+  - Removed dependency on neo4j.
+  - Reintroduces support for older Java versions (anything 8+ should work).
+  - Document database filename is now <assignment>-documents.no2 (more descriptive than .db).
+  - Insights such as "These phrases are often used together" will no longer appear.
+
 2.0 (2022-11-07)
   - Targets Java 17 instead of Java 11.
   - neo4j dependency updated from 3.5.1 to 5.1.0 to allow Java >11.
