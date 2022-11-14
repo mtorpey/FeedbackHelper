@@ -105,7 +105,12 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public void updatePhrase(String heading, Phrase phrase) {
-        getHeadingObject(heading).put(phrase.getPhraseAsString(), phrase.getUsageCount());
+        updatePhrase(getHeadingObject(heading), phrase);
+    }
+
+    /* Update the given phrase in the given JSON object. */
+    private void updatePhrase(JSONObject object, Phrase phrase) {
+        object.put(phrase.getPhraseAsString(), phrase.getUsageCount());
         dumpToFile();
     }
 
@@ -122,14 +127,19 @@ public class GraphDatabaseManager implements IGraphDatabase {
     }
 
     /**
-     * Remove a phrase.
+     * Remove a phrase from the given heading.
      *
      * @param heading The heading the phrase belongs to.
      * @param phrase  The phrase to remove.
      */
     @Override
     public void removePhrase(String heading, String phrase) {
-        getHeadingObject(heading).remove(phrase);
+        removePhrase(getHeadingObject(heading), phrase);
+    }
+
+    /* Remove a phrase from the given JSON object. */
+    private void removePhrase(JSONObject object, String phrase) {
+        object.remove(phrase);
         dumpToFile();
     }
 
@@ -206,53 +216,60 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public void updatePhrasesForHeading(String heading, List<String> oldPhrases, List<String> newPhrases) {
-        // Get the current phrases for the heading
-        List<Phrase> phrasesForHeading = getPhrasesForHeading(heading);
-        phrasesForHeading.addAll(getCustomPhrases()); // add custom phrases, so we can search if they are being used
-
-        // Find which phrases have been removed and added
+        // Find which phrases have been removed and added.
         List<String> removedPhrases = Utilities.getRemovalsFromList(oldPhrases, newPhrases);
         List<String> addedPhrases = Utilities.getAdditionsToList(oldPhrases, newPhrases);
+        // Be careful not to modify these, because we're about to use them twice!
 
+        // Update phrase counts for this heading and for custom phrases
+        updatePhrasesForObject(getHeadingObject(heading), removedPhrases, addedPhrases, true, true);
+        updatePhrasesForObject(getCustomObject(), removedPhrases, addedPhrases, false, false);
+    }
+
+    /* Update phrases in the given object, given these removed and added phrases. */
+    private void updatePhrasesForObject(JSONObject object, List<String> removedPhrases, List<String> addedPhrases, boolean addIfNew, boolean removeIfZero) {
         // Filter out phrases we have identified as those to remove
-        List<Phrase> filteredForRemoval = phrasesForHeading
+        List<Phrase> filteredForRemoval = getPhrasesFromObject(object)
                 .stream()
                 .filter(phrase -> removedPhrases.contains(phrase.getPhraseAsString()))
                 .collect(Collectors.toList());
 
         // Check the usage count of the phrases to remove
         filteredForRemoval.forEach(phraseToRemove -> {
-            if (phraseToRemove.getUsageCount() == 1) {
+            if (phraseToRemove.getUsageCount() == 1 && removeIfZero) {
                 // Remove for good
-                removePhrase(heading, phraseToRemove.getPhraseAsString());
+                removePhrase(object, phraseToRemove.getPhraseAsString());
             } else {
                 // Decrement usage count
                 phraseToRemove.decrementUsageCount();
-                updatePhrase(heading, phraseToRemove);
+                updatePhrase(object, phraseToRemove);
             }
         });
 
         // Filter out phrases that are being reused
-        List<Phrase> filteredForAddition = phrasesForHeading
+        List<Phrase> filteredForAddition = getPhrasesFromObject(object)
                 .stream()
                 .filter(phrase -> addedPhrases.contains(phrase.getPhraseAsString()))
                 .collect(Collectors.toList());
         List<String> updated = new ArrayList<>();
 
-        // Only add to database if phrase is new, otherwise update counter of existing phrase
+        // Update counter of existing phrase
         filteredForAddition.forEach(phraseToAdd -> {
             phraseToAdd.incrementUsageCount();
-            updatePhrase(heading, phraseToAdd);
+            updatePhrase(object, phraseToAdd);
             updated.add(phraseToAdd.getPhraseAsString());
         });
 
         // Add any new phrases
-        addedPhrases.removeAll(updated);
-        addedPhrases.forEach(phraseToAdd -> {
-            Phrase phrase = new Phrase(phraseToAdd);
-            phrase.incrementUsageCount();
-            addPhraseForHeading(heading, phrase);
-        });
+        if (addIfNew) {
+            addedPhrases.forEach(phraseToAdd -> {
+                if (!updated.contains(phraseToAdd)) {
+                    Phrase phrase = new Phrase(phraseToAdd);
+                    phrase.incrementUsageCount();
+                    updatePhrase(object, phrase);
+                }
+            });
+        }
     }
 
     /* Populate the JSON model from the file. */
