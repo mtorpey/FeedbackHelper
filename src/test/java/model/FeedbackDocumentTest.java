@@ -46,7 +46,7 @@ public class FeedbackDocumentTest extends TestCase {
     }
 
     public void testToString() {
-        assertEquals("FeedbackDocument{assignment=test.db, studentId=1}", feedbackDocument.toString());
+        assertEquals("FeedbackDocument{assignment=test, studentId=1}", feedbackDocument.toString());
     }
 
 }

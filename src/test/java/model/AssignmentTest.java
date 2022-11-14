@@ -129,7 +129,7 @@ public class AssignmentTest extends TestCase {
     }
 
     public void testGetDatabaseName() {
-        assertEquals("test.db", assignment.getDatabaseName());
+        assertEquals("test", assignment.getDatabaseName());
     }
 
 }
