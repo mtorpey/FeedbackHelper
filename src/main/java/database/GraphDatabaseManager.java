@@ -51,12 +51,15 @@ public class GraphDatabaseManager implements IGraphDatabase {
     @Override
     public boolean openGraphDatabase(String databasePath) {
         databaseFile = new File(databasePath + FILE_SUFFIX);
+        System.out.print("Attempting to load phrases from " + databaseFile + " . . . ");
         if (databaseFile.exists()) {
             // Load the database into memory
             loadFromFile();
+            System.out.println("success!");
             return true;
         }
         // Does not exist yet
+        System.out.println("failure (does not exist).");
         return false;
     }
 
@@ -274,8 +277,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
 
     /* Populate the JSON model from the file. */
     private void loadFromFile() {
-        try {
-            database = (JSONObject) new JSONParser().parse(new FileReader(databaseFile));
+        try (FileReader reader = new FileReader(databaseFile)) {
+            database = (JSONObject) new JSONParser().parse(reader);
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }

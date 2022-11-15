@@ -343,6 +343,10 @@ public class Assignment implements Serializable {
         return this.databaseName;
     }
 
+    /** Get the database name with its full directory path before it. */
+    public String getFullyQualifiedDatabaseName() {
+        return this.getAssignmentDirectoryPath() + File.separator + this.getDatabaseName();
+    }
 
     /**
      * Get a feedback document for a given student ID.

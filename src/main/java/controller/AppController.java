@@ -87,13 +87,13 @@ public class AppController implements IAppController {
                 .replace(".db", ""));
 
         // Create the assignment database
-        documentDatabase.createDocumentDatabase(assignment.getAssignmentDirectoryPath() + File.separator + assignment.getDatabaseName());
+        documentDatabase.createDocumentDatabase(assignment.getFullyQualifiedDatabaseName());
 
         // Create the feedback files for the assignment in the document database
         documentDatabase.createFeedbackDocuments(assignment);
 
         // Create the graph database
-        graphDatabase.createGraphDatabase(assignment.getAssignmentDirectoryPath() + File.separator + assignment.getDatabaseName());
+        graphDatabase.createGraphDatabase(assignment.getFullyQualifiedDatabaseName());
         graphDatabase.setUpGraphDatabaseForAssignment(assignment.getAssignmentHeadings());
 
         return assignment;
@@ -115,13 +115,13 @@ public class AppController implements IAppController {
                 .replace(".db", ""));
 
         // Create the assignment database
-        documentDatabase.createDocumentDatabase(assignment.getAssignmentDirectoryPath() + File.separator + assignment.getDatabaseName());
+        documentDatabase.createDocumentDatabase(assignment.getFullyQualifiedDatabaseName());
 
         // Create the feedback files for the assignment in the database
         documentDatabase.createFeedbackDocuments(assignment);
 
         // Setup the graph database
-        graphDatabase.createGraphDatabase(assignment.getAssignmentDirectoryPath() + File.separator + assignment.getDatabaseName());
+        graphDatabase.createGraphDatabase(assignment.getFullyQualifiedDatabaseName());
         graphDatabase.setUpGraphDatabaseForAssignment(assignment.getAssignmentHeadings());
 
         return assignment;
@@ -217,8 +217,9 @@ public class AppController implements IAppController {
      */
     private void loadFeedbackDocuments(Assignment assignment) {
         // Open the databases
-        documentDatabase.openDocumentDatabase(assignment.getAssignmentDirectoryPath() + File.separator + assignment.getDatabaseName());
-        graphDatabase.openGraphDatabase(assignment.getAssignmentDirectoryPath() + assignment.getDatabaseName());
+        System.out.println("Loading files " + assignment.getFullyQualifiedDatabaseName() + ".*");
+        documentDatabase.openDocumentDatabase(assignment.getFullyQualifiedDatabaseName());
+        graphDatabase.openGraphDatabase(assignment.getFullyQualifiedDatabaseName());
 
         // Get the feedback documents from the document database
         List<FeedbackDocument> feedbackDocuments = documentDatabase.loadFeedbackDocumentsForAssignment(assignment);
