@@ -6,8 +6,9 @@ import java.util.prefs.Preferences;
 public abstract class UserPreferences {
 
     public static final String THEME = "theme";
-    
-    private static Preferences prefs = Preferences.userRoot().node(UserPreferences.class.getClass().getCanonicalName());
+
+    private static String NODE_NAME = "FeedbackHelper";
+    private static Preferences prefs = Preferences.userRoot().node(NODE_NAME);
 
     public static String getTheme() {
         return prefs.get(THEME, null);
