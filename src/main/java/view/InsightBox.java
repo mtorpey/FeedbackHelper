@@ -63,7 +63,6 @@ public class InsightBox extends JPanel {
      */
     private void setupInfoText() {
         JTextArea infoText = new JTextArea("The following phrases have been paired together " + this.linkedPhrases.getCount() + " times.");
-        infoText.setBackground(Configuration.COLOR_INFO_AREA_BACKGROUND);
         infoText.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
         infoText.setWrapStyleWord(true);
         infoText.setLineWrap(true);

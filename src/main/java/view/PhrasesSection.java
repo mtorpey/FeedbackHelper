@@ -122,20 +122,7 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
      */
     public void setupTabbedPane() {
         this.tabbedPane.addChangeListener(l -> {
-            // Set text colour
-            if (this.tabbedPane.getTabCount() > 0) {
-                this.tabbedPane.setForeground(Configuration.COLOR_PHRASES_TEXT);
-            }
-
-            // Set un-highlighted colour
-            for (int i = 0; i < this.tabbedPane.getTabCount(); i++) {
-                this.tabbedPane.setBackgroundAt(i, Configuration.COLOR_PHRASES_BACKGROUND_UNHIGHLIGHTED);
-            }
-
-            // Set selected colour
             if (this.tabbedPane.getSelectedIndex() >= 0) {
-                this.tabbedPane.setBackgroundAt(this.tabbedPane.getSelectedIndex(), Configuration.COLOR_PHRASES_BACKGROUND_HIGHLIGHTED);
-
                 if (this.tabbedPane.getSelectedIndex() == 0) {
                     this.controller.setCurrentPhrasePanelInView(PhraseType.CUSTOM);
                 } else if (tabbedPane.getSelectedIndex() == 1) {

@@ -24,28 +24,4 @@ public abstract class Configuration {
     /** Colour used for the border of an insight box. */
     public static final Color COLOR_INSIGHT_BORDER = Color.BLACK;
 
-    /** Colour used for the border of an insight box. */
-    public static final Color COLOR_INFO_AREA_BACKGROUND = Color.WHITE;
-
-    /** Colour used for the background of a feedback box (editable section). */
-    public static final Color COLOR_FEEDBACK_BOX_BACKGROUND = Color.WHITE;
-
-    /** Colour used for the text inside a phrase box. */
-    public static final Color COLOR_PHRASES_TEXT = Color.BLACK;
-
-    /** Colour used for the background of a phrase box when not highlighted. */
-    public static final Color COLOR_PHRASES_BACKGROUND_UNHIGHLIGHTED = Color.LIGHT_GRAY;
-
-    /** Colour used for the background of a phrase box when highlighted. */
-    public static final Color COLOR_PHRASES_BACKGROUND_HIGHLIGHTED = Color.BLUE;
-
-    /** Colour used for the background of a preview box. */
-    public static final Color COLOR_PREVIEW_BOX_BACKGROUND = Color.WHITE;
-
-    /** Colour used for the caret (text cursor) inside an enabled text box. */
-    public static final Color COLOR_CARET_ENABLED = Color.BLACK;
-
-    /** Colour used for the caret (text cursor) inside a disabled text box. */
-    public static final Color COLOR_CARET_DISABLED = Color.WHITE;
-    
 }

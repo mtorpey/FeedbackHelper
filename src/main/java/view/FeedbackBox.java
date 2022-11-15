@@ -88,11 +88,11 @@ public class FeedbackBox extends JPanel {
         // Create the text area and set properties
         this.textArea = new JTextArea();
         this.textArea.setRows(10);
-        this.textArea.setBackground(Configuration.COLOR_FEEDBACK_BOX_BACKGROUND);
         this.textArea.setEditable(true);
         this.textArea.setLineWrap(true);
         this.textArea.setWrapStyleWord(true);
         this.textArea.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
+        this.textArea.setCaretColor(this.textArea.getForeground());
 
         // Listen for enter press
         this.textArea.addKeyListener(new KeyAdapter() {
