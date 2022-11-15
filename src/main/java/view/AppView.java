@@ -1,5 +1,9 @@
 package view;
 
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import configuration.UserPreferences;
 import controller.IAppController;
 
 /**
@@ -27,7 +31,19 @@ public class AppView implements IAppView {
      */
     @Override
     public void start() {
+        applyUserTheme();
         new HomeScreen(controller);
+    }
+
+    public static void applyUserTheme() {
+        String theme = UserPreferences.getTheme();
+        if (theme != null) {
+            try {
+                UIManager.setLookAndFeel(theme);
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

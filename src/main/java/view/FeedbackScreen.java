@@ -18,6 +18,8 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import configuration.UserPreferences;
+
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -305,6 +307,7 @@ public class FeedbackScreen implements PropertyChangeListener {
 
     private void setTheme(String name) {
         System.out.println("Setting theme " + name);
+        UserPreferences.setTheme(name);
         try {
             UIManager.setLookAndFeel(name);
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
