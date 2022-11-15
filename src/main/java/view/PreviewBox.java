@@ -76,7 +76,6 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
         // Set properties
         this.textPane = new JTextArea();
         this.textPane.setRows(5);
-        this.textPane.setBackground(Configuration.COLOR_PREVIEW_BOX_BACKGROUND);
         this.textPane.setBorder(unselectedBorder);
         this.textPane.setEditable(false);
         this.textPane.setLineWrap(false);

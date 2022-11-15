@@ -71,8 +71,7 @@ public class PhraseEntryBox extends JPanel {
      */
     public void disablePhraseEntryBox() {
         this.submitButton.setEnabled(false);
-        this.textArea.setEditable(false);
-        this.textArea.setCaretColor(Configuration.COLOR_CARET_DISABLED);
+        this.textArea.setEnabled(false);
 
         // Refresh the UI
         this.repaint();
@@ -84,8 +83,7 @@ public class PhraseEntryBox extends JPanel {
      */
     public void enablePhraseEntryBox() {
         this.submitButton.setEnabled(true);
-        this.textArea.setEditable(true);
-        this.textArea.setCaretColor(Configuration.COLOR_CARET_ENABLED);
+        this.textArea.setEnabled(true);
 
         // Refresh the UI
         this.repaint();
