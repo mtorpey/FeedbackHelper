@@ -1,5 +1,11 @@
 This file describes changes to FeedbackHelper since the initial release.
 
+3.0-rc.2 (2022-11-15)
+  - Bug fix: phrase database path is now formed correctly.
+  - Phrase database file is now closed properly after reading.
+  - More verbose terminal output.
+  - Adjust colours slightly.
+
 3.0-rc.1 (2022-11-14)
   - Phrases database is now a simple json file, <assignment>-phrases.json
   - Removed dependency on neo4j.
