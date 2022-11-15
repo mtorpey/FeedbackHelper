@@ -92,7 +92,6 @@ public class FeedbackBox extends JPanel {
         this.textArea.setLineWrap(true);
         this.textArea.setWrapStyleWord(true);
         this.textArea.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
-        this.textArea.setCaretColor(this.textArea.getForeground());
 
         // Listen for enter press
         this.textArea.addKeyListener(new KeyAdapter() {
@@ -120,6 +119,9 @@ public class FeedbackBox extends JPanel {
                     controller.resetPhrasesPanel(PhraseType.FREQUENTLY_USED);
                     controller.showPhrasesForHeading(heading);
                 }
+
+                // Set the caret colour (in some themes it might be hard to see)
+                textArea.setCaretColor(textArea.getForeground());
 
                 // Check if we need to insert a new line
                 if (textArea.getText().isEmpty()) {

@@ -14,6 +14,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.UIManager.LookAndFeelInfo;
+
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -232,6 +236,8 @@ public class FeedbackScreen implements PropertyChangeListener {
         JMenuItem visGradesOption = new JMenuItem("Visualise grades");
         JMenuItem summaryOption = new JMenuItem("Create summary");
 
+        JMenu preferencesMenu = createPreferencesMenu();
+
         // Save operation
         saveOption.addActionListener(l -> {
             JOptionPane.showMessageDialog(this.feedbackScreen, "Saving document for student: " + this.controller.getCurrentDocumentInView());
@@ -283,7 +289,28 @@ public class FeedbackScreen implements PropertyChangeListener {
 
         // Add the menu bar to the screen
         menuBar.add(fileMenu);
+        menuBar.add(preferencesMenu);
         this.feedbackScreen.add(menuBar, BorderLayout.PAGE_START);
+    }
+
+    private JMenu createPreferencesMenu() {
+        JMenu prefMenu = new JMenu("Preferences");
+        for (LookAndFeelInfo theme : UIManager.getInstalledLookAndFeels()) {
+            JMenuItem item = new JMenuItem(theme.getName());
+            item.addActionListener(e -> setTheme(theme.getClassName()));
+            prefMenu.add(item);
+        }
+        return prefMenu;
+    }
+
+    private void setTheme(String name) {
+        System.out.println("Setting theme " + name);
+        try {
+            UIManager.setLookAndFeel(name);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+        SwingUtilities.updateComponentTreeUI(feedbackScreen);
     }
 
     /**
