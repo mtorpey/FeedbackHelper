@@ -28,6 +28,9 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
     private JLabel sentimentLabel;
     private JLabel usageCountLabel;
 
+    // Green arrow icon
+    private static ImageIcon insertIcon = loadInsertIcon();
+
     /**
      * Constructor.
      *
@@ -42,13 +45,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
         this.phraseSentiment = controller.getPhraseSentiment(phrase);
         this.usageCount = usageCount;
 
-        // Following resize code is adapted from:
-        // https://stackoverflow.com/questions/6714045/how-to-resize-jlabel-imageicon
-        // Green arrow image from: https://commons.wikimedia.org/wiki/File:Eo_circle_green_arrow-left.svg
-        // Green arrow image has a creative commons license
-        this.insertButton = new JButton(
-                new ImageIcon(new ImageIcon(
-                        this.getClass().getResource("/green_arrow.png")).getImage().getScaledInstance(25, 25, Image.SCALE_DEFAULT)));
+        this.insertButton = new JButton(insertIcon);
 
         this.setLayout(new BorderLayout());
 
@@ -59,6 +56,18 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
 
         this.setMaximumSize(new Dimension(300, 100));
         this.setVisible(true);
+    }
+
+    /**
+     * Load the green arrow "insert" icon.
+     * To be used once, statically, at the beginning of the program.
+     */
+    private static ImageIcon loadInsertIcon() {
+        // Green arrow image from: https://commons.wikimedia.org/wiki/File:Eo_circle_green_arrow-left.svg
+        // (creative commons license)
+        URL url = PhraseBox.class.getResource("/green_arrow.png");
+        Image image = new ImageIcon(url).getImage().getScaledInstance(25, 25, Image.SCALE_DEFAULT);
+        return new ImageIcon(image);
     }
 
     /**
