@@ -1,7 +1,6 @@
 package view;
 
 import controller.IAppController;
-import model.Sentiment;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -21,11 +20,9 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
     // Instance variables
     private final IAppController controller;
     private String phrase;
-    private String phraseSentiment;
     private int usageCount;
     private JTextArea phraseTextArea;
     private JButton insertButton;
-    private JLabel sentimentLabel;
     private JLabel usageCountLabel;
 
     // Green arrow icon
@@ -42,7 +39,6 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
         this.controller = controller;
         this.phrase = phrase;
         this.phraseTextArea = new JTextArea();
-        this.phraseSentiment = controller.getPhraseSentiment(phrase);
         this.usageCount = usageCount;
 
         this.insertButton = new JButton(insertIcon);
@@ -51,7 +47,6 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
 
         setupInsertButton();
         setupPhraseTextArea();
-        setupSentimentLabel();
         setupUsageCountLabel();
 
         this.setMaximumSize(new Dimension(300, 100));
@@ -79,27 +74,6 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
             this.controller.saveFeedbackDocument(this.controller.getCurrentDocumentInView());
         });
         this.add(this.insertButton, BorderLayout.LINE_START);
-    }
-
-    /**
-     * Setup the sentiment label.
-     */
-    private void setupSentimentLabel() {
-        ImageIcon icon = null;
-        URL emojiFilePath = null;
-
-        // Pick the relevant emoji
-        // Emoji images are custom made on powerpoint - no licence needed.
-        if (this.phraseSentiment.equals(Sentiment.NEUTRAL.getSentimentAsString())) {
-            emojiFilePath = this.getClass().getResource("/neutral.png");
-        } else if (this.phraseSentiment.equals(Sentiment.POSITIVE.getSentimentAsString()) || this.phraseSentiment.equals(Sentiment.VERY_POSITIVE.getSentimentAsString())) {
-            emojiFilePath = this.getClass().getResource("/positive.png");
-        } else {
-            emojiFilePath = this.getClass().getResource("/negative.png");
-        }
-
-        this.sentimentLabel = new JLabel(new ImageIcon(new ImageIcon(emojiFilePath).getImage().getScaledInstance(25, 25, Image.SCALE_DEFAULT)));
-        this.add(this.sentimentLabel, BorderLayout.LINE_END);
     }
 
     /**

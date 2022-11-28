@@ -4,17 +4,12 @@ import database.DocumentDatabaseManager;
 import database.GraphDatabaseManager;
 import database.IDocumentDatabase;
 import database.IGraphDatabase;
-import edu.stanford.nlp.pipeline.CoreDocument;
-import edu.stanford.nlp.pipeline.CoreSentence;
-import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import model.Assignment;
 import model.FeedbackDocument;
 import model.IAppModel;
 import model.LinkedPhrases;
 import model.Phrase;
-import model.Sentiment;
 import model.Utilities;
-import nlp.NLPPipeline;
 import view.PhraseType;
 import visualisation.Visualisations;
 
@@ -37,10 +32,6 @@ public class AppController implements IAppController {
     private final IAppModel appModel;
     private final IDocumentDatabase documentDatabase;
     private final IGraphDatabase graphDatabase;
-    private final StanfordCoreNLP nlp;
-    
-    
-    private final Map<String, String> sentiments;
 
     /**
      * Constructor.
@@ -51,8 +42,6 @@ public class AppController implements IAppController {
         this.appModel = appModel;
         this.documentDatabase = new DocumentDatabaseManager();
         this.graphDatabase = new GraphDatabaseManager();
-        this.nlp = NLPPipeline.getPipeline();
-        this.sentiments = new HashMap<>();
     }
 
     /**
@@ -444,52 +433,6 @@ public class AppController implements IAppController {
 
         return summary;
     }
-
-
-    /* SENTIMENT METHODS */
-
-    /**
-     * Get the sentiment of a phrase.
-     *
-     * @param phrase The string representation of the phrase to be evaluated.
-     * @return The sentiment of the phrase.
-     */
-    @Override
-    public String getPhraseSentiment(String phrase) {
-        if(this.sentiments.containsKey(phrase)) {
-            return this.sentiments.get(phrase);
-        }
-        
-        // Get the annotated version of the phrase
-        CoreDocument coreDocument = new CoreDocument(phrase);
-        nlp.annotate(coreDocument);
-
-        // Check if multiple sentences need to be evaluated
-        List<CoreSentence> sentenceList = coreDocument.sentences();
-        if (sentenceList.size() > 1) {
-            String setiment =  Sentiment.getOverallSentimentOfSentences(sentenceList).sentimentAsString;
-            this.sentiments.put(phrase, setiment);
-            return setiment;
-        }
-
-        // Single sentence, so return the first value and store for faster fetch later
-        this.sentiments.put(phrase, sentenceList.get(0).sentiment());
-        return sentenceList.get(0).sentiment();
-    }
-
-    /**
-     * Get the sentiment annotations for a body of text.
-     *
-     * @param text The text body to be evaluated.
-     * @return A CoreDocument object containing the sentiment annotations.
-     */
-    @Override
-    public CoreDocument getSentimentForText(String text) {
-        CoreDocument coreDocument = new CoreDocument(text);
-        nlp.annotate(coreDocument);
-        return coreDocument;
-    }
-
 
     /* PHRASE MANAGEMENT METHODS */
 

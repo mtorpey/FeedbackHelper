@@ -232,7 +232,6 @@ public class FeedbackScreen implements PropertyChangeListener {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         JMenuItem saveOption = new JMenuItem("Save current document");
-        JMenuItem sentimentOption = new JMenuItem("Show overall sentiment of current document");
         JMenuItem exportDocsOption = new JMenuItem("Export feedback documents");
         JMenuItem exportGradesOption = new JMenuItem("Export grades");
         JMenuItem visGradesOption = new JMenuItem("Visualise grades");
@@ -244,12 +243,6 @@ public class FeedbackScreen implements PropertyChangeListener {
         saveOption.addActionListener(l -> {
             JOptionPane.showMessageDialog(this.feedbackScreen, "Saving document for student: " + this.controller.getCurrentDocumentInView());
             this.controller.saveFeedbackDocument(controller.getCurrentDocumentInView());
-        });
-
-        // View sentiment option
-        sentimentOption.addActionListener(l -> {
-            SentimentViewer sentimentViewer = new SentimentViewer(this.controller, "Sentiment Overview of Document for: " + this.controller.getCurrentDocumentInView());
-            sentimentViewer.displayData(this.assignment.getFeedbackDocumentForStudent(this.controller.getCurrentDocumentInView()));
         });
 
         // Export documents option
@@ -283,7 +276,6 @@ public class FeedbackScreen implements PropertyChangeListener {
 
         // Add all options to menu
         fileMenu.add(saveOption);
-        fileMenu.add(sentimentOption);
         fileMenu.add(exportDocsOption);
         fileMenu.add(exportGradesOption);
         fileMenu.add(visGradesOption);

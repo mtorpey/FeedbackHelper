@@ -9,7 +9,6 @@ public class Phrase implements Comparable<Phrase> {
 
     // Instance variables
     private final String phraseAsString;
-    private Sentiment sentiment;
     private int usageCount;
 
     /**

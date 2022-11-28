@@ -1,6 +1,5 @@
 package controller;
 
-import edu.stanford.nlp.pipeline.CoreDocument;
 import model.Assignment;
 import view.PhraseType;
 
@@ -198,22 +197,6 @@ public interface IAppController {
      * @return A map of headings and the 3 most used phrases for those headings.
      */
     Map<String, List<String>> getSummary(Assignment assignment);
-
-    /**
-     * Get the sentiment of a phrase.
-     *
-     * @param phrase The string representation of the phrase to be evaluated.
-     * @return The sentiment of the phrase.
-     */
-    String getPhraseSentiment(String phrase);
-
-    /**
-     * Get the sentiment annotations for a body of text.
-     *
-     * @param text The text body to be evaluated.
-     * @return A CoreDocument object containing the sentiment annotations.
-     */
-    CoreDocument getSentimentForText(String text);
 
     /**
      * Insert a phrase into the current feedback box being edited.
