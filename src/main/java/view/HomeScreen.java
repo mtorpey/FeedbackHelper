@@ -163,7 +163,6 @@ public class HomeScreen {
 
             // Ensure selected file is valid and show feedback screen
             if (assignmentFilePath != null) {
-                new Thread(LoadingScreen::showLoadingScreen).start();
                 Assignment assignment = this.controller.loadAssignment(assignmentFilePath);
                 new FeedbackScreen(this.controller, assignment);
             }

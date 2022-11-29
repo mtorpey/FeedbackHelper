@@ -6,7 +6,6 @@ import model.AppModel;
 import model.IAppModel;
 import view.AppView;
 import view.IAppView;
-import view.LoadingScreen;
 
 /**
  * Feedback Helper Tool Main Class.
@@ -27,9 +26,6 @@ public class FeedbackHelperTool {
      * Start the program.
      */
     public void start() {
-        // Show splash screen
-        new Thread(LoadingScreen::showSplashScreen).start();
-
         // Load everything up
         IAppModel model = new AppModel();
         IAppController controller = new AppController(model);
