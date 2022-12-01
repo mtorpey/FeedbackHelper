@@ -288,13 +288,13 @@ public class FeedbackScreen implements PropertyChangeListener {
     }
 
     private JMenu createPreferencesMenu() {
-        JMenu prefMenu = new JMenu("Preferences");
+        JMenu themeMenu = new JMenu("Theme");
         for (LookAndFeelInfo theme : UIManager.getInstalledLookAndFeels()) {
             JMenuItem item = new JMenuItem(theme.getName());
             item.addActionListener(e -> setTheme(theme.getClassName()));
-            prefMenu.add(item);
+            themeMenu.add(item);
         }
-        return prefMenu;
+        return themeMenu;
     }
 
     private void setTheme(String name) {
