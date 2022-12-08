@@ -112,7 +112,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Centre the screen
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (screenSize.width - this.feedbackScreen.getWidth()) / 2;
-        int y = (screenSize.height - this.feedbackScreen.getHeight()) / 2;
+        int y = 20;  // Just below top of screen
         this.feedbackScreen.setLocation(x, y);
     }
 
