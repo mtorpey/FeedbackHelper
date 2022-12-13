@@ -1,5 +1,13 @@
 This file describes changes to FeedbackHelper since the initial release.
 
+3.1 (2022-12-13)
+  - Sentiment analysis removed, for performance.
+  - Choice of colour themes, including FlatLaf and any built-in themes.
+  - Storage of user preferences (currently only used for themes).
+  - Images pre-loaded to cut UI lag when switching between sections.
+  - Splash screens removed.
+  - Bug fix: new windows can no longer be created with title bar off-screen.
+
 3.0 (2022-11-21)
   - Almost identical to 3.0-rc.2, which seems to be stable.
   - Tweaked stdout messages.
