@@ -12,12 +12,11 @@ This tool was developed as part of the project component of the MSc Computer Sci
 The goal of the tool is to help markers create feedback documents more efficiently and give them insight into the content of their feedback regarding phrases they use and the sentiment behind them.
 The tool is built in Java and depends on some external libraries, namely:
 - `Nitrite DB`
-- `Neo4j`
-- `Stanford NLP`
 - `tablesaw Visualisations`
 
 ## How to run
 The easiest way to get the tool running is to use the binary release from Github.
+- Make sure you have Java installed (see below).
 - Go to the [releases page](https://github.com/mtorpey/FeedbackHelper/releases).
 - Download `FeedbackHelper-<version>-complete.jar`.
 - You can copy this `JAR` to anywhere on your system and rename it if you wish. Just ensure that it has a `.jar` extension.
@@ -44,7 +43,7 @@ To compile and run the software from source, download this repository and do the
 Or to create an executable jar, do the following:
 - Navigate to the root directory of the project.
 - Type `mvn package` to build the jar from the source files.
-- After about 30 seconds you should a message saying the build was successful.
+- After about 10 seconds you should a message saying the build was successful.
 - Then navigate to the `target/` folder.
 - Within this folder look for the `JAR` named `FeedbackHelper-<version>-complete.jar`
 
