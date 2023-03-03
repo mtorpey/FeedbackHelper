@@ -232,8 +232,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         JMenuItem saveOption = new JMenuItem("Save current document");
-        JMenuItem exportDocsOption = new JMenuItem("Export feedback documents");
-        JMenuItem exportGradesOption = new JMenuItem("Export grades");
+        JMenuItem exportDocsOption = new JMenuItem("Export grades and feedback documents");
         JMenuItem visGradesOption = new JMenuItem("Visualise grades");
         JMenuItem summaryOption = new JMenuItem("Create summary");
 
@@ -245,19 +244,14 @@ public class FeedbackScreen implements PropertyChangeListener {
             this.controller.saveFeedbackDocument(controller.getCurrentDocumentInView());
         });
 
-        // Export documents option
+        // Export grades and documents option
         exportDocsOption.addActionListener(l -> {
+            // Export feedback documents
             this.controller.exportFeedbackDocuments(this.assignment);
-            JOptionPane.showMessageDialog(this.feedbackScreen,
-                    "Exporting feedback documents... \n" +
-                            "Please check the directory: " + this.assignment.getAssignmentDirectoryPath());
-        });
-
-        // Export grades option
-        exportGradesOption.addActionListener(l -> {
+            // Export grades
             this.controller.exportGrades(this.assignment);
             JOptionPane.showMessageDialog(this.feedbackScreen,
-                    "Exporting assignment grades... \n" +
+                    "Exporting assignment grades and feedback documents... \n" +
                             "Please check the directory: " + this.assignment.getAssignmentDirectoryPath());
         });
 
@@ -277,7 +271,6 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Add all options to menu
         fileMenu.add(saveOption);
         fileMenu.add(exportDocsOption);
-        fileMenu.add(exportGradesOption);
         fileMenu.add(visGradesOption);
         fileMenu.add(summaryOption);
 
