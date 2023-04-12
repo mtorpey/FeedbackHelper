@@ -228,15 +228,22 @@ public class FeedbackScreen implements PropertyChangeListener {
      * Setup the menubar.
      */
     private void setupMenuBar() {
-        // Menu bar and items
+        // Menu bar
         JMenuBar menuBar = new JMenuBar();
+
+        // Create the file menu and items
         JMenu fileMenu = new JMenu("File");
         JMenuItem saveOption = new JMenuItem("Save current document");
         JMenuItem exportDocsOption = new JMenuItem("Export grades and feedback documents");
         JMenuItem visGradesOption = new JMenuItem("Visualise grades");
         JMenuItem summaryOption = new JMenuItem("Create summary");
 
+        // Create the theme preferences menu
         JMenu preferencesMenu = createPreferencesMenu();
+        
+        // Create the help menu and items
+        JMenu helpMenu = new JMenu("Help");
+        JMenuItem aboutOption = new JMenuItem("About Feedback Helper");
 
         // Save operation
         saveOption.addActionListener(l -> {
@@ -257,7 +264,7 @@ public class FeedbackScreen implements PropertyChangeListener {
 
         // Visualise grades option
         visGradesOption.addActionListener(l -> {
-            this.controller.visualiseGrades(assignment);
+            this.controller.visualiseGrades(this.assignment);
             JOptionPane.showMessageDialog(this.feedbackScreen, "Generating visualisation of assignment grades...");
         });
 
@@ -268,15 +275,34 @@ public class FeedbackScreen implements PropertyChangeListener {
             documentViewer.displayData(summary, this.assignment.getAssignmentHeadings());
         });
 
+        // Show an 'about' window
+        aboutOption.addActionListener(l -> {
+
+            JOptionPane.showMessageDialog(this.feedbackScreen, 
+                    "Feedback Helper was originally written by Bhuvan Bezawadag " +
+                            "as part of a CS5099 project at the University of St Andrews." +
+                            "Later contributions by Michael Young, Johannes Zelger, and Oluwanifemi Fadare. \n" +
+                            "The goal of the tool is to help markers create feedback documents more efficiently and " +
+                            "give them insight into the content of their feedback regarding phrases they use and " +
+                            "the sentiment behind them. ", 
+                    "About Feedback Helper",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+        });
+
+
         // Add all options to menu
         fileMenu.add(saveOption);
         fileMenu.add(exportDocsOption);
         fileMenu.add(visGradesOption);
         fileMenu.add(summaryOption);
 
+        helpMenu.add(aboutOption);
+
         // Add the menu bar to the screen
         menuBar.add(fileMenu);
         menuBar.add(preferencesMenu);
+        menuBar.add(helpMenu);
         this.feedbackScreen.add(menuBar, BorderLayout.PAGE_START);
     }
 
