@@ -275,19 +275,11 @@ public class FeedbackScreen implements PropertyChangeListener {
             documentViewer.displayData(summary, this.assignment.getAssignmentHeadings());
         });
 
-        // Show an 'about' window
+        // Show the 'about' dialog window
         aboutOption.addActionListener(l -> {
-
-            JOptionPane.showMessageDialog(this.feedbackScreen, 
-                    "Feedback Helper was originally written by Bhuvan Bezawadag " +
-                            "as part of a CS5099 project at the University of St Andrews." +
-                            "Later contributions by Michael Young, Johannes Zelger, and Oluwanifemi Fadare. \n" +
-                            "The goal of the tool is to help markers create feedback documents more efficiently and " +
-                            "give them insight into the content of their feedback regarding phrases they use and " +
-                            "the sentiment behind them. ", 
-                    "About Feedback Helper",
-                    JOptionPane.INFORMATION_MESSAGE);
-
+            AboutDialog aboutDialog = new AboutDialog(this.feedbackScreen);
+            aboutDialog.pack();
+            aboutDialog.setVisible(true);
         });
 
 
