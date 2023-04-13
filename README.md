@@ -3,7 +3,7 @@ by Bhuvan Bezawada
 
 Originally written as part of a CS5099 project at the University of St Andrews
 
-Later contributions by Michael Young and Johannes Zelger
+Later contributions by Michael Young, Johannes Zelger, and Oluwanifemi Fadare
 
 This fork maintained by Michael Young
 
