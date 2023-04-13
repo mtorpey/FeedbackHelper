@@ -1,37 +1,127 @@
 package view;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.awt.Desktop;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JEditorPane;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 /**
  * About Dialog Class.
  */
 public class AboutDialog extends JDialog {
     
-    String info = "Feedback Helper was originally written by Bhuvan Bezawadag " +
-    "as part of a CS5099 project at the University of St Andrews." +
-    "Later contributions by Michael Young, Johannes Zelger, and Oluwanifemi Fadare. \n" +
-    "The goal of the tool is to help markers create feedback documents more efficiently and " +
-    "give them insight into the content of their feedback regarding phrases they use and " +
-    "the sentiment behind them. ";
-    
+    public static final String DEVELOPER_INFO = 
+        "Feedback Helper was developed by Bhuvan Bezawadag as part of a CS5099 project at the University of St Andrews.";
+
+    public static final String CONTRIBUTOR_INFO = 
+        "Later contributions by Michael Young, Johannes Zelger, and Oluwanifemi Fadare.";
+
+    public static final String GOAL_INFO =
+        "The goal of this tool is to help markers create feedback documents more efficiently.";
+
+    public static final String ABOUT_INFO = "<html><br>" + DEVELOPER_INFO + "<br>" + GOAL_INFO + "<br><br>" 
+        + CONTRIBUTOR_INFO + "</html>";
+
+    public static final String LINKS = "<html><a href='https://github.com/mtorpey/FeedbackHelper'>Check out the Github repository</a> " +
+        "or view the 'About' window <a href='https://github.com/mtorpey/FeedbackHelper/issues/10'>issue tracker</a>.</html>";
+
     /**
      * Constructor.
      *
      * @param parent the dialog parent
      */
     public AboutDialog(JFrame parent) {
-        super(parent, "About", true);
-        // set size, layout, and other properties of the dialog
+        super(parent, "About Feedback Helper", true);
+ 
+        // Create the dialog components
+        JPanel dialogPanel = new JPanel(new BorderLayout());;
+        dialogPanel.setBorder(BorderFactory.createEmptyBorder(8, 16, 24, 16));
+        
+        JPanel panelWest = new JPanel(new FlowLayout());
+        // Add information icon
+        JLabel iconLabel = new JLabel(UIManager.getLookAndFeel().getDefaults().getIcon("OptionPane.informationIcon"));
 
-        setLocationRelativeTo(null);
-
-        // create a label to display the Java version
+        JPanel panelEast = new JPanel();
+        panelEast.setLayout(new BoxLayout(panelEast, BoxLayout.Y_AXIS));
+        // Create program header
+        JLabel headerLabel = new JLabel("Feedback Helper");
+        headerLabel.setFont(headerLabel.getFont().deriveFont(32.0f)); // Increase size
+        // Create a label to display the Java version
         JLabel javaVersionLabel = new JLabel("Java Version: " + System.getProperty("java.version"));
-        add(javaVersionLabel);
+        // Create labels to add information
+        JLabel developersLabel = new JLabel(ABOUT_INFO);
+        // Add hyperlink pane
+        JEditorPane linksPane = new JEditorPane("text/html", LINKS);
 
-        // add UI elements such as labels, buttons, and images
-     }
+        linksPane.setEditable(false);
+        linksPane.setOpaque(false);
+
+        // Hyperlink navigation
+        linksPane.addHyperlinkListener(new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent hle) {
+                // Open in browser on hyperlink activation
+                if (HyperlinkEvent.EventType.ACTIVATED.equals(hle.getEventType())) {
+                    openLocation(hle.getURL().toString());
+                }
+            }
+        });
+
+        // Add panels
+        dialogPanel.add(panelWest, BorderLayout.WEST);
+            panelWest.add(iconLabel, BorderLayout.CENTER);
+        dialogPanel.add(panelEast, BorderLayout.CENTER);
+            panelEast.add(headerLabel);
+            panelEast.add(javaVersionLabel);
+            panelEast.add(developersLabel);
+            panelEast.add(linksPane);
+
+        add(dialogPanel, BorderLayout.CENTER);
+
+        setResizable(false);
+        pack(); // Adjust dialog size to fit components
+        setLocationRelativeTo(parent); // Center the dialog onscreen
+        
+    }
+
+    /**
+     * Open a given url
+     * 
+     * @param url of webpage
+     */
+    private static void openLocation(String url) {
+        if (!Desktop.isDesktopSupported()) {
+            JOptionPane.showMessageDialog(null,
+                "Java is not able to launch links on your computer.",
+                "Cannot Launch Link", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Desktop desktop = Desktop.getDesktop();
+        
+        try {
+            desktop.browse(new URI(url));
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null,
+                "Failed to launch the link, your computer is likely misconfigured.",
+                "Cannot Launch Link",JOptionPane.WARNING_MESSAGE);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }

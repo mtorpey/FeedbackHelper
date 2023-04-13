@@ -278,7 +278,6 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Show the 'about' dialog window
         aboutOption.addActionListener(l -> {
             AboutDialog aboutDialog = new AboutDialog(this.feedbackScreen);
-            aboutDialog.pack();
             aboutDialog.setVisible(true);
         });
 
