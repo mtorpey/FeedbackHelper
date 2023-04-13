@@ -146,11 +146,10 @@ public class AppController implements IAppController {
 
         // Check if the assignment working directory matches the current directory
         if (!assignment.getAssignmentDirectoryPath().equals(currentDirectory)) {
+            System.out.println("Changing directory to " + currentDirectory);
             // Change working directory to current directory
             assignment.setAssignmentDirectoryPath(currentDirectory);
         }
-
-        System.out.println(assignment.getFullyQualifiedDatabaseName());
 
         // Load the feedback documents into the assignment
         loadFeedbackDocuments(assignment);
