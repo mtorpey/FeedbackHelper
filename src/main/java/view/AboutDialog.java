@@ -36,7 +36,7 @@ public class AboutDialog extends JDialog {
     public static final String ABOUT_INFO = "<html><br>" + DEVELOPER_INFO + "<br>" + GOAL_INFO + "<br><br>" 
         + CONTRIBUTOR_INFO + "</html>";
 
-    public static final String LINKS = "<html><a href='https://github.com/mtorpey/FeedbackHelper'>Check out the Github repository</a> " +
+    public static final String LINKS = "<html>Check out the <a href='https://github.com/mtorpey/FeedbackHelper'>Github repository</a> " +
         "or view the 'About' window <a href='https://github.com/mtorpey/FeedbackHelper/issues/10'>issue tracker</a>.</html>";
 
     /**
@@ -52,6 +52,7 @@ public class AboutDialog extends JDialog {
         dialogPanel.setBorder(BorderFactory.createEmptyBorder(8, 16, 24, 16));
         
         JPanel panelWest = new JPanel(new FlowLayout());
+
         // Add information icon
         JLabel iconLabel = new JLabel(UIManager.getLookAndFeel().getDefaults().getIcon("OptionPane.informationIcon"));
 
@@ -65,13 +66,14 @@ public class AboutDialog extends JDialog {
         // Create labels to add information
         JLabel developersLabel = new JLabel(ABOUT_INFO);
         // Add hyperlink pane
-        JEditorPane linksPane = new JEditorPane("text/html", LINKS);
+        JPanel linksPane = new JPanel(new FlowLayout());
+        JEditorPane linksEditorPane = new JEditorPane("text/html", LINKS);
 
-        linksPane.setEditable(false);
-        linksPane.setOpaque(false);
+        linksEditorPane.setEditable(false);
+        linksEditorPane.setOpaque(false);
 
         // Hyperlink navigation
-        linksPane.addHyperlinkListener(new HyperlinkListener() {
+        linksEditorPane.addHyperlinkListener(new HyperlinkListener() {
             public void hyperlinkUpdate(HyperlinkEvent hle) {
                 // Open in browser on hyperlink activation
                 if (HyperlinkEvent.EventType.ACTIVATED.equals(hle.getEventType())) {
@@ -83,11 +85,13 @@ public class AboutDialog extends JDialog {
         // Add panels
         dialogPanel.add(panelWest, BorderLayout.WEST);
             panelWest.add(iconLabel, BorderLayout.CENTER);
-        dialogPanel.add(panelEast, BorderLayout.CENTER);
+        dialogPanel.add(panelEast, BorderLayout.EAST);
             panelEast.add(headerLabel);
             panelEast.add(javaVersionLabel);
             panelEast.add(developersLabel);
+            // Add pane for links
             panelEast.add(linksPane);
+                linksPane.add(linksEditorPane);
 
         add(dialogPanel, BorderLayout.CENTER);
 
@@ -117,7 +121,7 @@ public class AboutDialog extends JDialog {
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null,
                 "Failed to launch the link, your computer is likely misconfigured.",
-                "Cannot Launch Link",JOptionPane.WARNING_MESSAGE);
+                "Cannot Launch Link", JOptionPane.WARNING_MESSAGE);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
