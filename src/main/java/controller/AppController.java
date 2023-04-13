@@ -140,6 +140,18 @@ public class AppController implements IAppController {
         // Load the assignment
         Assignment assignment = appModel.loadAssignment(assignmentFilePath);
 
+        // Get the file at the path
+        File file = new File(assignmentFilePath);
+        String currentDirectory = file.getParent();
+
+        // Check if the assignment working directory matches the current directory
+        if (!assignment.getAssignmentDirectoryPath().equals(currentDirectory)) {
+            // Change working directory to current directory
+            assignment.setAssignmentDirectoryPath(currentDirectory);
+        }
+
+        System.out.println(assignment.getFullyQualifiedDatabaseName());
+
         // Load the feedback documents into the assignment
         loadFeedbackDocuments(assignment);
         return assignment;
