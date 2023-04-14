@@ -255,7 +255,7 @@ public class AppController implements IAppController {
     public void saveFeedbackDocument(Assignment assignment, String studentId, Map<String, String> headingsAndData, double grade) {
         documentDatabase.saveFeedbackDocument(assignment, studentId, headingsAndData, grade);
         FeedbackDocument feedbackDocumentForStudent = assignment.getFeedbackDocumentForStudent(studentId);
-        feedbackDocumentForStudent.getHeadings().forEach(heading -> {
+        assignment.getAssignmentHeadings().forEach(heading -> {
             feedbackDocumentForStudent.setDataForHeading(heading, headingsAndData.get(heading));
         });
         feedbackDocumentForStudent.setGrade(grade);
@@ -320,7 +320,7 @@ public class AppController implements IAppController {
         FeedbackDocument feedbackDocumentForStudent = assignment.getFeedbackDocumentForStudent(studentId);
 
         // Find the first line of the document
-        for (String heading : feedbackDocumentForStudent.getHeadings()) {
+        for (String heading : assignment.getAssignmentHeadings()) {
             if (!feedbackDocumentForStudent.getHeadingData(heading).isEmpty()) {
                 List<String> dataAsList = Arrays
                         .stream(feedbackDocumentForStudent.getHeadingData(heading).split("\n"))
@@ -370,6 +370,16 @@ public class AppController implements IAppController {
         return !appModel.getCurrentHeadingBeingEdited().equals(appModel.getPreviousHeadingBeingEdited());
     }
 
+    /**
+     * Change the current feedback box heading.
+     *
+     * @param previousHeading           The current feedback box heading being edited.
+     * @param currentHeading            The new feedback box heading
+     */
+    @Override
+    public void updateHeading(String previousHeading, String newHeading) {
+        appModel.notifySubscribers("changeHeading", previousHeading, newHeading);
+    }
 
     /* USER EXPORTS AND OPERATIONS */
 

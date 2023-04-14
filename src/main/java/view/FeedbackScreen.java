@@ -2,6 +2,7 @@ package view;
 
 import controller.IAppController;
 import model.Assignment;
+import model.FeedbackDocument;
 import model.LinkedPhrases;
 import model.Phrase;
 
@@ -339,6 +340,9 @@ public class FeedbackScreen implements PropertyChangeListener {
             case "saveDoc":
                 performDocumentSave(event);
                 break;
+            case "changeHeading":
+                performHeadingChange(event);
+                break;
             case "insertPhrase":
                 performInsertPhrase(event);
                 break;
@@ -470,6 +474,47 @@ public class FeedbackScreen implements PropertyChangeListener {
         String phrase = (String) event.getNewValue();
         String heading = this.controller.getCurrentHeadingBeingEdited();
         this.editorPanel.insertPhraseIntoFeedbackBox(phrase, heading);
+    }
+
+    /**
+     * Change a heading for all documents.
+     *
+     * @param event The event notification from the model.
+     */
+    private void performHeadingChange(PropertyChangeEvent event) {
+        String previousHeading = (String) event.getOldValue();
+        String currentHeading = (String) event.getNewValue();
+        
+        // Change assignment heading
+        List<String> assignmentHeadings = this.assignment.getAssignmentHeadings();
+        int headingPosition = assignmentHeadings.indexOf(previousHeading);
+        assignmentHeadings.set(headingPosition, currentHeading);
+        this.assignment.setAssignmentHeadings(String.join("\n", assignmentHeadings));
+  
+        // Change the heading for each student
+        List<FeedbackDocument> feedbackDocuments = this.assignment.getFeedbackDocuments();
+        feedbackDocuments.forEach(feedbackDocument -> {
+            String studentId = feedbackDocument.getStudentId();
+            // Change the data to the new key
+            String data = feedbackDocument.getHeadingData(previousHeading);
+            feedbackDocument.setDataForHeading(currentHeading, data); 
+
+            Map<String, String> headingsAndData = new HashMap<String, String>();
+            this.assignment.getAssignmentHeadings().forEach(heading -> {
+                headingsAndData.put(heading, feedbackDocument.getHeadingData(heading));
+            });
+
+            double grade = feedbackDocument.getGrade();
+            this.controller.saveFeedbackDocument(this.assignment, studentId, headingsAndData, grade);
+            this.previewPanel.updatePreviewBox(studentId, this.controller.getFirstLineFromDocument(this.assignment, studentId), grade);
+        });   
+                          
+        // Save the assignment to an FHT file
+        this.assignment.saveAssignmentDetails(this.assignment.getAssignmentTitle()
+            .toLowerCase()
+            .replace(" ", "-")
+            .replace(".db", ""));
+
     }
 
     /**

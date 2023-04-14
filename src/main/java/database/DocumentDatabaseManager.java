@@ -206,7 +206,7 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
             FeedbackDocument feedbackDocument = (FeedbackDocument) document.get("feedbackDocObject");
 
             // Update the feedback document's data
-            feedbackDocument.getHeadings().forEach(heading -> {
+            assignment.getAssignmentHeadings().forEach(heading -> {
                 feedbackDocument.setDataForHeading(heading, (String) document.get(heading));
             });
 

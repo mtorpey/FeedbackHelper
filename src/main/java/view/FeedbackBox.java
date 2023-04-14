@@ -23,20 +23,19 @@ public class FeedbackBox extends JPanel {
     // Class variable
     private static final int ENTER_KEY = 10;
     private static final String NEWLINE = "\n";
-    
-    public static final String EDIT_SYMBOL = "✎";
-    public static final String FINISH_SYMBOL = "✔";
+    private static final String EDIT_SYMBOL = "✎";
+    private static final String FINISH_SYMBOL = "✔";
 
     // Instance variables
     private final IAppController controller;
     private String heading;
     private JPanel headingPanel;
+    private JTextArea headingField;
+    private JButton headingButton;
     private JTextArea textArea;
     private List<String> currentBoxContents;
     private List<String> previousBoxContents;
 
-    public JTextArea headingField;
-    public JButton headingButton;
 
     /**
      * Constructor.
@@ -79,6 +78,13 @@ public class FeedbackBox extends JPanel {
     }
 
     /**
+     * Set the heading string.
+     */
+    public void setHeading(String heading) {
+        this.heading = heading;
+    }
+
+    /**
      * Setup the heading panel.
      */
     private void setupPanel() {
@@ -93,6 +99,33 @@ public class FeedbackBox extends JPanel {
         // Add to the panel
         this.headingPanel.add(this.headingField, BorderLayout.WEST);
         this.headingPanel.add(this.headingButton, BorderLayout.EAST);
+
+        // Listen to renaming heading sections
+        this.headingButton.addActionListener(a -> {
+            if (headingButton.getText().equals(FINISH_SYMBOL)) {
+                // Stop editing
+                headingField.setEditable(false); 
+                headingButton.setText(EDIT_SYMBOL); 
+
+                // Update heading
+                String currentHeading = getHeading();
+                String newHeading = headingField.getText();
+
+                if (!currentHeading.equals(newHeading)) {  
+                    // Save new heading
+                    controller.updateHeading(currentHeading, newHeading);
+                    setHeading(newHeading);
+
+                    // Add phrases for this heading
+                    //controller.updatePhrases(newHeading, previousBoxContents, currentBoxContents);
+                    //controller.managePhraseLinks(newHeading, previousBoxContents, currentBoxContents);   
+                }
+
+            } else { // Set editable
+                headingField.setEditable(true); 
+                headingButton.setText(FeedbackBox.FINISH_SYMBOL); 
+            }
+        });  
     }
 
     /**

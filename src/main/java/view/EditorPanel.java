@@ -23,7 +23,6 @@ public class EditorPanel extends JPanel {
     // Instance variables
     private final IAppController controller;
     private String titleText;
-    private List<String> headings;
     private JLabel titleLabel;
     private JPanel feedbackBoxesPanel;
     private List<FeedbackBox> feedbackBoxes;
@@ -40,7 +39,6 @@ public class EditorPanel extends JPanel {
     public EditorPanel(IAppController controller, String titleText, List<String> headings) {
         // Set data variables
         this.titleText = titleText;
-        this.headings = headings;
         this.controller = controller;
         this.feedbackBoxes = new ArrayList<FeedbackBox>();
         this.headingAndFeedbackBox = new HashMap<String, FeedbackBox>();
@@ -49,7 +47,7 @@ public class EditorPanel extends JPanel {
         this.setLayout(new BorderLayout());
         this.setupTitle();
         this.setupFeedbackBoxesPanel();
-        this.setupFeedbackBoxes();
+        this.setupFeedbackBoxes(headings);
         this.setupGradeBox();
 
         // Set visibility
@@ -96,9 +94,11 @@ public class EditorPanel extends JPanel {
 
     /**
      * Setup the feedback boxes.
+     * 
+     * @param headings   The headings of the feedback boxes to create.
      */
-    private void setupFeedbackBoxes() {
-        this.headings.forEach(heading -> {
+    private void setupFeedbackBoxes(List<String> headings) {
+        headings.forEach(heading -> {
             FeedbackBox feedbackBox = new FeedbackBox(this.controller, heading);
             this.feedbackBoxes.add(feedbackBox);
             this.headingAndFeedbackBox.put(heading, feedbackBox);
@@ -164,6 +164,15 @@ public class EditorPanel extends JPanel {
         });
 
         return headingsAndData;
+    }
+
+    /**
+     * Get feedback boxes.
+     *
+     * @return The feedback boxes.
+     */
+    public List<FeedbackBox> getFeedbackBoxes() {
+        return this.feedbackBoxes;
     }
 
     /**
