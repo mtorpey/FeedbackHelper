@@ -2,10 +2,9 @@ package view;
 
 import controller.IAppController;
 
-import javax.swing.JLabel;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -24,14 +23,20 @@ public class FeedbackBox extends JPanel {
     // Class variable
     private static final int ENTER_KEY = 10;
     private static final String NEWLINE = "\n";
+    
+    public static final String EDIT_SYMBOL = "✎";
+    public static final String FINISH_SYMBOL = "✔";
 
     // Instance variables
     private final IAppController controller;
     private String heading;
-    private JLabel headingLabel;
+    private JPanel headingPanel;
     private JTextArea textArea;
     private List<String> currentBoxContents;
     private List<String> previousBoxContents;
+
+    public JTextArea headingField;
+    public JButton headingButton;
 
     /**
      * Constructor.
@@ -49,14 +54,14 @@ public class FeedbackBox extends JPanel {
         this.previousBoxContents = new ArrayList<String>();
 
         // Setup components
-        setupLabel();
+        setupPanel();
         setupTextArea();
 
         // Layout components from top to bottom on this panel
         this.setLayout(new BorderLayout());
 
         // Add components to the panel
-        this.add(this.headingLabel, BorderLayout.PAGE_START);
+        this.add(this.headingPanel, BorderLayout.PAGE_START);
         this.add(this.textArea, BorderLayout.CENTER);
 
         // Add some padding to the bottom on the panel and make it visible
@@ -74,11 +79,20 @@ public class FeedbackBox extends JPanel {
     }
 
     /**
-     * Setup the heading label.
+     * Setup the heading panel.
      */
-    private void setupLabel() {
-        this.headingLabel = new JLabel(this.heading, SwingConstants.LEFT);
-        this.headingLabel.setBorder(BorderCreator.createEmptyBorderBottomOnly(BorderCreator.PADDING_10_PIXELS));
+    private void setupPanel() {
+        this.headingPanel = new JPanel(new BorderLayout());
+        this.headingPanel.setBorder(BorderCreator.createEmptyBorderBottomOnly(BorderCreator.PADDING_10_PIXELS));
+
+        // Create components
+        this.headingField = new JTextArea(this.heading, 1, this.heading.length());
+        this.headingField.setEditable(false);
+        this.headingButton = new JButton(EDIT_SYMBOL); 
+
+        // Add to the panel
+        this.headingPanel.add(this.headingField, BorderLayout.WEST);
+        this.headingPanel.add(this.headingButton, BorderLayout.EAST);
     }
 
     /**
