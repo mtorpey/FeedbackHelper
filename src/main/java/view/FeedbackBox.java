@@ -117,8 +117,8 @@ public class FeedbackBox extends JPanel {
                     setHeading(newHeading);
 
                     // Add phrases for this heading
-                    //controller.updatePhrases(newHeading, previousBoxContents, currentBoxContents);
-                    //controller.managePhraseLinks(newHeading, previousBoxContents, currentBoxContents);   
+                    controller.updatePhrases(newHeading, previousBoxContents, currentBoxContents);
+                    controller.managePhraseLinks(newHeading, previousBoxContents, currentBoxContents);   
                 }
 
             } else { // Set editable

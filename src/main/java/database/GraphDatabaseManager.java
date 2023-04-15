@@ -102,6 +102,21 @@ public class GraphDatabaseManager implements IGraphDatabase {
     }
 
     /**
+     * Add phrases for a given heading to the database
+     *
+     * @param heading The heading the phrase belongs to.
+     */
+    @Override
+    public void addHeadingObject(String heading) {
+        JSONObject usedPhrases = (JSONObject) database.get(USED_PHRASES_KEY);
+        usedPhrases.put(heading, new JSONObject());
+
+        database.put(USED_PHRASES_KEY, usedPhrases);
+
+        dumpToFile();
+    };
+
+    /**
      * Update the count for the given phrase, adding it if not already present.
      *
      * @param heading The heading the phrase belongs to.

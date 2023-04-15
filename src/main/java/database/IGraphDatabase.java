@@ -34,6 +34,13 @@ public interface IGraphDatabase {
     void setUpGraphDatabaseForAssignment(List<String> headings);
 
     /**
+     * Add phrases for a given heading to the database
+     *
+     * @param heading The heading the phrase belongs to.
+     */
+    void addHeadingObject(String heading);
+
+    /**
      * Update phrase.
      *
      * @param heading The heading the phrase belongs to.

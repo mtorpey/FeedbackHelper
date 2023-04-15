@@ -378,6 +378,8 @@ public class AppController implements IAppController {
      */
     @Override
     public void updateHeading(String previousHeading, String newHeading) {
+        // Add the new heading
+        graphDatabase.addHeadingObject(newHeading);
         appModel.notifySubscribers("changeHeading", previousHeading, newHeading);
     }
 
