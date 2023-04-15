@@ -377,9 +377,14 @@ public class AppController implements IAppController {
      * @param currentHeading            The new feedback box heading
      */
     @Override
-    public void updateHeading(String previousHeading, String newHeading) {
-        // Add the new heading
+    public void updateHeading(String previousHeading, String newHeading, List<String> currentBoxContents) {
+        // Add phrases for this heading
         graphDatabase.addHeadingObject(newHeading);
+        List<String> previousBoxContents = new ArrayList<String>();
+        updatePhrases(newHeading, previousBoxContents, currentBoxContents);
+        managePhraseLinks(newHeading, previousBoxContents, currentBoxContents); 
+
+        // Change to the new heading
         appModel.notifySubscribers("changeHeading", previousHeading, newHeading);
     }
 

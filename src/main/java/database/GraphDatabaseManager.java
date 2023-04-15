@@ -109,8 +109,10 @@ public class GraphDatabaseManager implements IGraphDatabase {
     @Override
     public void addHeadingObject(String heading) {
         JSONObject usedPhrases = (JSONObject) database.get(USED_PHRASES_KEY);
-        usedPhrases.put(heading, new JSONObject());
-
+        if (!usedPhrases.containsKey(heading)) {
+            usedPhrases.put(heading, new JSONObject());
+        }
+        
         database.put(USED_PHRASES_KEY, usedPhrases);
 
         dumpToFile();

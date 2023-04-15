@@ -6,6 +6,7 @@ import model.FeedbackDocument;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
@@ -27,6 +28,7 @@ public class EditorPanel extends JPanel {
     private JPanel feedbackBoxesPanel;
     private List<FeedbackBox> feedbackBoxes;
     private GradeBox gradeBox;
+    private List<String> headings;
     private Map<String, FeedbackBox> headingAndFeedbackBox;
 
     /**
@@ -41,13 +43,14 @@ public class EditorPanel extends JPanel {
         this.titleText = titleText;
         this.controller = controller;
         this.feedbackBoxes = new ArrayList<FeedbackBox>();
+        this.headings = headings;
         this.headingAndFeedbackBox = new HashMap<String, FeedbackBox>();
 
         // Layout components from top to bottom
         this.setLayout(new BorderLayout());
         this.setupTitle();
         this.setupFeedbackBoxesPanel();
-        this.setupFeedbackBoxes(headings);
+        this.setupFeedbackBoxes();
         this.setupGradeBox();
 
         // Set visibility
@@ -95,10 +98,9 @@ public class EditorPanel extends JPanel {
     /**
      * Setup the feedback boxes.
      * 
-     * @param headings   The headings of the feedback boxes to create.
      */
-    private void setupFeedbackBoxes(List<String> headings) {
-        headings.forEach(heading -> {
+    private void setupFeedbackBoxes() {
+        this.headings.forEach(heading -> {
             FeedbackBox feedbackBox = new FeedbackBox(this.controller, heading);
             this.feedbackBoxes.add(feedbackBox);
             this.headingAndFeedbackBox.put(heading, feedbackBox);
@@ -107,6 +109,27 @@ public class EditorPanel extends JPanel {
 
         this.feedbackBoxesPanel.setVisible(true);
         this.add(this.feedbackBoxesPanel, BorderLayout.CENTER);
+    }
+
+    /**
+     * Reset the feedback boxes.
+     * 
+     * @param headings   The headings of the feedback boxes to reset.
+     */
+    public void resetFeedbackBoxes(List<String> newHeadings) {
+        for (int position = 0; position < headings.size(); position++){
+            FeedbackBox feedbackBox = this.feedbackBoxes.get(position);
+            String previousHeading = headings.get(position);
+            // Change the heading
+            String currentHeading = newHeadings.get(position);
+            this.headingAndFeedbackBox.remove(previousHeading);
+            this.headingAndFeedbackBox.put(currentHeading, feedbackBox);
+            feedbackBox.setHeading(currentHeading);
+            // Reconcile the heading interface
+            JTextArea headingField = feedbackBox.getHeadingField();
+            headingField.setText(currentHeading);
+        }
+        this.headings = newHeadings;
     }
 
     /**

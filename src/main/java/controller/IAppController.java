@@ -174,8 +174,9 @@ public interface IAppController {
      *
      * @param previousheading           The current feedback box heading being edited.
      * @param currentHeading            The new feedback box heading
+     * @param currentBoxContents        The current list of phrases for the feedback box.
      */
-    void updateHeading(String previousheading, String newHeading)
+    void updateHeading(String previousheading, String newHeading, List<String> currentBoxContents);
 
     /**
      * Export the feedback documents.

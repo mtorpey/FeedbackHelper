@@ -487,10 +487,24 @@ public class FeedbackScreen implements PropertyChangeListener {
         
         // Change assignment heading
         List<String> assignmentHeadings = this.assignment.getAssignmentHeadings();
+
+        // Check that the new heading is not the same as any old ones
+        for (String heading : assignmentHeadings) {
+            if (heading.equals(currentHeading)) {
+                JOptionPane.showMessageDialog(this.feedbackScreen,
+                    "The heading " + currentHeading + " already exists.");
+                this.editorPanel.resetFeedbackBoxes(assignmentHeadings);
+                return;
+            }
+        }
+
         int headingPosition = assignmentHeadings.indexOf(previousHeading);
         assignmentHeadings.set(headingPosition, currentHeading);
         this.assignment.setAssignmentHeadings(String.join("\n", assignmentHeadings));
   
+        // Reconcile any assignment headings
+        this.editorPanel.resetFeedbackBoxes(assignmentHeadings);
+
         // Change the heading for each student
         List<FeedbackDocument> feedbackDocuments = this.assignment.getFeedbackDocuments();
         feedbackDocuments.forEach(feedbackDocument -> {
@@ -508,7 +522,7 @@ public class FeedbackScreen implements PropertyChangeListener {
             this.controller.saveFeedbackDocument(this.assignment, studentId, headingsAndData, grade);
             this.previewPanel.updatePreviewBox(studentId, this.controller.getFirstLineFromDocument(this.assignment, studentId), grade);
         });   
-                          
+
         // Save the assignment to an FHT file
         this.assignment.saveAssignmentDetails(this.assignment.getAssignmentTitle()
             .toLowerCase()

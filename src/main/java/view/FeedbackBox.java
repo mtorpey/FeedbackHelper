@@ -112,13 +112,9 @@ public class FeedbackBox extends JPanel {
                 String newHeading = headingField.getText();
 
                 if (!currentHeading.equals(newHeading)) {  
-                    // Save new heading
-                    controller.updateHeading(currentHeading, newHeading);
                     setHeading(newHeading);
-
-                    // Add phrases for this heading
-                    controller.updatePhrases(newHeading, previousBoxContents, currentBoxContents);
-                    controller.managePhraseLinks(newHeading, previousBoxContents, currentBoxContents);   
+                    // Save new heading
+                    controller.updateHeading(currentHeading, newHeading, currentBoxContents);
                 }
 
             } else { // Set editable
@@ -126,6 +122,13 @@ public class FeedbackBox extends JPanel {
                 headingButton.setText(FeedbackBox.FINISH_SYMBOL); 
             }
         });  
+    }
+
+    /**
+     * Get the heading field.
+     */
+    public JTextArea getHeadingField() {
+        return this.headingField;
     }
 
     /**
