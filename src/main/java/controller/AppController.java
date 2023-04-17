@@ -378,6 +378,8 @@ public class AppController implements IAppController {
      */
     @Override
     public void updateHeading(String previousHeading, String newHeading, List<String> currentBoxContents) {
+        newHeading = newHeading.replaceAll("\n", "").trim(); // Remove all new lines
+
         // Add phrases for this heading
         graphDatabase.addHeadingObject(newHeading);
         List<String> previousBoxContents = new ArrayList<String>();
