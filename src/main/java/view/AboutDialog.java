@@ -25,7 +25,7 @@ import javax.swing.event.HyperlinkListener;
 public class AboutDialog extends JDialog {
     
     public static final String DEVELOPER_INFO = 
-        "Feedback Helper was developed by Bhuvan Bezawadag as part of a CS5099 project at the University of St Andrews.";
+        "Feedback Helper was developed by Bhuvan Bezawada as part of a CS5099 project at the University of St Andrews.";
 
     public static final String CONTRIBUTOR_INFO = 
         "Later contributions by Michael Young, Johannes Zelger, and Oluwanifemi Fadare.";
@@ -37,7 +37,7 @@ public class AboutDialog extends JDialog {
         + CONTRIBUTOR_INFO + "</html>";
 
     public static final String LINKS = "<html>Check out the <a href='https://github.com/mtorpey/FeedbackHelper'>Github repository</a> " +
-        "or view the 'About' window <a href='https://github.com/mtorpey/FeedbackHelper/issues/10'>issue tracker</a>.</html>";
+        "or view the <a href='https://github.com/mtorpey/FeedbackHelper/issues'>issue tracker</a>.</html>";
 
     /**
      * Constructor.

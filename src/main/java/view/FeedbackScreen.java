@@ -243,7 +243,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         
         // Create the help menu and items
         JMenu helpMenu = new JMenu("Help");
-        JMenuItem aboutOption = new JMenuItem("About Feedback Helper");
+        JMenuItem aboutOption = new JMenuItem("About");
 
         // Save operation
         saveOption.addActionListener(l -> {

@@ -191,6 +191,10 @@ public class Assignment implements Serializable {
     /**
      * Get the assignment directory path.
      *
+     * Note: this is saved when we serialize, but is not actually used
+     * meaningfully when we load an assignment from disk.  We reset it in
+     * AppController.loadAssignment if the location has actually moved on disk.
+     *
      * @return The assignment directory path.
      */
     public String getAssignmentDirectoryPath() {
