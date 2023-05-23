@@ -112,9 +112,10 @@ public class FeedbackBox extends JPanel {
                 String newHeading = headingField.getText();
 
                 if (!currentHeading.equals(newHeading)) {  
+                    // Change heading
                     setHeading(newHeading);
                     // Save new heading
-                    controller.updateHeading(currentHeading, newHeading, currentBoxContents);
+                    controller.checkHeading(currentHeading, newHeading);
                 }
 
             } else { // Set editable

@@ -488,6 +488,14 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Change assignment heading
         List<String> assignmentHeadings = this.assignment.getAssignmentHeadings();
 
+        // Check that the new heading is not blank
+        if (currentHeading.isBlank()) {
+            JOptionPane.showMessageDialog(this.feedbackScreen,
+                    "The heading " + currentHeading + " already exists.");
+            this.editorPanel.resetFeedbackBoxes(assignmentHeadings);
+            return;
+        }
+
         // Check that the new heading is not the same as any old ones
         for (String heading : assignmentHeadings) {
             if (heading.equals(currentHeading)) {
@@ -498,6 +506,10 @@ public class FeedbackScreen implements PropertyChangeListener {
             }
         }
 
+        // Update phrases
+        this.controller.updateHeading(previousHeading, currentHeading);
+
+        // Set new assignment headings
         int headingPosition = assignmentHeadings.indexOf(previousHeading);
         assignmentHeadings.set(headingPosition, currentHeading);
         this.assignment.setAssignmentHeadings(String.join("\n", assignmentHeadings));
