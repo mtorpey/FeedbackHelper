@@ -12,6 +12,7 @@ import javax.swing.event.DocumentListener;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -102,6 +103,10 @@ public class FeedbackBox extends JPanel {
         this.headingField = new JTextField(this.heading, this.heading.length());
         this.headingButton = new JButton(EDIT_SYMBOL); 
 
+        // Set heading font
+        Font currentFont = getFont();
+        this.headingField.setFont(new Font(currentFont.getFontName(), Font.BOLD, currentFont.getSize()));
+
         // Add to the panel
         this.headingPanel.add(this.headingField, BorderLayout.WEST);
         this.headingPanel.add(this.headingButton, BorderLayout.EAST);
@@ -118,6 +123,7 @@ public class FeedbackBox extends JPanel {
                 headingField.setBackground(Color.WHITE);
             } else { // Stop editing
                 headingButton.setText(FeedbackBox.EDIT_SYMBOL); 
+                //headingField.setBorder(BorderCreator.createEmptyBorderBottomOnly(BorderCreator.PADDING_10_PIXELS))
                 headingField.setBorder(BorderFactory.createEmptyBorder());
                 headingField.setBackground(new Color(0, 0, 0, 0));
             }
