@@ -491,7 +491,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Check that the new heading is not blank
         if (currentHeading.isBlank()) {
             JOptionPane.showMessageDialog(this.feedbackScreen,
-                    "The heading " + currentHeading + " already exists.");
+                    "The heading is blank.");
             this.editorPanel.resetFeedbackBoxes(assignmentHeadings);
             return;
         }
