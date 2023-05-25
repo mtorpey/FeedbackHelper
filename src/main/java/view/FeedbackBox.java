@@ -157,7 +157,7 @@ public class FeedbackBox extends JPanel {
         this.currentBoxContents = this.currentBoxContents.stream()
                 .map(String::trim)
                 .filter(line -> line.startsWith(this.controller.getLineMarker()))
-                .map(line -> line.replace(this.controller.getLineMarker(), ""))
+                .map(line -> line.replaceFirst(this.controller.getLineMarker(), ""))
                 .collect(Collectors.toList());
     }
 
