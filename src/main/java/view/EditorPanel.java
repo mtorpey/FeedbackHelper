@@ -7,6 +7,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
@@ -126,7 +127,7 @@ public class EditorPanel extends JPanel {
             this.headingAndFeedbackBox.put(currentHeading, feedbackBox);
             feedbackBox.setHeading(currentHeading);
             // Reconcile the heading interface
-            JTextArea headingField = feedbackBox.getHeadingField();
+            JTextField headingField = feedbackBox.getHeadingField();
             headingField.setText(currentHeading);
         }
         this.headings = newHeadings;

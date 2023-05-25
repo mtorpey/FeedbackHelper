@@ -2,10 +2,16 @@ package view;
 
 import controller.IAppController;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -13,6 +19,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -30,7 +37,7 @@ public class FeedbackBox extends JPanel {
     private final IAppController controller;
     private String heading;
     private JPanel headingPanel;
-    private JTextArea headingField;
+    private JTextField headingField;
     private JButton headingButton;
     private JTextArea textArea;
     private List<String> currentBoxContents;
@@ -92,21 +99,52 @@ public class FeedbackBox extends JPanel {
         this.headingPanel.setBorder(BorderCreator.createEmptyBorderBottomOnly(BorderCreator.PADDING_10_PIXELS));
 
         // Create components
-        this.headingField = new JTextArea(this.heading, 1, this.heading.length());
-        this.headingField.setEditable(false);
+        this.headingField = new JTextField(this.heading, this.heading.length());
         this.headingButton = new JButton(EDIT_SYMBOL); 
 
         // Add to the panel
         this.headingPanel.add(this.headingField, BorderLayout.WEST);
         this.headingPanel.add(this.headingButton, BorderLayout.EAST);
 
+        // Create a function consumer
+        Consumer<Boolean> edit = (state) -> {
+            headingField.setEditable(state); 
+            headingField.setOpaque(state);
+
+            // Set editable
+            if (state) { 
+                headingButton.setText(FeedbackBox.FINISH_SYMBOL); 
+                headingField.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+                headingField.setBackground(Color.WHITE);
+            } else { // Stop editing
+                headingButton.setText(FeedbackBox.EDIT_SYMBOL); 
+                headingField.setBorder(BorderFactory.createEmptyBorder());
+                headingField.setBackground(new Color(0, 0, 0, 0));
+            }
+
+            headingPanel.revalidate();
+        };
+        
+        // Listen to changed text field
+        this.headingField.getDocument().addDocumentListener(new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {
+                String currentHeading = headingField.getText();
+                headingField.setColumns(currentHeading.length());
+                headingPanel.revalidate();
+            }
+            public void removeUpdate(DocumentEvent e) {
+                changedUpdate(e);
+            }
+            public void insertUpdate(DocumentEvent e) {
+                changedUpdate(e);
+            }
+        });
+
         // Listen to renaming heading sections
         this.headingButton.addActionListener(a -> {
             if (headingButton.getText().equals(FINISH_SYMBOL)) {
-                // Stop editing
-                headingField.setEditable(false); 
-                headingButton.setText(EDIT_SYMBOL); 
-
+                edit.accept(false);
+  
                 // Update heading
                 String currentHeading = getHeading();
                 String newHeading = headingField.getText();
@@ -118,17 +156,19 @@ public class FeedbackBox extends JPanel {
                     controller.checkHeading(currentHeading, newHeading);
                 }
 
-            } else { // Set editable
-                headingField.setEditable(true); 
-                headingButton.setText(FeedbackBox.FINISH_SYMBOL); 
+            } else {
+                edit.accept(true);
             }
         });  
+
+        // Disable the editable header
+        edit.accept(false);
     }
 
     /**
      * Get the heading field.
      */
-    public JTextArea getHeadingField() {
+    public JTextField getHeadingField() {
         return this.headingField;
     }
 
