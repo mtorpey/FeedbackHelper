@@ -21,6 +21,13 @@ public interface IAppController {
     void registerWithModel(PropertyChangeListener propertyChangeListener);
 
     /**
+     * Create the feedback files for the assignment in the document database.
+     *
+     * @param assignment              The assignment.
+     */
+    public void createFeedbackDocuments(Assignment assignment);
+
+    /**
      * Create an assignment in the model.
      *
      * @param assignmentTitle         The title of the assignment.
