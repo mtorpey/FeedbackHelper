@@ -100,6 +100,17 @@ public class AppModel implements IAppModel {
         subscribers.firePropertyChange(property, OLD_VALUE_DUMMY_MESSAGE, notification);
     }
 
+    /**
+     * Send a property change notification to subscribers.
+     *
+     * @param property     The message indicating the change.
+     * @param oldNotification The old Object value of the thing that changed.
+     * @param notification The new Object value of the thing that has changed.
+     */
+    @Override
+    public void notifySubscribers(String property, Object oldNotification, Object notification) {
+        subscribers.firePropertyChange(property, oldNotification, notification);
+    }
 
     /* ASSIGNMENT METHODS */
 
@@ -336,7 +347,7 @@ public class AppModel implements IAppModel {
         // Write out each feedback document as a text file
         assignment.getFeedbackDocuments().forEach(feedbackDocument -> {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputDirectory + File.separator + feedbackDocument.getStudentId() + ".txt"))) {
-                for (String heading : feedbackDocument.getHeadings()) {
+                for (String heading : assignment.getAssignmentHeadings()) {
                     // Heading
                     writer.write(assignment.getHeadingStyle() + heading);
                     writer.newLine();

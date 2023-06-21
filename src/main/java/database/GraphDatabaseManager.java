@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import java.io.Console;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -100,6 +100,39 @@ public class GraphDatabaseManager implements IGraphDatabase {
 
         dumpToFile();
     }
+
+    /**
+     * Add phrases for a given heading to the database
+     *
+     * @param heading The heading the phrase belongs to.
+     */
+    @Override
+    public void addHeadingObject(String heading) {
+        JSONObject usedPhrases = (JSONObject) database.get(USED_PHRASES_KEY);
+        if (!usedPhrases.containsKey(heading)) {
+            usedPhrases.put(heading, new JSONObject());
+        }
+        
+        database.put(USED_PHRASES_KEY, usedPhrases);
+
+        dumpToFile();
+    };
+
+    /**
+     * Remove phrases for a given heading in the database
+     *
+     * @param heading The heading to remove.
+     */
+    @Override
+    public JSONObject removeHeadingObject(String heading) {
+        JSONObject usedPhrases = (JSONObject) database.get(USED_PHRASES_KEY);
+        JSONObject phrases = (JSONObject) usedPhrases.remove(heading);
+
+        database.put(USED_PHRASES_KEY, usedPhrases);
+
+        dumpToFile();
+        return phrases;
+    };
 
     /**
      * Update the count for the given phrase, adding it if not already present.

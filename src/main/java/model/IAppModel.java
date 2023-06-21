@@ -35,6 +35,15 @@ public interface IAppModel {
     void notifySubscribers(String property, Object notification);
 
     /**
+     * Send a property change notification to subscribers.
+     *
+     * @param property     The message indicating the change.
+     * @param oldNotification The old Object value of the thing that changed.
+     * @param notification The new Object value of the thing that has changed.
+     */
+    void notifySubscribers(String property, Object oldNotification, Object notification);
+
+    /**
      * Create an assignment.
      *
      * @param assignmentTitle         The title of the assignment.

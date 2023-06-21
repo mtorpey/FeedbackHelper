@@ -6,6 +6,8 @@ import model.FeedbackDocument;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
@@ -23,11 +25,11 @@ public class EditorPanel extends JPanel {
     // Instance variables
     private final IAppController controller;
     private String titleText;
-    private List<String> headings;
     private JLabel titleLabel;
     private JPanel feedbackBoxesPanel;
     private List<FeedbackBox> feedbackBoxes;
     private GradeBox gradeBox;
+    private List<String> headings;
     private Map<String, FeedbackBox> headingAndFeedbackBox;
 
     /**
@@ -40,9 +42,9 @@ public class EditorPanel extends JPanel {
     public EditorPanel(IAppController controller, String titleText, List<String> headings) {
         // Set data variables
         this.titleText = titleText;
-        this.headings = headings;
         this.controller = controller;
         this.feedbackBoxes = new ArrayList<FeedbackBox>();
+        this.headings = headings;
         this.headingAndFeedbackBox = new HashMap<String, FeedbackBox>();
 
         // Layout components from top to bottom
@@ -96,6 +98,7 @@ public class EditorPanel extends JPanel {
 
     /**
      * Setup the feedback boxes.
+     * 
      */
     private void setupFeedbackBoxes() {
         this.headings.forEach(heading -> {
@@ -107,6 +110,27 @@ public class EditorPanel extends JPanel {
 
         this.feedbackBoxesPanel.setVisible(true);
         this.add(this.feedbackBoxesPanel, BorderLayout.CENTER);
+    }
+
+    /**
+     * Reset the feedback boxes.
+     * 
+     * @param headings   The headings of the feedback boxes to reset.
+     */
+    public void resetFeedbackBoxes(List<String> newHeadings) {
+        for (int position = 0; position < headings.size(); position++){
+            FeedbackBox feedbackBox = this.feedbackBoxes.get(position);
+            String previousHeading = headings.get(position);
+            // Change the heading
+            String currentHeading = newHeadings.get(position);
+            this.headingAndFeedbackBox.remove(previousHeading);
+            this.headingAndFeedbackBox.put(currentHeading, feedbackBox);
+            feedbackBox.setHeading(currentHeading);
+            // Reconcile the heading interface
+            JTextField headingField = feedbackBox.getHeadingField();
+            headingField.setText(currentHeading);
+        }
+        this.headings = newHeadings;
     }
 
     /**
@@ -164,6 +188,15 @@ public class EditorPanel extends JPanel {
         });
 
         return headingsAndData;
+    }
+
+    /**
+     * Get feedback boxes.
+     *
+     * @return The feedback boxes.
+     */
+    public List<FeedbackBox> getFeedbackBoxes() {
+        return this.feedbackBoxes;
     }
 
     /**

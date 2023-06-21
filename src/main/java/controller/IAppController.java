@@ -170,6 +170,22 @@ public interface IAppController {
     boolean headingChanged();
 
     /**
+     * Check the current feedback box heading.
+     *
+     * @param previousheading           The current feedback box heading being edited.
+     * @param currentHeading            The new feedback box heading
+     */
+    void checkHeading(String previousheading, String newHeading);
+
+    /**
+     * Change the current feedback box heading.
+     *
+     * @param previousheading           The current feedback box heading being edited.
+     * @param currentHeading            The new feedback box heading
+     */
+    void updateHeading(String previousheading, String newHeading);
+
+    /**
      * Export the feedback documents.
      *
      * @param assignment The assignment the feedback documents belong to.

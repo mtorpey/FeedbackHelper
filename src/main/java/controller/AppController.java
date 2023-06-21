@@ -23,6 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.json.simple.JSONObject;
+
+import com.google.common.base.Functions;
+import com.google.common.collect.Lists;
+
 /**
  * App Controller Class.
  */
@@ -255,7 +260,7 @@ public class AppController implements IAppController {
     public void saveFeedbackDocument(Assignment assignment, String studentId, Map<String, String> headingsAndData, double grade) {
         documentDatabase.saveFeedbackDocument(assignment, studentId, headingsAndData, grade);
         FeedbackDocument feedbackDocumentForStudent = assignment.getFeedbackDocumentForStudent(studentId);
-        feedbackDocumentForStudent.getHeadings().forEach(heading -> {
+        assignment.getAssignmentHeadings().forEach(heading -> {
             feedbackDocumentForStudent.setDataForHeading(heading, headingsAndData.get(heading));
         });
         feedbackDocumentForStudent.setGrade(grade);
@@ -320,7 +325,7 @@ public class AppController implements IAppController {
         FeedbackDocument feedbackDocumentForStudent = assignment.getFeedbackDocumentForStudent(studentId);
 
         // Find the first line of the document
-        for (String heading : feedbackDocumentForStudent.getHeadings()) {
+        for (String heading : assignment.getAssignmentHeadings()) {
             if (!feedbackDocumentForStudent.getHeadingData(heading).isEmpty()) {
                 List<String> dataAsList = Arrays
                         .stream(feedbackDocumentForStudent.getHeadingData(heading).split("\n"))
@@ -370,6 +375,40 @@ public class AppController implements IAppController {
         return !appModel.getCurrentHeadingBeingEdited().equals(appModel.getPreviousHeadingBeingEdited());
     }
 
+    /**
+     * Change the current feedback box heading.
+     *
+     * @param previousHeading           The current feedback box heading being edited.
+     * @param currentHeading            The new feedback box heading
+     */
+    @Override
+    public void checkHeading(String previousHeading, String newHeading) {
+        newHeading = newHeading.replaceAll("\n", "").trim(); // Remove all new lines
+
+        // Change to the new heading
+        appModel.notifySubscribers("changeHeading", previousHeading, newHeading);
+    }
+
+    /**
+     * Change the current feedback box heading.
+     *
+     * @param previousHeading           The current feedback box heading being edited.
+     * @param currentHeading            The new feedback box heading
+     */
+    @Override
+    public void updateHeading(String previousHeading, String newHeading) {
+        // Add new heading
+        graphDatabase.addHeadingObject(newHeading);
+
+        // Move phrases from old heading
+        List<Phrase> currentPhrases = graphDatabase.getPhrasesForHeading(previousHeading);
+        currentPhrases.forEach(phraseToAdd -> {
+            graphDatabase.updatePhrase(newHeading, phraseToAdd);
+        });
+
+        // Remove the old heading
+        graphDatabase.removeHeadingObject(previousHeading);
+    }
 
     /* USER EXPORTS AND OPERATIONS */
 

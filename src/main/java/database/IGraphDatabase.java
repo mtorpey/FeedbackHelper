@@ -5,6 +5,8 @@ import model.Phrase;
 
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 /**
  * Graph Database Interface.
  */
@@ -32,6 +34,21 @@ public interface IGraphDatabase {
      * @param headings A list of headings to be used in the assignment feedback documents.
      */
     void setUpGraphDatabaseForAssignment(List<String> headings);
+
+    /**
+     * Add phrases for a given heading to the database
+     *
+     * @param heading The heading the phrase belongs to.
+     */
+    void addHeadingObject(String heading);
+
+    /**
+     * Remove phrases for a given heading in the database
+     *
+     * @param heading The heading to remove.
+     * @return the previous phrases associated with heading
+     */
+    JSONObject removeHeadingObject(String heading);
 
     /**
      * Update phrase.
