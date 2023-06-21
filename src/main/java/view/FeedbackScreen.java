@@ -235,6 +235,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Create the file menu and items
         JMenu fileMenu = new JMenu("File");
         JMenuItem saveOption = new JMenuItem("Save current document");
+        JMenuItem addStudentOption = new JMenuItem("Add new student");
         JMenuItem exportDocsOption = new JMenuItem("Export grades and feedback documents");
         JMenuItem visGradesOption = new JMenuItem("Visualise grades");
         JMenuItem summaryOption = new JMenuItem("Create summary");
@@ -246,10 +247,69 @@ public class FeedbackScreen implements PropertyChangeListener {
         JMenu helpMenu = new JMenu("Help");
         JMenuItem aboutOption = new JMenuItem("About");
 
-        // Save operation
+        // Save option
         saveOption.addActionListener(l -> {
             JOptionPane.showMessageDialog(this.feedbackScreen, "Saving document for student: " + this.controller.getCurrentDocumentInView());
             this.controller.saveFeedbackDocument(controller.getCurrentDocumentInView());
+        });
+
+        // Add student option
+        addStudentOption.addActionListener(l -> {
+            String input = JOptionPane.showInputDialog(this.feedbackScreen, "Enter the new student id");
+
+            // Check that the new student id is not blank
+            if (input.isBlank()) {
+                JOptionPane.showMessageDialog(this.feedbackScreen,
+                        "The student id is blank.");
+                return;
+            }
+
+            Integer studentId;    
+            try {
+                studentId = Integer.valueOf(input);    
+            } catch(NumberFormatException exception) {
+                JOptionPane.showMessageDialog(this.feedbackScreen,
+                        "The student id is not a number.");
+                return;
+            }
+
+            // Create the new feedback document
+            FeedbackDocument feedbackDoc = new FeedbackDocument(assignment, studentId.toString());
+            assignment.setFeedbackDocument(studentId.toString(), feedbackDoc);
+
+            // Create the feedback files for the assignment in the document database
+            controller.createFeedbackDocuments(assignment);
+
+            // Save the assignment to an FHT file
+            controller.saveAssignment(assignment, assignment.getAssignmentTitle()
+				.toLowerCase()
+				.replace(" ", "-"));
+
+            // Create preview boxes
+            List<PreviewBox> previewBoxes = new ArrayList<PreviewBox>();
+            assignment.getFeedbackDocuments().forEach(feedbackDocument -> {
+                PreviewBox previewBox = new PreviewBox(controller, feedbackDocument.getStudentId(), feedbackDocument.getGrade(), this.controller.getFirstLineFromDocument(this.assignment, feedbackDocument.getStudentId()));
+                previewBox.setAssignment(this.assignment);
+                previewBoxes.add(previewBox);
+            });
+
+            // Order the preview boxes by the id if possible
+            Collections.sort(previewBoxes);
+
+            // Remove the previous panel
+            this.previewPanelScrollPane.remove(this.previewPanel);
+
+            // Make the preview panel scrollable
+            this.previewPanel = new PreviewPanel(previewBoxes);
+            this.previewPanelScrollPane.add(this.previewPanel);
+            this.previewPanelScrollPane.getViewport().setView(this.previewPanel);
+
+            // Select the new student
+            controller.displayNewDocument(assignment, studentId.toString());
+    
+            // Confirm completion
+            JOptionPane.showMessageDialog(this.feedbackScreen,
+                "Added document for student: " + studentId);
         });
 
         // Export grades and documents option
@@ -285,6 +345,7 @@ public class FeedbackScreen implements PropertyChangeListener {
 
         // Add all options to menu
         fileMenu.add(saveOption);
+        fileMenu.add(addStudentOption);
         fileMenu.add(exportDocsOption);
         fileMenu.add(visGradesOption);
         fileMenu.add(summaryOption);

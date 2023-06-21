@@ -63,6 +63,16 @@ public class AppController implements IAppController {
     /* ASSIGNMENT METHODS */
 
     /**
+     * Create the feedback files for the assignment in the document database.
+     *
+     * @param assignment              The assignment.
+     */
+    @Override
+    public void createFeedbackDocuments(Assignment assignment) {
+        documentDatabase.createFeedbackDocuments(assignment);
+    }
+
+    /**
      * Create an assignment in the model.
      *
      * @param assignmentTitle         The title of the assignment.

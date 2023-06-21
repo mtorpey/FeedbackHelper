@@ -83,6 +83,10 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
 
         // Create each feedback document
         assignment.getFeedbackDocuments().forEach(feedbackDocument -> {
+            // Check if this document exists
+            Cursor documents = assignmentCollection.find(Filters.eq("feedbackFor", feedbackDocument.getStudentId()));
+            if (documents.totalCount() > 0) return;
+
             // Store the actual FeedbackDocument object.
             Document dbDoc = Document.createDocument("feedbackFor", feedbackDocument.getStudentId());
             dbDoc.put("feedbackDocObject", feedbackDocument);
