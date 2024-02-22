@@ -56,4 +56,4 @@ Or to create an executable jar, do the following:
 - The user guide can be found at [this link](https://drive.google.com/file/d/1UgDoxDrzht1C-oGnEB52T9OMwwsOnGq9/view).
 
 ## Copyright
-Copyright (C) 2020-2022 by Bhuvan Bezawada and contributors
+Copyright (C) 2020-2024 by Bhuvan Bezawada and contributors

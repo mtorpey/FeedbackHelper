@@ -1,5 +1,14 @@
 This file describes changes to FeedbackHelper since the initial release.
 
+4.0 (2024-02-22)
+  - New option to add students to an assignment after starting (Femi).
+  - Assignment files are now portable (can be loaded after being moved on disk) (Femi).
+  - Sections can now be renamed (Femi).
+  - Export of grades and feedback unified into one button (Femi).
+  - About window added (Femi).
+  - Hyphens are no longer removed from reusable comments (Femi).
+  - Breaking: assignments created with FeedbackHelper 3.x cannot be loaded.
+
 3.1 (2022-12-13)
   - Sentiment analysis removed, for performance.
   - Choice of colour themes, including FlatLaf and any built-in themes.
