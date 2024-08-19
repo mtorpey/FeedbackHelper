@@ -150,12 +150,12 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Create panels
         PhrasesPanel customPhrasesPanel = new PhrasesPanel(this.controller, PhraseType.CUSTOM);
         PhrasesPanel frequentlyUsedPhrasesPanel = new PhrasesPanel(this.controller, PhraseType.FREQUENTLY_USED);
-        PhrasesPanel insightsPhrasesPanel = new PhrasesPanel(this.controller, PhraseType.INSIGHTS);
+        //PhrasesPanel insightsPhrasesPanel = new PhrasesPanel(this.controller, PhraseType.INSIGHTS);
 
         // Add panels
         this.phrasesSection.addPhrasesPanel(customPhrasesPanel);
         this.phrasesSection.addPhrasesPanel(frequentlyUsedPhrasesPanel);
-        this.phrasesSection.addPhrasesPanel(insightsPhrasesPanel);
+        //this.phrasesSection.addPhrasesPanel(insightsPhrasesPanel);
 
         // Start on frequently used pane
         this.phrasesSection.setHighlightedPane(1);
@@ -264,9 +264,10 @@ public class FeedbackScreen implements PropertyChangeListener {
                 return;
             }
 
-            Integer studentId;    
+            String studentId;    
             try {
-                studentId = Integer.valueOf(input);    
+                Integer.parseInt(input);
+                studentId = input; 
             } catch(NumberFormatException exception) {
                 JOptionPane.showMessageDialog(this.feedbackScreen,
                         "The student id is not a number.");
@@ -422,9 +423,9 @@ public class FeedbackScreen implements PropertyChangeListener {
             case "newCustomPhrase":
                 performAddNewPhrase(event, PhraseType.CUSTOM);
                 break;
-            case "newLinkedPhrases":
-                performAddNewLinkedPhrase(event);
-                break;
+            // case "newLinkedPhrases":
+            //     performAddNewLinkedPhrase(event);
+            //     break;
             case "phrasePanelChange":
                 performPhrasePanelChange(event);
                 break;
@@ -466,10 +467,10 @@ public class FeedbackScreen implements PropertyChangeListener {
             }
 
             // Show insights
-            if (panelInView == PhraseType.INSIGHTS) {
-                this.controller.resetPhrasesPanel(PhraseType.INSIGHTS);
-                this.controller.showInsights();
-            }
+            // if (panelInView == PhraseType.INSIGHTS) {
+            //     this.controller.resetPhrasesPanel(PhraseType.INSIGHTS);
+            //     this.controller.showInsights();
+            // }
         }
     }
 
@@ -490,7 +491,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         Phrase phraseToUpdate = (Phrase) event.getNewValue();
         this.phrasesSection.updatePhraseCounter(PhraseType.FREQUENTLY_USED, phraseToUpdate.getPhraseAsString(), phraseToUpdate.getUsageCount());
         this.phrasesSection.updatePhraseCounter(PhraseType.CUSTOM, phraseToUpdate.getPhraseAsString(), phraseToUpdate.getUsageCount());
-        this.phrasesSection.updatePhraseCounter(PhraseType.INSIGHTS, phraseToUpdate.getPhraseAsString(), phraseToUpdate.getUsageCount());
+        //this.phrasesSection.updatePhraseCounter(PhraseType.INSIGHTS, phraseToUpdate.getPhraseAsString(), phraseToUpdate.getUsageCount());
     }
 
     /**
@@ -519,12 +520,12 @@ public class FeedbackScreen implements PropertyChangeListener {
      *
      * @param event The event notification from the model.
      */
-    private void performAddNewLinkedPhrase(PropertyChangeEvent event) {
-        LinkedPhrases newLinkedPhrases = (LinkedPhrases) event.getNewValue();
-        if (newLinkedPhrases.getCount() >= INSIGHT_LEVEL) {
-            this.phrasesSection.addInsightToInsightPanel(newLinkedPhrases);
-        }
-    }
+    // private void performAddNewLinkedPhrase(PropertyChangeEvent event) {
+    //     LinkedPhrases newLinkedPhrases = (LinkedPhrases) event.getNewValue();
+    //     if (newLinkedPhrases.getCount() >= INSIGHT_LEVEL) {
+    //         this.phrasesSection.addInsightToInsightPanel(newLinkedPhrases);
+    //     }
+    // }
 
     /**
      * Insert a phrase into the feedback box being currently edited.

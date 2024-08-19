@@ -7,8 +7,8 @@ public enum PhraseType {
 
     // Phrase type values
     CUSTOM("Custom"),
-    FREQUENTLY_USED("Frequently Used"),
-    INSIGHTS("Insights");
+    FREQUENTLY_USED("Frequently Used");
+    //INSIGHTS("Insights");
 
     // Instance variable
     public final String phraseTypeAsString;

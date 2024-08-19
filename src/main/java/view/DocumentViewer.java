@@ -26,7 +26,7 @@ public class DocumentViewer extends JFrame {
     protected JPanel documentPanel;
     protected JTextArea textArea;
     protected JLabel titleLabel;
-
+    
     /**
      * Constructor.
      *

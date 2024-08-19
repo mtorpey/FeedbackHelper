@@ -128,7 +128,7 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
                 } else if (tabbedPane.getSelectedIndex() == 1) {
                     this.controller.setCurrentPhrasePanelInView(PhraseType.FREQUENTLY_USED);
                 } else {
-                    this.controller.setCurrentPhrasePanelInView(PhraseType.INSIGHTS);
+                    //this.controller.setCurrentPhrasePanelInView(PhraseType.INSIGHTS);
                 }
             }
         });
@@ -152,9 +152,9 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
      *
      * @param linkedPhrases The linked phrases to display as an insight.
      */
-    public void addInsightToInsightPanel(LinkedPhrases linkedPhrases) {
-        this.phrasesPanelsByType.get(PhraseType.INSIGHTS).addInsightBox(linkedPhrases);
-    }
+    // public void addInsightToInsightPanel(LinkedPhrases linkedPhrases) {
+    //     this.phrasesPanelsByType.get(PhraseType.INSIGHTS).addInsightBox(linkedPhrases);
+    // }
 
     /**
      * Filter the displayed phrases by the contents of the search box.
