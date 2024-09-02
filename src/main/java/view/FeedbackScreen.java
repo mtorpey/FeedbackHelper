@@ -305,6 +305,9 @@ public class FeedbackScreen implements PropertyChangeListener {
             this.previewPanelScrollPane.add(this.previewPanel);
             this.previewPanelScrollPane.getViewport().setView(this.previewPanel);
 
+            for(PreviewBox pb : previewBoxes){
+                this.previewPanel.unhighlightPreviewBox(pb.getHeading());
+            }
             // Select the new student
             controller.displayNewDocument(assignment, studentId.toString());
     
