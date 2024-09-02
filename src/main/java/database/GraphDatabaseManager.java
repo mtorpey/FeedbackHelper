@@ -62,7 +62,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
         System.out.println("file not found.");
         return false;
     }
-
+    
     /**
      * Create a database.  See also setUpGraphDatabaseForAssignment.
      *
@@ -243,7 +243,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
         Collections.sort(phrases);
         return phrases;
     }
-
+    
     /**
      * Update the phrases for a given heading.
      *

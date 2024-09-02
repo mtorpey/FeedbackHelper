@@ -7,6 +7,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * Grade Box Class.
@@ -34,7 +36,7 @@ public class GradeBox extends JPanel {
         // Setup components
         this.setupLabel();
         this.setupTextField();
-        this.setupConfirmButton();
+        this.saveGrade();
 
         // Add some padding to the bottom on the panel and make it visible
         this.setBorder(BorderCreator.createEmptyBorderLeavingTop(BorderCreator.PADDING_20_PIXELS));
@@ -57,21 +59,40 @@ public class GradeBox extends JPanel {
     private void setupTextField() {
         this.textField = new JTextField(10);
         this.textField.setEditable(true);
+
+        this.textField.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                saveGrade();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                saveGrade();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                saveGrade();
+            }
+            
+        });
         this.add(this.textField);
     }
 
     /**
-     * Setup the confirm button.
+     * Setup the save grade function.
      */
-    private void setupConfirmButton() {
-        this.confirmButton = new JButton("Confirm");
-        this.confirmButton.addActionListener(l -> {
-            if (getGrade() > 0) {
-                JOptionPane.showMessageDialog(this.confirmButton, "Saving grade of " + getGrade() + " for student " + this.studentId);
+    private void saveGrade() {
+        try {
+            double grade = getGrade();
+
+            if (grade > 0) {
                 this.controller.saveFeedbackDocument(this.studentId);
             }
-        });
-        this.add(this.confirmButton);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
     }
 
     /**
