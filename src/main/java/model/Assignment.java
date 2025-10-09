@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -311,25 +310,11 @@ public class Assignment implements Serializable {
      * @return A list of the feedback documents.
      */
     public List<FeedbackDocument> getFeedbackDocuments() {
-        List<Map.Entry<String, FeedbackDocument>> studentIdAndFeedbackDocumentList = new ArrayList<Map.Entry<String, FeedbackDocument>>(this.studentIdAndFeedbackDocumentMap.entrySet());
-        
-        Collections.sort(studentIdAndFeedbackDocumentList, new Comparator<Map.Entry<String, FeedbackDocument>>() {
-            @Override
-            public int compare(Map.Entry<String, FeedbackDocument> first, Map.Entry<String, FeedbackDocument> second) {
-                return Integer.compare(Integer.parseInt(first.getKey()), Integer.parseInt(second.getKey()));
-            }
-        });
-
-
-        List<FeedbackDocument> feedbackDocumentList = new ArrayList<FeedbackDocument>();
-
-
-        for (Map.Entry<String, FeedbackDocument> entry : studentIdAndFeedbackDocumentList) {
-            feedbackDocumentList.add(entry.getValue());
-        }
-
-
-        return feedbackDocumentList;
+        return this.studentIdAndFeedbackDocumentMap
+            .values()
+            .stream()
+            .sorted()  // FeedbackDocument implements compareTo using studentId
+            .collect(Collectors.toList());
     }
 
     /**

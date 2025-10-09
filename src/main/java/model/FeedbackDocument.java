@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Feedback Document Class.
  */
-public class FeedbackDocument implements Serializable {
+public class FeedbackDocument implements Serializable, Comparable<FeedbackDocument> {
 
     // Instance variables
     private Assignment assignment;
@@ -110,6 +110,12 @@ public class FeedbackDocument implements Serializable {
                 "assignment=" + assignment.getDatabaseName() +
                 ", studentId=" + studentId +
                 '}';
+    }
+
+    /** Comparable by student id. */
+    @Override
+    public int compareTo(FeedbackDocument other) {
+        return getStudentId().compareTo(other.getStudentId());
     }
 
 }
