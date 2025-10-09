@@ -258,11 +258,11 @@ public class FeedbackScreen implements PropertyChangeListener {
                 return;
             }
 
-            String studentId;    
+            String studentId;
             try {
                 Integer.parseInt(input);
-                studentId = input; 
-            } catch(NumberFormatException exception) {
+                studentId = input;
+            } catch (NumberFormatException exception) {
                 JOptionPane.showMessageDialog(this.feedbackScreen,
                         "The student id is not a number.");
                 return;
@@ -304,7 +304,7 @@ public class FeedbackScreen implements PropertyChangeListener {
             }
             // Select the new student
             controller.displayNewDocument(assignment, studentId.toString());
-    
+
             // Confirm completion
             JOptionPane.showMessageDialog(this.feedbackScreen,
                 "Added document for student: " + studentId);
@@ -389,7 +389,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Perform action based on the incoming message
         switch (event.getPropertyName()) {
             case "docViewChange":
-                scrollbarValues.put(controller.getLastDocumentInView(), 
+                scrollbarValues.put(controller.getLastDocumentInView(),
                         this.editorPanelScrollPane.getVerticalScrollBar().getValue());
                 performDocumentViewChange(event);
                 SwingUtilities.invokeLater(() -> this.editorPanelScrollPane.getVerticalScrollBar()
@@ -521,7 +521,7 @@ public class FeedbackScreen implements PropertyChangeListener {
     private void performHeadingChange(PropertyChangeEvent event) {
         String previousHeading = (String) event.getOldValue();
         String currentHeading = (String) event.getNewValue();
-        
+
         // Change assignment heading
         List<String> assignmentHeadings = this.assignment.getAssignmentHeadings();
 
@@ -550,7 +550,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         int headingPosition = assignmentHeadings.indexOf(previousHeading);
         assignmentHeadings.set(headingPosition, currentHeading);
         this.assignment.setAssignmentHeadings(String.join("\n", assignmentHeadings));
-  
+
         // Reconcile any assignment headings
         this.editorPanel.resetFeedbackBoxes(assignmentHeadings);
 
@@ -560,7 +560,7 @@ public class FeedbackScreen implements PropertyChangeListener {
             String studentId = feedbackDocument.getStudentId();
             // Change the data to the new key
             String data = feedbackDocument.getHeadingData(previousHeading);
-            feedbackDocument.setDataForHeading(currentHeading, data); 
+            feedbackDocument.setDataForHeading(currentHeading, data);
 
             Map<String, String> headingsAndData = new HashMap<String, String>();
             this.assignment.getAssignmentHeadings().forEach(heading -> {
@@ -570,7 +570,7 @@ public class FeedbackScreen implements PropertyChangeListener {
             double grade = feedbackDocument.getGrade();
             this.controller.saveFeedbackDocument(this.assignment, studentId, headingsAndData, grade);
             this.previewPanel.updatePreviewBox(studentId, this.controller.getFirstLineFromDocument(this.assignment, studentId), grade);
-        });   
+        });
 
         // Save the assignment to an FHT file
         this.assignment.saveAssignmentDetails(this.assignment.getAssignmentTitle()
