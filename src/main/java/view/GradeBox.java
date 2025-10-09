@@ -2,11 +2,10 @@ package view;
 
 import controller.IAppController;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -16,13 +15,15 @@ import javax.swing.event.DocumentListener;
 public class GradeBox extends JPanel {
 
     // Class variable
-    final static private String GRADE = "Grade: ";
+    private static final String GRADE   = "Grade: ";
+    private static final double MINIMUM = 0.0;
+    private static final double MAXIMUM = 20.0;
+    private static final double STEP    = 0.5;
 
     // Instance variables
     private final IAppController controller;
-    private JLabel gradeLabel;
-    private JTextField textField;
-    private JButton confirmButton;
+    private JLabel label;
+    private JSpinner chooser;
     private String studentId;
 
     /**
@@ -33,65 +34,32 @@ public class GradeBox extends JPanel {
     public GradeBox(IAppController controller) {
         this.controller = controller;
 
-        // Setup components
         this.setupLabel();
-        this.setupTextField();
-        this.saveGrade();
+        this.setupChooser();
 
         // Add some padding to the bottom on the panel and make it visible
         this.setBorder(BorderCreator.createEmptyBorderLeavingTop(BorderCreator.PADDING_20_PIXELS));
-
-        // Set visibility
         this.setVisible(true);
     }
 
-    /**
-     * Setup the label.
-     */
     private void setupLabel() {
-        this.gradeLabel = new JLabel(GRADE);
-        this.add(this.gradeLabel);
+        this.label = new JLabel(GRADE);
+        this.add(this.label);
     }
 
-    /**
-     * Setup the text field.
-     */
-    private void setupTextField() {
-        this.textField = new JTextField(10);
-        this.textField.setEditable(true);
+    private void setupChooser() {
+        this.chooser = new JSpinner(new SpinnerNumberModel(MINIMUM, MINIMUM, MAXIMUM, STEP));
 
-        this.textField.getDocument().addDocumentListener(new DocumentListener(){
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                saveGrade();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                saveGrade();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                saveGrade();
-            }
-            
-        });
-        this.add(this.textField);
+        this.chooser.addChangeListener(e -> saveGrade());
+        this.add(this.chooser);
     }
 
-    /**
-     * Setup the save grade function.
-     */
     private void saveGrade() {
         try {
-            double grade = getGrade();
-
-            if (grade > 0) {
-                this.controller.saveFeedbackDocument(this.studentId);
-            }
-        } catch (Exception e) {
-            // TODO: handle exception
+            getGrade();
+            this.controller.saveFeedbackDocument(this.studentId);
+        } catch (NumberFormatException e) {
+            
         }
     }
 
@@ -100,28 +68,14 @@ public class GradeBox extends JPanel {
      *
      * @return The grade value.
      */
-    public double getGrade() {
+    public double getGrade() throws NumberFormatException {
         // Get the string version of the grade
-        String gradeAsString = this.textField.getText();
-        double grade = 0.0;
-
-        // Return 0.0 if it is empty
-        if (gradeAsString.isEmpty()) {
-            return grade;
-        }
+        double grade = (double) this.chooser.getValue();
 
         // Parse string into a valid double
-        try {
-            grade = Double.parseDouble(gradeAsString);
-            if (grade < 0.0 || grade > 20.0) {
-                throw new NumberFormatException();
-            }
-        } catch (NumberFormatException e) {
-            this.controller.error("Grade must be a real number from 0.0 to 20.0!");
-            setGrade(0.0);
-            return -1.0;
+        if (grade < MINIMUM || grade > MAXIMUM) {
+            throw new NumberFormatException();
         }
-
         return grade;
     }
 
@@ -131,7 +85,7 @@ public class GradeBox extends JPanel {
      * @param grade The grade value to set.
      */
     public void setGrade(double grade) {
-        this.textField.setText(String.valueOf(grade));
+        this.chooser.setValue(grade);
     }
 
     /**
