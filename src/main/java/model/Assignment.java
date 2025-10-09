@@ -276,16 +276,15 @@ public class Assignment implements Serializable {
      * @param assignmentDirectoryPath The assignment directory.
      */
     public void setStudentIds(File studentManifestFile, String assignmentDirectoryPath) {
-        //if manifest is undefined try to guess from directories in the assignment dir
+        // If manifest is undefined, try to guess from directories in the assignment dir
         if (studentManifestFile == null) {
             for (File f : new File(assignmentDirectoryPath).listFiles()) {
-                //skip files, only look at dirs
-                if (!f.isDirectory()) continue;
-                try {
-                    Integer studentId = Integer.valueOf(f.getName());
-                    FeedbackDocument feedbackDocument = new FeedbackDocument(this, studentId.toString());
-                    this.studentIdAndFeedbackDocumentMap.put(studentId.toString(), feedbackDocument);
-                } catch(NumberFormatException exception) {
+                String name = f.getName();
+                // Does this look like a string of digits?
+                if (name.matches("\\d+(\\..*)?")) {
+                    String studentId = name.split("\\.")[0];  // everything before the dot
+                    FeedbackDocument feedbackDocument = new FeedbackDocument(this, studentId);
+                    this.studentIdAndFeedbackDocumentMap.put(studentId, feedbackDocument);
                 }
             }
         } else {
