@@ -125,10 +125,8 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
             if (this.tabbedPane.getSelectedIndex() >= 0) {
                 if (this.tabbedPane.getSelectedIndex() == 0) {
                     this.controller.setCurrentPhrasePanelInView(PhraseType.CUSTOM);
-                } else if (tabbedPane.getSelectedIndex() == 1) {
-                    this.controller.setCurrentPhrasePanelInView(PhraseType.FREQUENTLY_USED);
                 } else {
-                    //this.controller.setCurrentPhrasePanelInView(PhraseType.INSIGHTS);
+                    this.controller.setCurrentPhrasePanelInView(PhraseType.FREQUENTLY_USED);
                 }
             }
         });
@@ -146,15 +144,6 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
             this.tabbedPane.setSelectedIndex(index);
         }
     }
-
-    /**
-     * Add an insight to the insights panel.
-     *
-     * @param linkedPhrases The linked phrases to display as an insight.
-     */
-    // public void addInsightToInsightPanel(LinkedPhrases linkedPhrases) {
-    //     this.phrasesPanelsByType.get(PhraseType.INSIGHTS).addInsightBox(linkedPhrases);
-    // }
 
     /**
      * Filter the displayed phrases by the contents of the search box.

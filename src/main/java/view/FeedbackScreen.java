@@ -3,7 +3,6 @@ package view;
 import controller.IAppController;
 import model.Assignment;
 import model.FeedbackDocument;
-import model.LinkedPhrases;
 import model.Phrase;
 
 import javax.swing.JFrame;
@@ -31,11 +30,9 @@ import java.util.List;
  * Feedback Screen Class.
  */
 public class FeedbackScreen implements PropertyChangeListener {
-    // Class variable
-    private static final int INSIGHT_LEVEL = 3;
-    
+
     //Remember Scrolling, not ideal because reset at restart, but quick fix that helps a lot
-    private static Map<String, Integer> scrollbarValues = new HashMap();
+    private static Map<String, Integer> scrollbarValues = new HashMap<>();  // TODO: is this the problem?
 
     // Instance variables
     private final IAppController controller;
@@ -150,12 +147,10 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Create panels
         PhrasesPanel customPhrasesPanel = new PhrasesPanel(this.controller, PhraseType.CUSTOM);
         PhrasesPanel frequentlyUsedPhrasesPanel = new PhrasesPanel(this.controller, PhraseType.FREQUENTLY_USED);
-        //PhrasesPanel insightsPhrasesPanel = new PhrasesPanel(this.controller, PhraseType.INSIGHTS);
 
         // Add panels
         this.phrasesSection.addPhrasesPanel(customPhrasesPanel);
         this.phrasesSection.addPhrasesPanel(frequentlyUsedPhrasesPanel);
-        //this.phrasesSection.addPhrasesPanel(insightsPhrasesPanel);
 
         // Start on frequently used pane
         this.phrasesSection.setHighlightedPane(1);
@@ -221,7 +216,6 @@ public class FeedbackScreen implements PropertyChangeListener {
         this.previewPanelScrollPane.getVerticalScrollBar().setUnitIncrement(AppView.SCROLL_SPEED);
 
         // Set scroll position to top
-        // The following line is adapted from: https://stackoverflow.com/questions/1166072/setting-scroll-bar-on-a-jscrollpane
         SwingUtilities.invokeLater(() -> this.previewPanelScrollPane.getVerticalScrollBar().setValue(0));
     }
 
@@ -242,7 +236,7 @@ public class FeedbackScreen implements PropertyChangeListener {
 
         // Create the theme preferences menu
         JMenu preferencesMenu = createPreferencesMenu();
-        
+
         // Create the help menu and items
         JMenu helpMenu = new JMenu("Help");
         JMenuItem aboutOption = new JMenuItem("About");
@@ -426,9 +420,6 @@ public class FeedbackScreen implements PropertyChangeListener {
             case "newCustomPhrase":
                 performAddNewPhrase(event, PhraseType.CUSTOM);
                 break;
-            // case "newLinkedPhrases":
-            //     performAddNewLinkedPhrase(event);
-            //     break;
             case "phrasePanelChange":
                 performPhrasePanelChange(event);
                 break;
@@ -468,12 +459,6 @@ public class FeedbackScreen implements PropertyChangeListener {
             } else {
                 this.phraseEntryBox.disablePhraseEntryBox();
             }
-
-            // Show insights
-            // if (panelInView == PhraseType.INSIGHTS) {
-            //     this.controller.resetPhrasesPanel(PhraseType.INSIGHTS);
-            //     this.controller.showInsights();
-            // }
         }
     }
 
@@ -494,7 +479,6 @@ public class FeedbackScreen implements PropertyChangeListener {
         Phrase phraseToUpdate = (Phrase) event.getNewValue();
         this.phrasesSection.updatePhraseCounter(PhraseType.FREQUENTLY_USED, phraseToUpdate.getPhraseAsString(), phraseToUpdate.getUsageCount());
         this.phrasesSection.updatePhraseCounter(PhraseType.CUSTOM, phraseToUpdate.getPhraseAsString(), phraseToUpdate.getUsageCount());
-        //this.phrasesSection.updatePhraseCounter(PhraseType.INSIGHTS, phraseToUpdate.getPhraseAsString(), phraseToUpdate.getUsageCount());
     }
 
     /**
@@ -517,18 +501,6 @@ public class FeedbackScreen implements PropertyChangeListener {
         Phrase newPhrase = (Phrase) event.getNewValue();
         this.phrasesSection.addPhraseToPanel(newPhrase.getPhraseAsString(), newPhrase.getUsageCount(), phraseType);
     }
-
-    /**
-     * Add a phrase to the given panel.
-     *
-     * @param event The event notification from the model.
-     */
-    // private void performAddNewLinkedPhrase(PropertyChangeEvent event) {
-    //     LinkedPhrases newLinkedPhrases = (LinkedPhrases) event.getNewValue();
-    //     if (newLinkedPhrases.getCount() >= INSIGHT_LEVEL) {
-    //         this.phrasesSection.addInsightToInsightPanel(newLinkedPhrases);
-    //     }
-    // }
 
     /**
      * Insert a phrase into the feedback box being currently edited.

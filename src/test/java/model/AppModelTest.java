@@ -44,7 +44,6 @@ public class AppModelTest extends TestCase {
     public void testSetCurrentPhrasePanelInView() {
         model.setCurrentPhrasePanelInView(PhraseType.FREQUENTLY_USED);
         model.setCurrentPhrasePanelInView(PhraseType.CUSTOM);
-        //model.setCurrentPhrasePanelInView(PhraseType.INSIGHTS);
     }
 
     public void testCreateAssignment() {

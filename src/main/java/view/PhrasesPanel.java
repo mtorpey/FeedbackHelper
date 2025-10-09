@@ -116,18 +116,6 @@ public class PhrasesPanel extends JPanel {
     }
 
     /**
-     * Add an insight box to the panel (only if it is an Insight Panel)
-     *
-     * @param linkedPhrases The linked phrases to display in the insight box.
-     */
-    // public void addInsightBox(LinkedPhrases linkedPhrases) {
-    //     if (this.phraseType == PhraseType.INSIGHTS) {
-    //         this.add(new InsightBox(controller, linkedPhrases));
-    //         this.updatePhrasePanel();
-    //     }
-    // }
-
-    /**
      * Show phrase boxes that match a given search query, and hide all others.
      *
      * @param query The search query to filter by.
