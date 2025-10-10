@@ -1,11 +1,11 @@
 package database;
 
-import model.LinkedPhrases;
-import model.Phrase;
-
 import java.util.List;
 
 import org.json.simple.JSONObject;
+
+import model.LinkedPhrases;
+import model.Phrase;
 
 /**
  * Graph Database Interface.

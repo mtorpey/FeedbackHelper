@@ -1,13 +1,17 @@
 package view;
 
-import controller.IAppController;
-import model.LinkedPhrases;
-
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+
+import controller.IAppController;
 
 /**
  * Phrases Section Class.

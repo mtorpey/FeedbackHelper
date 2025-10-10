@@ -1,5 +1,15 @@
 package controller;
 
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import database.DocumentDatabaseManager;
 import database.GraphDatabaseManager;
 import database.IDocumentDatabase;
@@ -12,21 +22,6 @@ import model.Phrase;
 import model.Utilities;
 import view.PhraseType;
 import visualisation.Visualisations;
-
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.json.simple.JSONObject;
-
-import com.google.common.base.Functions;
-import com.google.common.collect.Lists;
 
 /**
  * App Controller Class.

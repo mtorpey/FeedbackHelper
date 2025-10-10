@@ -1,16 +1,17 @@
 package database;
 
-import model.Assignment;
-import model.FeedbackDocument;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.dizitart.no2.Cursor;
 import org.dizitart.no2.Document;
 import org.dizitart.no2.Nitrite;
 import org.dizitart.no2.NitriteCollection;
 import org.dizitart.no2.filters.Filters;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import model.Assignment;
+import model.FeedbackDocument;
 
 /**
  * Document Database Manager Class.

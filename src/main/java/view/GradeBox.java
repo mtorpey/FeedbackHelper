@@ -1,13 +1,11 @@
 package view;
 
-import controller.IAppController;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+
+import controller.IAppController;
 
 /**
  * Grade Box Class.

@@ -1,14 +1,15 @@
 package view;
 
-import controller.IAppController;
-import model.Assignment;
+import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
-import java.awt.BorderLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+
+import controller.IAppController;
+import model.Assignment;
 
 /**
  * Preview Box Class.

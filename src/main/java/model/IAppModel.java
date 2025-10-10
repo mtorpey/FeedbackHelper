@@ -1,10 +1,10 @@
 package model;
 
-import view.PhraseType;
-
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.List;
+
+import view.PhraseType;
 
 /**
  * App Model Interface.

@@ -1,6 +1,7 @@
 package visualisation;
 
 import java.util.List;
+
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;

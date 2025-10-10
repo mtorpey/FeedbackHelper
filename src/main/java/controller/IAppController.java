@@ -1,12 +1,12 @@
 package controller;
 
-import model.Assignment;
-import view.PhraseType;
-
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+
+import model.Assignment;
+import view.PhraseType;
 
 /**
  * App Controller Interface.

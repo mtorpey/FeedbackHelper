@@ -1,13 +1,13 @@
 package view;
 
-import controller.IAppController;
-import model.LinkedPhrases;
-
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+
+import controller.IAppController;
 
 /**
  * Phrases Panel Class.

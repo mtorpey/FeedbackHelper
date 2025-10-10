@@ -1,24 +1,23 @@
 package database;
 
-import model.LinkedPhrases;
-import model.Pair;
-import model.Phrase;
-import model.Utilities;
-
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.io.Console;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import model.LinkedPhrases;
+import model.Pair;
+import model.Phrase;
+import model.Utilities;
 
 /**
  * Database manager for phrases, including their headings and usage counts.

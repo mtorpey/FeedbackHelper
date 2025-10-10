@@ -1,7 +1,6 @@
 package view;
 
-import controller.IAppController;
-import model.LinkedPhrases;
+import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -9,7 +8,9 @@ import javax.swing.JTextArea;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import java.awt.Dimension;
+
+import controller.IAppController;
+import model.LinkedPhrases;
 
 /**
  * Insight Box Class.

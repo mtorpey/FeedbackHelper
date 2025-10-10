@@ -1,10 +1,11 @@
 package view;
 
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 
 /**
  * Preview Panel Class.
