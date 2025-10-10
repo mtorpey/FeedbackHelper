@@ -280,11 +280,6 @@ public interface IAppController {
     void showCustomPhrases();
 
     /**
-     * Get the custom phrases and display them.
-     */
-    void showInsights();
-
-    /**
      * Set the phrase panel the user is currently viewing.
      *
      * @param currentPhrasePanelInView The phrase panel type.

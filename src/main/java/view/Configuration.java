@@ -20,7 +20,4 @@ public abstract class Configuration {
 
     /** Colour used for the border of a component when it is selected. */
     public static final Color COLOR_BORDER_SELECTED = Color.GREEN;
-
-    /** Colour used for the border of an insight box. */
-    public static final Color COLOR_INSIGHT_BORDER = Color.BLACK;
 }

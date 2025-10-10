@@ -598,12 +598,6 @@ public class AppController implements IAppController {
         // Update custom panel
         resetPhrasesPanel(PhraseType.CUSTOM);
         showCustomPhrases(); // takes a long time on startup for big sets
-
-        // Update insights panel
-        //resetPhrasesPanel(PhraseType.INSIGHTS);
-        //showInsights();
-        // This gets very expensive on big data sets, so we don't do it here.
-        // Now we only do it when switching to the Insights window.
     }
 
     /**
@@ -621,15 +615,6 @@ public class AppController implements IAppController {
     public void showCustomPhrases() {
         List<Phrase> customPhrases = graphDatabase.getCustomPhrases();
         customPhrases.forEach(appModel::addNewCustomPhraseToView);
-    }
-
-    /**
-     * Get the custom phrases and display them.
-     */
-    @Override
-    public void showInsights() {
-        List<LinkedPhrases> linkedPhrases = graphDatabase.getLinkedPhrases(getCurrentHeadingBeingEdited());
-        linkedPhrases.forEach(appModel::addNewLinkedPhrasesToView);
     }
 
     /**
