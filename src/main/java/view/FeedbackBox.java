@@ -44,7 +44,6 @@ public class FeedbackBox extends JPanel {
     private List<String> currentBoxContents;
     private List<String> previousBoxContents;
 
-
     /**
      * Constructor.
      *
@@ -101,7 +100,7 @@ public class FeedbackBox extends JPanel {
 
         // Create components
         this.headingField = new JTextField(this.heading, this.heading.length());
-        this.headingButton = new JButton(EDIT_SYMBOL); 
+        this.headingButton = new JButton(EDIT_SYMBOL);
 
         // Set heading font
         Font currentFont = getFont();
@@ -112,17 +111,18 @@ public class FeedbackBox extends JPanel {
         this.headingPanel.add(this.headingButton, BorderLayout.EAST);
 
         // Create a function consumer
-        Consumer<Boolean> edit = (state) -> {
-            headingField.setEditable(state); 
+        Consumer<Boolean> edit = state -> {
+            headingField.setEditable(state);
             headingField.setOpaque(state);
 
             // Set editable
-            if (state) { 
-                headingButton.setText(FeedbackBox.FINISH_SYMBOL); 
+            if (state) {
+                headingButton.setText(FeedbackBox.FINISH_SYMBOL);
                 headingField.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
                 headingField.setBackground(Color.WHITE);
-            } else { // Stop editing
-                headingButton.setText(FeedbackBox.EDIT_SYMBOL); 
+            } else {
+                // Stop editing
+                headingButton.setText(FeedbackBox.EDIT_SYMBOL);
                 //headingField.setBorder(BorderCreator.createEmptyBorderBottomOnly(BorderCreator.PADDING_10_PIXELS))
                 headingField.setBorder(BorderFactory.createEmptyBorder());
                 headingField.setBackground(new Color(0, 0, 0, 0));
@@ -130,42 +130,45 @@ public class FeedbackBox extends JPanel {
 
             headingPanel.revalidate();
         };
-        
+
         // Listen to changed text field
-        this.headingField.getDocument().addDocumentListener(new DocumentListener() {
-            public void changedUpdate(DocumentEvent e) {
-                String currentHeading = headingField.getText();
-                headingField.setColumns(currentHeading.length());
-                headingPanel.revalidate();
+        this.headingField.getDocument().addDocumentListener(
+            new DocumentListener() {
+                public void changedUpdate(DocumentEvent e) {
+                    String currentHeading = headingField.getText();
+                    headingField.setColumns(currentHeading.length());
+                    headingPanel.revalidate();
+                }
+
+                public void removeUpdate(DocumentEvent e) {
+                    changedUpdate(e);
+                }
+
+                public void insertUpdate(DocumentEvent e) {
+                    changedUpdate(e);
+                }
             }
-            public void removeUpdate(DocumentEvent e) {
-                changedUpdate(e);
-            }
-            public void insertUpdate(DocumentEvent e) {
-                changedUpdate(e);
-            }
-        });
+        );
 
         // Listen to renaming heading sections
         this.headingButton.addActionListener(a -> {
             if (headingButton.getText().equals(FINISH_SYMBOL)) {
                 edit.accept(false);
-  
+
                 // Update heading
                 String currentHeading = getHeading();
                 String newHeading = headingField.getText();
 
-                if (!currentHeading.equals(newHeading)) {  
+                if (!currentHeading.equals(newHeading)) {
                     // Change heading
                     setHeading(newHeading);
                     // Save new heading
                     controller.checkHeading(currentHeading, newHeading);
                 }
-
             } else {
                 edit.accept(true);
             }
-        });  
+        });
 
         // Disable the editable header
         edit.accept(false);
@@ -191,46 +194,50 @@ public class FeedbackBox extends JPanel {
         this.textArea.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
 
         // Listen for enter press
-        this.textArea.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == ENTER_KEY) {
-                    captureState();
-                    controller.updatePhrases(heading, previousBoxContents, currentBoxContents);
-                    controller.managePhraseLinks(heading, previousBoxContents, currentBoxContents);
-                    controller.saveFeedbackDocument(controller.getCurrentDocumentInView());
-                    insertLineMarkerForNewLine();
+        this.textArea.addKeyListener(
+            new KeyAdapter() {
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    if (e.getKeyCode() == ENTER_KEY) {
+                        captureState();
+                        controller.updatePhrases(heading, previousBoxContents, currentBoxContents);
+                        controller.managePhraseLinks(heading, previousBoxContents, currentBoxContents);
+                        controller.saveFeedbackDocument(controller.getCurrentDocumentInView());
+                        insertLineMarkerForNewLine();
+                    }
                 }
             }
-        });
+        );
 
         // Listen for clicks on the text area
-        this.textArea.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                // Notify model what is in focus
-                controller.updateCurrentHeadingBeingEdited(heading);
+        this.textArea.addFocusListener(
+            new FocusListener() {
+                @Override
+                public void focusGained(FocusEvent e) {
+                    // Notify model what is in focus
+                    controller.updateCurrentHeadingBeingEdited(heading);
 
-                // If heading being edited has changed, show all the phrases for that heading
-                if (controller.headingChanged()) {
-                    controller.resetPhrasesPanel(PhraseType.FREQUENTLY_USED);
-                    controller.showPhrasesForHeading(heading);
+                    // If heading being edited has changed, show all the phrases for that heading
+                    if (controller.headingChanged()) {
+                        controller.resetPhrasesPanel(PhraseType.FREQUENTLY_USED);
+                        controller.showPhrasesForHeading(heading);
+                    }
+
+                    // Set the caret colour (in some themes it might be hard to see)
+                    textArea.setCaretColor(textArea.getForeground());
+
+                    // Check if we need to insert a new line
+                    if (textArea.getText().isEmpty()) {
+                        insertLineMarkerForNewLine();
+                    }
                 }
 
-                // Set the caret colour (in some themes it might be hard to see)
-                textArea.setCaretColor(textArea.getForeground());
-
-                // Check if we need to insert a new line
-                if (textArea.getText().isEmpty()) {
-                    insertLineMarkerForNewLine();
+                @Override
+                public void focusLost(FocusEvent e) {
+                    controller.saveFeedbackDocument(controller.getCurrentDocumentInView());
                 }
             }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                controller.saveFeedbackDocument(controller.getCurrentDocumentInView());
-            }
-        });
+        );
     }
 
     /**
@@ -252,10 +259,10 @@ public class FeedbackBox extends JPanel {
         // Store the realtime contents (and remove line marker for storage)
         this.currentBoxContents = Arrays.asList(this.textArea.getText().split(NEWLINE));
         this.currentBoxContents = this.currentBoxContents.stream()
-                .map(String::trim)
-                .filter(line -> line.startsWith(this.controller.getLineMarker()))
-                .map(line -> line.replaceFirst(this.controller.getLineMarker(), ""))
-                .collect(Collectors.toList());
+            .map(String::trim)
+            .filter(line -> line.startsWith(this.controller.getLineMarker()))
+            .map(line -> line.replaceFirst(this.controller.getLineMarker(), ""))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -267,10 +274,10 @@ public class FeedbackBox extends JPanel {
         // Store the realtime contents (and remove line marker for storage)
         this.currentBoxContents = Arrays.asList(data.split(NEWLINE));
         this.currentBoxContents = this.currentBoxContents.stream()
-                .map(String::trim)
-                .filter(line -> line.startsWith(this.controller.getLineMarker()))
-                .map(line -> line.replace(this.controller.getLineMarker(), ""))
-                .collect(Collectors.toList());
+            .map(String::trim)
+            .filter(line -> line.startsWith(this.controller.getLineMarker()))
+            .map(line -> line.replace(this.controller.getLineMarker(), ""))
+            .collect(Collectors.toList());
         this.textArea.setText(data);
     }
 
@@ -307,5 +314,4 @@ public class FeedbackBox extends JPanel {
         int caretPos = this.textArea.getCaretPosition();
         this.textArea.insert(this.controller.getLineMarker(), caretPos);
     }
-
 }

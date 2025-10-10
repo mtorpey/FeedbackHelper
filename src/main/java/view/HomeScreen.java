@@ -113,10 +113,10 @@ public class HomeScreen {
     public void createDescriptionArea() {
         this.descriptionLabel = new JTextPane();
         this.descriptionLabel.setText(
-                "Welcome to the Feedback Helper Tool! " +
-                        "To get started with creating feedback documents click the 'Start New Assignment' button. " +
-                        "You will then be prompted to setup your assignment via a JSON configuration file or through a manual guided setup. " +
-                        "To resume creating feedback documents click the 'Load Assignment' button and select your '.fht' file."
+            "Welcome to the Feedback Helper Tool! " +
+                "To get started with creating feedback documents click the 'Start New Assignment' button. " +
+                "You will then be prompted to setup your assignment via a JSON configuration file or through a manual guided setup. " +
+                "To resume creating feedback documents click the 'Load Assignment' button and select your '.fht' file."
         );
         this.descriptionLabel.setBorder(BorderCreator.createAllSidesEmptyBorder(20));
         this.descriptionLabel.setMaximumSize(new Dimension(500, 210));
@@ -184,5 +184,4 @@ public class HomeScreen {
         });
         this.startNewButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     }
-
 }

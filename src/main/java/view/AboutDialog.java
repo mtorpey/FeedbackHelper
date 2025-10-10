@@ -23,20 +23,21 @@ import javax.swing.event.HyperlinkListener;
  * About Dialog Class.
  */
 public class AboutDialog extends JDialog {
-    
-    public static final String DEVELOPER_INFO = 
+
+    public static final String DEVELOPER_INFO =
         "Feedback Helper was developed by Bhuvan Bezawada as part of a CS5099 project at the University of St Andrews.";
 
-    public static final String CONTRIBUTOR_INFO = 
+    public static final String CONTRIBUTOR_INFO =
         "Later contributions by Michael Young, Johannes Zelger, and Oluwanifemi Fadare.";
 
     public static final String GOAL_INFO =
         "The goal of this tool is to help markers create feedback documents more efficiently.";
 
-    public static final String ABOUT_INFO = "<html><br>" + DEVELOPER_INFO + "<br>" + GOAL_INFO + "<br><br>" 
-        + CONTRIBUTOR_INFO + "</html>";
+    public static final String ABOUT_INFO =
+        "<html><br>" + DEVELOPER_INFO + "<br>" + GOAL_INFO + "<br><br>" + CONTRIBUTOR_INFO + "</html>";
 
-    public static final String LINKS = "<html>Check out the <a href='https://github.com/mtorpey/FeedbackHelper'>Github repository</a> " +
+    public static final String LINKS =
+        "<html>Check out the <a href='https://github.com/mtorpey/FeedbackHelper'>Github repository</a> " +
         "or view the <a href='https://github.com/mtorpey/FeedbackHelper/issues'>issue tracker</a>.</html>";
 
     /**
@@ -46,11 +47,10 @@ public class AboutDialog extends JDialog {
      */
     public AboutDialog(JFrame parent) {
         super(parent, "About Feedback Helper", true);
- 
         // Create the dialog components
-        JPanel dialogPanel = new JPanel(new BorderLayout());;
+        JPanel dialogPanel = new JPanel(new BorderLayout());
         dialogPanel.setBorder(BorderFactory.createEmptyBorder(8, 16, 24, 16));
-        
+
         JPanel panelWest = new JPanel(new FlowLayout());
 
         // Add information icon
@@ -73,59 +73,64 @@ public class AboutDialog extends JDialog {
         linksEditorPane.setOpaque(false);
 
         // Hyperlink navigation
-        linksEditorPane.addHyperlinkListener(new HyperlinkListener() {
-            public void hyperlinkUpdate(HyperlinkEvent hle) {
-                // Open in browser on hyperlink activation
-                if (HyperlinkEvent.EventType.ACTIVATED.equals(hle.getEventType())) {
-                    openLocation(hle.getURL().toString());
+        linksEditorPane.addHyperlinkListener(
+            new HyperlinkListener() {
+                public void hyperlinkUpdate(HyperlinkEvent hle) {
+                    // Open in browser on hyperlink activation
+                    if (HyperlinkEvent.EventType.ACTIVATED.equals(hle.getEventType())) {
+                        openLocation(hle.getURL().toString());
+                    }
                 }
             }
-        });
+        );
 
         // Add panels
         dialogPanel.add(panelWest, BorderLayout.WEST);
-            panelWest.add(iconLabel, BorderLayout.CENTER);
+        panelWest.add(iconLabel, BorderLayout.CENTER);
         dialogPanel.add(panelEast, BorderLayout.EAST);
-            panelEast.add(headerLabel);
-            panelEast.add(javaVersionLabel);
-            panelEast.add(developersLabel);
-            // Add pane for links
-            panelEast.add(linksPane);
-                linksPane.add(linksEditorPane);
+        panelEast.add(headerLabel);
+        panelEast.add(javaVersionLabel);
+        panelEast.add(developersLabel);
+        // Add pane for links
+        panelEast.add(linksPane);
+        linksPane.add(linksEditorPane);
 
         add(dialogPanel, BorderLayout.CENTER);
 
         setResizable(false);
         pack(); // Adjust dialog size to fit components
         setLocationRelativeTo(parent); // Center the dialog onscreen
-        
     }
 
     /**
      * Open a given url
-     * 
+     *
      * @param url of webpage
      */
     private static void openLocation(String url) {
         if (!Desktop.isDesktopSupported()) {
-            JOptionPane.showMessageDialog(null,
+            JOptionPane.showMessageDialog(
+                null,
                 "Java is not able to launch links on your computer.",
-                "Cannot Launch Link", JOptionPane.WARNING_MESSAGE);
+                "Cannot Launch Link",
+                JOptionPane.WARNING_MESSAGE
+            );
             return;
         }
 
         Desktop desktop = Desktop.getDesktop();
-        
+
         try {
             desktop.browse(new URI(url));
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null,
+            JOptionPane.showMessageDialog(
+                null,
                 "Failed to launch the link, your computer is likely misconfigured.",
-                "Cannot Launch Link", JOptionPane.WARNING_MESSAGE);
+                "Cannot Launch Link",
+                JOptionPane.WARNING_MESSAGE
+            );
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-
     }
-
 }

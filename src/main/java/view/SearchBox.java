@@ -36,41 +36,46 @@ public class SearchBox extends JTextField {
     public SearchBox(Listener listener) {
         // Start with prompt displayed to user
         super(PROMPT);
-
         // Display with height of one line
         setMaximumSize(new Dimension(Integer.MAX_VALUE, getPreferredSize().height));
         setVisible(true);
 
         // Inform listener of all changes to contents
         this.listener = listener;
-        getDocument().addDocumentListener(new DocumentListener() {
+        getDocument().addDocumentListener(
+            new DocumentListener() {
                 public void changedUpdate(DocumentEvent e) {
                     updated();
                 }
+
                 public void removeUpdate(DocumentEvent e) {
                     updated();
                 }
+
                 public void insertUpdate(DocumentEvent e) {
                     updated();
                 }
-            });
+            }
+        );
 
         // Display prompt only when empty and unfocused
-        addFocusListener(new FocusListener() {
+        addFocusListener(
+            new FocusListener() {
                 @Override
                 public void focusLost(FocusEvent e) {
                     if (getText().isEmpty()) {
                         setText(PROMPT);
                     }
                 }
-                
+
                 @Override
                 public void focusGained(FocusEvent e) {
                     if (getText().equals(PROMPT)) {
                         setText("");
                     }
                 }
-            });
+            }
+        );
     }
 
     /**

@@ -4,7 +4,6 @@ package view;
  * Phrase Type Enum.
  */
 public enum PhraseType {
-
     // Phrase type values
     CUSTOM("Custom"),
     FREQUENTLY_USED("Frequently Used");
@@ -29,5 +28,4 @@ public enum PhraseType {
     public String getPhraseTypeAsString() {
         return phraseTypeAsString;
     }
-
 }

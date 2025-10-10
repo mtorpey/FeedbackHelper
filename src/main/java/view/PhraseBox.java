@@ -160,5 +160,4 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
     public int compareTo(PhraseBox o) {
         return o.getUsageCount() - this.getUsageCount();
     }
-
 }

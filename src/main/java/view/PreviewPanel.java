@@ -89,5 +89,4 @@ public class PreviewPanel extends JPanel {
         this.revalidate();
         this.repaint();
     }
-
 }

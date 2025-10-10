@@ -12,7 +12,6 @@ import model.FeedbackDocument;
  * Document Database Interface.
  */
 public interface IDocumentDatabase {
-
     /**
      * Create a collection in the database.
      *
@@ -69,7 +68,12 @@ public interface IDocumentDatabase {
      * @param grade           The grade assigned to the feedback document.
      * @return True id the document was saved, false otherwise.
      */
-    boolean saveFeedbackDocument(Assignment assignment, String studentId, Map<String, String> headingsAndData, double grade);
+    boolean saveFeedbackDocument(
+        Assignment assignment,
+        String studentId,
+        Map<String, String> headingsAndData,
+        double grade
+    );
 
     /**
      * Update a feedback document.
@@ -78,5 +82,4 @@ public interface IDocumentDatabase {
      * @param studentId  The student ID of the feedback document.
      */
     void updateFeedbackDocument(Assignment assignment, String studentId);
-
 }

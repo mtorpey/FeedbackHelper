@@ -125,5 +125,4 @@ public class PhrasesPanel extends JPanel {
             phraseBox.setVisibleBySearchQuery(query);
         }
     }
-
 }

@@ -71,7 +71,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
     @Override
     public boolean createGraphDatabase(String databasePath) {
         // File should not exist yet
-        if (openGraphDatabase(databasePath)) {  // initialises databaseFile
+        if (openGraphDatabase(databasePath)) {
+            // initialises databaseFile
             return false;
         }
 
@@ -90,7 +91,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
     @Override
     public void setUpGraphDatabaseForAssignment(List<String> headings) {
         JSONObject usedPhrases = new JSONObject();
-        for (String heading: headings) {
+        for (String heading : headings) {
             usedPhrases.put(heading, new JSONObject());
         }
 
@@ -115,7 +116,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
         database.put(USED_PHRASES_KEY, usedPhrases);
 
         dumpToFile();
-    };
+    }
 
     /**
      * Remove phrases for a given heading in the database
@@ -131,7 +132,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
 
         dumpToFile();
         return phrases;
-    };
+    }
 
     /**
      * Update the count for the given phrase, adding it if not already present.
@@ -159,7 +160,7 @@ public class GraphDatabaseManager implements IGraphDatabase {
      */
     @Override
     public void addPhraseForHeading(final String heading, Phrase phrase) {
-        updatePhrase(heading, phrase);  // adds a new entry if it does not exist already
+        updatePhrase(heading, phrase); // adds a new entry if it does not exist already
     }
 
     /**
@@ -231,9 +232,9 @@ public class GraphDatabaseManager implements IGraphDatabase {
         List<Phrase> phrases = new ArrayList<>();
 
         // Read from the JSON object
-        for (String phraseString: (Set<String>) object.keySet()) {
+        for (String phraseString : (Set<String>) object.keySet()) {
             Phrase phrase = new Phrase(phraseString);
-            int count = ((Number) object.get(phraseString)).intValue();  // hopefully less than 4 billion
+            int count = ((Number) object.get(phraseString)).intValue(); // hopefully less than 4 billion
             phrase.setUsageCount(count);
             phrases.add(phrase);
         }
@@ -263,12 +264,18 @@ public class GraphDatabaseManager implements IGraphDatabase {
     }
 
     /* Update phrases in the given object, given these removed and added phrases. */
-    private void updatePhrasesForObject(JSONObject object, List<String> removedPhrases, List<String> addedPhrases, boolean addIfNew, boolean removeIfZero) {
+    private void updatePhrasesForObject(
+        JSONObject object,
+        List<String> removedPhrases,
+        List<String> addedPhrases,
+        boolean addIfNew,
+        boolean removeIfZero
+    ) {
         // Filter out phrases we have identified as those to remove
         List<Phrase> filteredForRemoval = getPhrasesFromObject(object)
-                .stream()
-                .filter(phrase -> removedPhrases.contains(phrase.getPhraseAsString()))
-                .collect(Collectors.toList());
+            .stream()
+            .filter(phrase -> removedPhrases.contains(phrase.getPhraseAsString()))
+            .collect(Collectors.toList());
 
         // Check the usage count of the phrases to remove
         filteredForRemoval.forEach(phraseToRemove -> {
@@ -284,9 +291,9 @@ public class GraphDatabaseManager implements IGraphDatabase {
 
         // Filter out phrases that are being reused
         List<Phrase> filteredForAddition = getPhrasesFromObject(object)
-                .stream()
-                .filter(phrase -> addedPhrases.contains(phrase.getPhraseAsString()))
-                .collect(Collectors.toList());
+            .stream()
+            .filter(phrase -> addedPhrases.contains(phrase.getPhraseAsString()))
+            .collect(Collectors.toList());
         List<String> updated = new ArrayList<>();
 
         // Update counter of existing phrase
@@ -413,5 +420,4 @@ public class GraphDatabaseManager implements IGraphDatabase {
         List<LinkedPhrases> linkedPhrasesList = new ArrayList<LinkedPhrases>();
         return linkedPhrasesList;
     }
-
 }

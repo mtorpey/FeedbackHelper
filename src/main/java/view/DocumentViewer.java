@@ -108,10 +108,12 @@ public class DocumentViewer extends JFrame {
             this.textArea.append("\n");
 
             // Section data
-            data.get(heading).forEach(line -> {
-                this.textArea.append(this.controller.getLineMarker() + line);
-                this.textArea.append("\n");
-            });
+            data
+                .get(heading)
+                .forEach(line -> {
+                    this.textArea.append(this.controller.getLineMarker() + line);
+                    this.textArea.append("\n");
+                });
 
             // End section spacing
             for (int i = 0; i < this.controller.getLineSpacing(); i++) {
@@ -120,5 +122,4 @@ public class DocumentViewer extends JFrame {
             this.textArea.append("\n");
         });
     }
-
 }

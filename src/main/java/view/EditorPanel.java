@@ -74,7 +74,6 @@ public class EditorPanel extends JPanel {
         this.add(this.gradeBox, BorderLayout.PAGE_END);
     }
 
-
     /**
      * Set the title label.
      *
@@ -83,7 +82,6 @@ public class EditorPanel extends JPanel {
     public void setTitleLabel(String titleText) {
         this.titleLabel.setText(titleText);
     }
-
 
     /**
      * Setup the title.
@@ -98,7 +96,7 @@ public class EditorPanel extends JPanel {
 
     /**
      * Setup the feedback boxes.
-     * 
+     *
      */
     private void setupFeedbackBoxes() {
         this.headings.forEach(heading -> {
@@ -114,11 +112,11 @@ public class EditorPanel extends JPanel {
 
     /**
      * Reset the feedback boxes.
-     * 
+     *
      * @param headings   The headings of the feedback boxes to reset.
      */
     public void resetFeedbackBoxes(List<String> newHeadings) {
-        for (int position = 0; position < headings.size(); position++){
+        for (int position = 0; position < headings.size(); position++) {
             FeedbackBox feedbackBox = this.feedbackBoxes.get(position);
             String previousHeading = headings.get(position);
             // Change the heading
@@ -207,5 +205,4 @@ public class EditorPanel extends JPanel {
     public double getGrade() {
         return this.gradeBox.getGrade();
     }
-
 }

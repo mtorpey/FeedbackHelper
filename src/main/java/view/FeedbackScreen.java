@@ -38,7 +38,7 @@ import model.Phrase;
 public class FeedbackScreen implements PropertyChangeListener {
 
     //Remember Scrolling, not ideal because reset at restart, but quick fix that helps a lot
-    private static Map<String, Integer> scrollbarValues = new HashMap<>();  // TODO: is this the problem?
+    private static Map<String, Integer> scrollbarValues = new HashMap<>(); // TODO: is this the problem?
 
     // Instance variables
     private final IAppController controller;
@@ -116,7 +116,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Centre the screen
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (screenSize.width - this.feedbackScreen.getWidth()) / 2;
-        int y = 20;  // Just below top of screen
+        int y = 20; // Just below top of screen
         this.feedbackScreen.setLocation(x, y);
     }
 
@@ -136,7 +136,11 @@ public class FeedbackScreen implements PropertyChangeListener {
     private void setupPhrasesAndPhraseEntrySplitPane() {
         this.phraseEntryBox = new PhraseEntryBox(this.controller);
         this.phraseEntryBox.disablePhraseEntryBox();
-        this.phrasesAndPhraseEntrySplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.phrasesSection, this.phraseEntryBox);
+        this.phrasesAndPhraseEntrySplitPane = new JSplitPane(
+            JSplitPane.VERTICAL_SPLIT,
+            this.phrasesSection,
+            this.phraseEntryBox
+        );
         this.phrasesAndPhraseEntrySplitPane.setOneTouchExpandable(false);
         this.phrasesAndPhraseEntrySplitPane.setDividerLocation(600);
         this.phrasesAndPhraseEntrySplitPane.setMaximumSize(new Dimension(300, 800));
@@ -167,7 +171,11 @@ public class FeedbackScreen implements PropertyChangeListener {
      * Setup the preview and editor split pane.
      */
     private void setupPreviewAndEditorSplitPane() {
-        this.previewAndEditorSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, this.previewPanelScrollPane, this.editorPanelScrollPane);
+        this.previewAndEditorSplitPane = new JSplitPane(
+            JSplitPane.HORIZONTAL_SPLIT,
+            this.previewPanelScrollPane,
+            this.editorPanelScrollPane
+        );
         this.previewAndEditorSplitPane.setMaximumSize(new Dimension(900, 800));
         this.previewAndEditorSplitPane.setPreferredSize(new Dimension(900, 800));
         this.previewAndEditorSplitPane.setMinimumSize(new Dimension(900, 800));
@@ -182,12 +190,18 @@ public class FeedbackScreen implements PropertyChangeListener {
         this.editorPanelScrollPane = new JScrollPane();
 
         // Create editor panel with popup menu
-        this.editorPanel = new EditorPanel(this.controller, this.assignment.getAssignmentTitle(), this.assignment.getAssignmentHeadings());
+        this.editorPanel = new EditorPanel(
+            this.controller,
+            this.assignment.getAssignmentTitle(),
+            this.assignment.getAssignmentHeadings()
+        );
         this.editingPopupMenu = new EditingPopupMenu();
         this.editorPanel.registerPopupMenu(this.editingPopupMenu);
 
         // Set the document data if it exists
-        this.editorPanel.setData(this.assignment.getFeedbackDocumentForStudent(this.controller.getCurrentDocumentInView()));
+        this.editorPanel.setData(
+            this.assignment.getFeedbackDocumentForStudent(this.controller.getCurrentDocumentInView())
+        );
 
         // Make the panel scrollable
         this.editorPanelScrollPane.add(this.editorPanel);
@@ -206,7 +220,12 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Create preview boxes
         List<PreviewBox> previewBoxes = new ArrayList<PreviewBox>();
         this.assignment.getFeedbackDocuments().forEach(feedbackDocument -> {
-            PreviewBox previewBox = new PreviewBox(this.controller, feedbackDocument.getStudentId(), feedbackDocument.getGrade(), this.controller.getFirstLineFromDocument(this.assignment, feedbackDocument.getStudentId()));
+            PreviewBox previewBox = new PreviewBox(
+                this.controller,
+                feedbackDocument.getStudentId(),
+                feedbackDocument.getGrade(),
+                this.controller.getFirstLineFromDocument(this.assignment, feedbackDocument.getStudentId())
+            );
             previewBox.setAssignment(this.assignment);
             previewBoxes.add(previewBox);
         });
@@ -249,7 +268,10 @@ public class FeedbackScreen implements PropertyChangeListener {
 
         // Save option
         saveOption.addActionListener(l -> {
-            JOptionPane.showMessageDialog(this.feedbackScreen, "Saving document for student: " + this.controller.getCurrentDocumentInView());
+            JOptionPane.showMessageDialog(
+                this.feedbackScreen,
+                "Saving document for student: " + this.controller.getCurrentDocumentInView()
+            );
             this.controller.saveFeedbackDocument(controller.getCurrentDocumentInView());
         });
 
@@ -259,8 +281,7 @@ public class FeedbackScreen implements PropertyChangeListener {
 
             // Check that the new student id is not blank
             if (input.isBlank()) {
-                JOptionPane.showMessageDialog(this.feedbackScreen,
-                        "The student id is blank.");
+                JOptionPane.showMessageDialog(this.feedbackScreen, "The student id is blank.");
                 return;
             }
 
@@ -269,8 +290,7 @@ public class FeedbackScreen implements PropertyChangeListener {
                 Integer.parseInt(input);
                 studentId = input;
             } catch (NumberFormatException exception) {
-                JOptionPane.showMessageDialog(this.feedbackScreen,
-                        "The student id is not a number.");
+                JOptionPane.showMessageDialog(this.feedbackScreen, "The student id is not a number.");
                 return;
             }
 
@@ -282,17 +302,22 @@ public class FeedbackScreen implements PropertyChangeListener {
             controller.createFeedbackDocuments(assignment);
 
             // Save the assignment to an FHT file
-            controller.saveAssignment(assignment, assignment.getAssignmentTitle()
-				.toLowerCase()
-				.replace(" ", "-"));
+            controller.saveAssignment(assignment, assignment.getAssignmentTitle().toLowerCase().replace(" ", "-"));
 
             // Create preview boxes
             List<PreviewBox> previewBoxes = new ArrayList<PreviewBox>();
-            assignment.getFeedbackDocuments().forEach(feedbackDocument -> {
-                PreviewBox previewBox = new PreviewBox(controller, feedbackDocument.getStudentId(), feedbackDocument.getGrade(), this.controller.getFirstLineFromDocument(this.assignment, feedbackDocument.getStudentId()));
-                previewBox.setAssignment(this.assignment);
-                previewBoxes.add(previewBox);
-            });
+            assignment
+                .getFeedbackDocuments()
+                .forEach(feedbackDocument -> {
+                    PreviewBox previewBox = new PreviewBox(
+                        controller,
+                        feedbackDocument.getStudentId(),
+                        feedbackDocument.getGrade(),
+                        this.controller.getFirstLineFromDocument(this.assignment, feedbackDocument.getStudentId())
+                    );
+                    previewBox.setAssignment(this.assignment);
+                    previewBoxes.add(previewBox);
+                });
 
             // Order the preview boxes by the id if possible
             Collections.sort(previewBoxes);
@@ -305,15 +330,14 @@ public class FeedbackScreen implements PropertyChangeListener {
             this.previewPanelScrollPane.add(this.previewPanel);
             this.previewPanelScrollPane.getViewport().setView(this.previewPanel);
 
-            for(PreviewBox pb : previewBoxes){
+            for (PreviewBox pb : previewBoxes) {
                 this.previewPanel.unhighlightPreviewBox(pb.getHeading());
             }
             // Select the new student
             controller.displayNewDocument(assignment, studentId.toString());
 
             // Confirm completion
-            JOptionPane.showMessageDialog(this.feedbackScreen,
-                "Added document for student: " + studentId);
+            JOptionPane.showMessageDialog(this.feedbackScreen, "Added document for student: " + studentId);
         });
 
         // Export grades and documents option
@@ -322,9 +346,12 @@ public class FeedbackScreen implements PropertyChangeListener {
             this.controller.exportFeedbackDocuments(this.assignment);
             // Export grades
             this.controller.exportGrades(this.assignment);
-            JOptionPane.showMessageDialog(this.feedbackScreen,
-                    "Exporting assignment grades and feedback documents... \n" +
-                            "Please check the directory: " + this.assignment.getAssignmentDirectoryPath());
+            JOptionPane.showMessageDialog(
+                this.feedbackScreen,
+                "Exporting assignment grades and feedback documents... \n" +
+                    "Please check the directory: " +
+                    this.assignment.getAssignmentDirectoryPath()
+            );
         });
 
         // Visualise grades option
@@ -345,7 +372,6 @@ public class FeedbackScreen implements PropertyChangeListener {
             AboutDialog aboutDialog = new AboutDialog(this.feedbackScreen);
             aboutDialog.setVisible(true);
         });
-
 
         // Add all options to menu
         fileMenu.add(saveOption);
@@ -378,7 +404,12 @@ public class FeedbackScreen implements PropertyChangeListener {
         UserPreferences.setTheme(name);
         try {
             UIManager.setLookAndFeel(name);
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+        } catch (
+            ClassNotFoundException
+            | InstantiationException
+            | IllegalAccessException
+            | UnsupportedLookAndFeelException e
+        ) {
             e.printStackTrace();
         }
         SwingUtilities.updateComponentTreeUI(feedbackScreen);
@@ -395,12 +426,16 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Perform action based on the incoming message
         switch (event.getPropertyName()) {
             case "docViewChange":
-                scrollbarValues.put(controller.getLastDocumentInView(),
-                        this.editorPanelScrollPane.getVerticalScrollBar().getValue());
+                scrollbarValues.put(
+                    controller.getLastDocumentInView(),
+                    this.editorPanelScrollPane.getVerticalScrollBar().getValue()
+                );
                 performDocumentViewChange(event);
-                SwingUtilities.invokeLater(() -> this.editorPanelScrollPane.getVerticalScrollBar()
-                        .setValue(scrollbarValues
-                                .getOrDefault(event.getNewValue(), 0)));
+                SwingUtilities.invokeLater(() ->
+                    this.editorPanelScrollPane.getVerticalScrollBar().setValue(
+                        scrollbarValues.getOrDefault(event.getNewValue(), 0)
+                    )
+                );
                 break;
             case "saveDoc":
                 performDocumentSave(event);
@@ -483,8 +518,16 @@ public class FeedbackScreen implements PropertyChangeListener {
      */
     private void performUpdatePhrase(PropertyChangeEvent event) {
         Phrase phraseToUpdate = (Phrase) event.getNewValue();
-        this.phrasesSection.updatePhraseCounter(PhraseType.FREQUENTLY_USED, phraseToUpdate.getPhraseAsString(), phraseToUpdate.getUsageCount());
-        this.phrasesSection.updatePhraseCounter(PhraseType.CUSTOM, phraseToUpdate.getPhraseAsString(), phraseToUpdate.getUsageCount());
+        this.phrasesSection.updatePhraseCounter(
+            PhraseType.FREQUENTLY_USED,
+            phraseToUpdate.getPhraseAsString(),
+            phraseToUpdate.getUsageCount()
+        );
+        this.phrasesSection.updatePhraseCounter(
+            PhraseType.CUSTOM,
+            phraseToUpdate.getPhraseAsString(),
+            phraseToUpdate.getUsageCount()
+        );
     }
 
     /**
@@ -533,8 +576,7 @@ public class FeedbackScreen implements PropertyChangeListener {
 
         // Check that the new heading is not blank
         if (currentHeading.isBlank()) {
-            JOptionPane.showMessageDialog(this.feedbackScreen,
-                    "The heading is blank.");
+            JOptionPane.showMessageDialog(this.feedbackScreen, "The heading is blank.");
             this.editorPanel.resetFeedbackBoxes(assignmentHeadings);
             return;
         }
@@ -542,8 +584,10 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Check that the new heading is not the same as any old ones
         for (String heading : assignmentHeadings) {
             if (heading.equals(currentHeading)) {
-                JOptionPane.showMessageDialog(this.feedbackScreen,
-                    "The heading " + currentHeading + " already exists.");
+                JOptionPane.showMessageDialog(
+                    this.feedbackScreen,
+                    "The heading " + currentHeading + " already exists."
+                );
                 this.editorPanel.resetFeedbackBoxes(assignmentHeadings);
                 return;
             }
@@ -575,15 +619,17 @@ public class FeedbackScreen implements PropertyChangeListener {
 
             double grade = feedbackDocument.getGrade();
             this.controller.saveFeedbackDocument(this.assignment, studentId, headingsAndData, grade);
-            this.previewPanel.updatePreviewBox(studentId, this.controller.getFirstLineFromDocument(this.assignment, studentId), grade);
+            this.previewPanel.updatePreviewBox(
+                studentId,
+                this.controller.getFirstLineFromDocument(this.assignment, studentId),
+                grade
+            );
         });
 
         // Save the assignment to an FHT file
-        this.assignment.saveAssignmentDetails(this.assignment.getAssignmentTitle()
-            .toLowerCase()
-            .replace(" ", "-")
-            .replace(".db", ""));
-
+        this.assignment.saveAssignmentDetails(
+            this.assignment.getAssignmentTitle().toLowerCase().replace(" ", "-").replace(".db", "")
+        );
     }
 
     /**
@@ -597,7 +643,11 @@ public class FeedbackScreen implements PropertyChangeListener {
         double grade = this.editorPanel.getGrade();
         if (grade >= 0) {
             this.controller.saveFeedbackDocument(this.assignment, studentId, headingsAndData, grade);
-            this.previewPanel.updatePreviewBox(studentId, this.controller.getFirstLineFromDocument(this.assignment, studentId), grade);
+            this.previewPanel.updatePreviewBox(
+                studentId,
+                this.controller.getFirstLineFromDocument(this.assignment, studentId),
+                grade
+            );
         }
     }
 
@@ -613,8 +663,8 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Update the preview boxes
         if (this.controller.getLastDocumentInView() != null) {
             this.previewPanel.updatePreviewBoxLine(
-                    this.controller.getLastDocumentInView(),
-                    this.controller.getFirstLineFromDocument(this.assignment, this.controller.getLastDocumentInView())
+                this.controller.getLastDocumentInView(),
+                this.controller.getFirstLineFromDocument(this.assignment, this.controller.getLastDocumentInView())
             );
             this.previewPanel.unhighlightPreviewBox(this.controller.getLastDocumentInView());
         }
@@ -624,5 +674,4 @@ public class FeedbackScreen implements PropertyChangeListener {
         this.previewPanel.repaint();
         this.previewPanel.revalidate();
     }
-
 }

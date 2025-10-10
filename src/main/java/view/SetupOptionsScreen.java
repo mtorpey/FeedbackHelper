@@ -117,7 +117,12 @@ public class SetupOptionsScreen {
                     this.setupOptionsScreen.dispose();
                     new CreateAssignmentScreen(this.controller, configFilePath);
                 } else {
-                    JOptionPane.showMessageDialog(this.setupOptionsScreen, "Please select a JSON config file!", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(
+                        this.setupOptionsScreen,
+                        "Please select a JSON config file!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                    );
                 }
             }
         });
@@ -176,8 +181,8 @@ public class SetupOptionsScreen {
         this.instructions = new JTextPane();
 
         this.instructions.setText(
-                "Please select 'Use config file...' if you have a JSON config file ready. " +
-                        "Otherwise, please select 'Use manual setup' where you will be guided through a configuration setup."
+            "Please select 'Use config file...' if you have a JSON config file ready. " +
+                "Otherwise, please select 'Use manual setup' where you will be guided through a configuration setup."
         );
 
         this.instructions.setMaximumSize(new Dimension(400, 130));
@@ -188,5 +193,4 @@ public class SetupOptionsScreen {
         this.instructions.setEditable(false);
         this.instructions.setAlignmentX(Component.CENTER_ALIGNMENT);
     }
-
 }

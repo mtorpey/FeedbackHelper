@@ -11,7 +11,6 @@ import model.Phrase;
  * Graph Database Interface.
  */
 public interface IGraphDatabase {
-
     /**
      * Open the database.
      *
@@ -121,5 +120,4 @@ public interface IGraphDatabase {
      * @return A list of linked phrases for the given heading.
      */
     List<LinkedPhrases> getLinkedPhrases(String heading);
-
 }

@@ -65,8 +65,14 @@ public abstract class BorderCreator {
      */
     public static Border unselectedBorder() {
         return new CompoundBorder(
-                new MatteBorder(PADDING_1_PIXEL, PADDING_5_PIXELS, PADDING_1_PIXEL, PADDING_1_PIXEL, Configuration.COLOR_BORDER_UNSELECTED),
-                new EmptyBorder(PADDING_10_PIXELS, PADDING_10_PIXELS, PADDING_10_PIXELS, PADDING_10_PIXELS)
+            new MatteBorder(
+                PADDING_1_PIXEL,
+                PADDING_5_PIXELS,
+                PADDING_1_PIXEL,
+                PADDING_1_PIXEL,
+                Configuration.COLOR_BORDER_UNSELECTED
+            ),
+            new EmptyBorder(PADDING_10_PIXELS, PADDING_10_PIXELS, PADDING_10_PIXELS, PADDING_10_PIXELS)
         );
     }
 
@@ -77,9 +83,14 @@ public abstract class BorderCreator {
      */
     public static Border selectedBorder() {
         return new CompoundBorder(
-                new MatteBorder(PADDING_1_PIXEL, PADDING_5_PIXELS, PADDING_1_PIXEL, PADDING_1_PIXEL, Configuration.COLOR_BORDER_SELECTED),
-                new EmptyBorder(PADDING_10_PIXELS, PADDING_10_PIXELS, PADDING_10_PIXELS, PADDING_10_PIXELS)
+            new MatteBorder(
+                PADDING_1_PIXEL,
+                PADDING_5_PIXELS,
+                PADDING_1_PIXEL,
+                PADDING_1_PIXEL,
+                Configuration.COLOR_BORDER_SELECTED
+            ),
+            new EmptyBorder(PADDING_10_PIXELS, PADDING_10_PIXELS, PADDING_10_PIXELS, PADDING_10_PIXELS)
         );
     }
-
 }

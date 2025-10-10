@@ -60,10 +60,14 @@ public class AppView implements IAppView {
         if (theme != null) {
             try {
                 UIManager.setLookAndFeel(theme);
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+            } catch (
+                ClassNotFoundException
+                | InstantiationException
+                | IllegalAccessException
+                | UnsupportedLookAndFeelException e
+            ) {
                 e.printStackTrace();
             }
         }
     }
-
 }

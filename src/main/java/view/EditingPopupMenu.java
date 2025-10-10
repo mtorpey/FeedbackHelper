@@ -46,15 +46,19 @@ public class EditingPopupMenu {
      * @param feedbackBox The feedback box to register.
      */
     public void registerFeedbackBox(FeedbackBox feedbackBox) {
-        feedbackBox.getTextArea().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (SwingUtilities.isRightMouseButton(e)) {
-                    popupMenu.setInvoker(feedbackBox.getTextArea());
-                    popupMenu.show(feedbackBox.getTextArea(), e.getX(), e.getY());
+        feedbackBox
+            .getTextArea()
+            .addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if (SwingUtilities.isRightMouseButton(e)) {
+                            popupMenu.setInvoker(feedbackBox.getTextArea());
+                            popupMenu.show(feedbackBox.getTextArea(), e.getX(), e.getY());
+                        }
+                    }
                 }
-            }
-        });
+            );
     }
 
     /**
@@ -79,5 +83,4 @@ public class EditingPopupMenu {
             }
         });
     }
-
 }

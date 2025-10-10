@@ -84,11 +84,11 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
      */
     public void addPhraseToPanel(String phrase, int phraseCount, PhraseType phrasePanelType) {
         this.phrasesPanelsByType.get(phrasePanelType).addPhrase(phrase, phraseCount);
-        for(JScrollPane scrollPane : this.phrasesPanelScrollPanes) {
+        for (JScrollPane scrollPane : this.phrasesPanelScrollPanes) {
             SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
             scrollPane.getVerticalScrollBar().setValue(0);
         }
-        this.searchBox.clear();  // new phrase added, so current search is over
+        this.searchBox.clear(); // new phrase added, so current search is over
     }
 
     /**
@@ -118,7 +118,7 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
      */
     public void updatePhraseCounter(PhraseType phraseType, String phrase, int phraseCount) {
         this.phrasesPanelsByType.get(phraseType).updatePhraseCounter(phrase, phraseCount);
-        this.searchBox.clear();  // new phrase added, so current search is over
+        this.searchBox.clear(); // new phrase added, so current search is over
     }
 
     /**
@@ -162,5 +162,4 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
             panel.filterByString(query);
         }
     }
-
 }

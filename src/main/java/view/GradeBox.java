@@ -13,10 +13,10 @@ import controller.IAppController;
 public class GradeBox extends JPanel {
 
     // Class variable
-    private static final String GRADE   = "Grade: ";
+    private static final String GRADE = "Grade: ";
     private static final double MINIMUM = 0.0;
     private static final double MAXIMUM = 20.0;
-    private static final double STEP    = 0.5;
+    private static final double STEP = 0.5;
 
     // Instance variables
     private final IAppController controller;
@@ -56,9 +56,7 @@ public class GradeBox extends JPanel {
         try {
             getGrade();
             this.controller.saveFeedbackDocument(this.studentId);
-        } catch (NumberFormatException e) {
-            
-        }
+        } catch (NumberFormatException e) {}
     }
 
     /**
@@ -94,5 +92,4 @@ public class GradeBox extends JPanel {
     public void setStudentId(String studentId) {
         this.studentId = studentId;
     }
-
 }

@@ -82,12 +82,14 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
         this.textPane.setLineWrap(false);
 
         // Listen for clicks on the text area
-        this.textPane.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                controller.displayNewDocument(assignment, heading);
+        this.textPane.addMouseListener(
+            new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    controller.displayNewDocument(assignment, heading);
+                }
             }
-        });
+        );
 
         // Set the contents of the preview box
         this.textPane.setText(this.heading + "\n\n" + this.firstLine + "\n\n" + "Grade: " + this.grade);
@@ -167,5 +169,4 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
             return 0;
         }
     }
-
 }

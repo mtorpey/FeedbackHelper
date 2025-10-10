@@ -53,9 +53,9 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
     @Override
     public boolean openDocumentDatabase(String databasePath) {
         this.databaseConnection = Nitrite.builder()
-                .compressed()
-                .filePath(databasePath + FILE_SUFFIX)
-                .openOrCreate("user", "password");
+            .compressed()
+            .filePath(databasePath + FILE_SUFFIX)
+            .openOrCreate("user", "password");
 
         return !this.databaseConnection.isClosed();
     }
@@ -80,29 +80,35 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
     @Override
     public boolean createFeedbackDocuments(Assignment assignment) {
         // Store the assignment's feedback documents into the database
-        NitriteCollection assignmentCollection = databaseConnection.getCollection(assignment.getDatabaseCollectionName());
+        NitriteCollection assignmentCollection = databaseConnection.getCollection(
+            assignment.getDatabaseCollectionName()
+        );
 
         // Create each feedback document
-        assignment.getFeedbackDocuments().forEach(feedbackDocument -> {
-            // Check if this document exists
-            Cursor documents = assignmentCollection.find(Filters.eq("feedbackFor", feedbackDocument.getStudentId()));
-            if (documents.totalCount() > 0) return;
+        assignment
+            .getFeedbackDocuments()
+            .forEach(feedbackDocument -> {
+                // Check if this document exists
+                Cursor documents = assignmentCollection.find(
+                    Filters.eq("feedbackFor", feedbackDocument.getStudentId())
+                );
+                if (documents.totalCount() > 0) return;
 
-            // Store the actual FeedbackDocument object.
-            Document dbDoc = Document.createDocument("feedbackFor", feedbackDocument.getStudentId());
-            dbDoc.put("feedbackDocObject", feedbackDocument);
+                // Store the actual FeedbackDocument object.
+                Document dbDoc = Document.createDocument("feedbackFor", feedbackDocument.getStudentId());
+                dbDoc.put("feedbackDocObject", feedbackDocument);
 
-            // Setup the headings of the document
-            for (String heading : assignment.getAssignmentHeadings()) {
-                dbDoc.put(heading, "");
-            }
+                // Setup the headings of the document
+                for (String heading : assignment.getAssignmentHeadings()) {
+                    dbDoc.put(heading, "");
+                }
 
-            // Store grade
-            dbDoc.put("grade", feedbackDocument.getGrade());
+                // Store grade
+                dbDoc.put("grade", feedbackDocument.getGrade());
 
-            // Commit the document
-            assignmentCollection.insert(dbDoc);
-        });
+                // Commit the document
+                assignmentCollection.insert(dbDoc);
+            });
 
         // Commit the created documents
         databaseConnection.commit();
@@ -135,9 +141,11 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
                     FeedbackDocument feedbackDocument = (FeedbackDocument) result.get("feedbackDocObject");
 
                     // Assign data into feedback document
-                    assignment.getAssignmentHeadings().forEach(heading -> {
-                        feedbackDocument.setDataForHeading(heading, (String) result.get(heading));
-                    });
+                    assignment
+                        .getAssignmentHeadings()
+                        .forEach(heading -> {
+                            feedbackDocument.setDataForHeading(heading, (String) result.get(heading));
+                        });
 
                     // Assign the grade
                     feedbackDocument.setGrade((double) result.get("grade"));
@@ -163,7 +171,12 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
      * @return True id the document was saved, false otherwise.
      */
     @Override
-    public boolean saveFeedbackDocument(Assignment assignment, String studentId, Map<String, String> headingsAndData, double grade) {
+    public boolean saveFeedbackDocument(
+        Assignment assignment,
+        String studentId,
+        Map<String, String> headingsAndData,
+        double grade
+    ) {
         // Check the collection exists
         if (databaseConnection.hasCollection(assignment.getDatabaseCollectionName())) {
             // Get the collection
@@ -174,9 +187,11 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
             Document document = documents.toList().get(0);
 
             // Save all the data
-            headingsAndData.keySet().forEach(heading -> {
-                document.put(heading, headingsAndData.get(heading));
-            });
+            headingsAndData
+                .keySet()
+                .forEach(heading -> {
+                    document.put(heading, headingsAndData.get(heading));
+                });
 
             // Save the grade
             document.put("grade", grade);
@@ -199,7 +214,6 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
     public void updateFeedbackDocument(Assignment assignment, String studentId) {
         // Check if the collection exists
         if (databaseConnection.hasCollection(assignment.getDatabaseCollectionName())) {
-
             // Get the collection
             NitriteCollection collection = databaseConnection.getCollection(assignment.getDatabaseCollectionName());
 
@@ -211,9 +225,11 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
             FeedbackDocument feedbackDocument = (FeedbackDocument) document.get("feedbackDocObject");
 
             // Update the feedback document's data
-            assignment.getAssignmentHeadings().forEach(heading -> {
-                feedbackDocument.setDataForHeading(heading, (String) document.get(heading));
-            });
+            assignment
+                .getAssignmentHeadings()
+                .forEach(heading -> {
+                    feedbackDocument.setDataForHeading(heading, (String) document.get(heading));
+                });
 
             // Update the feedback document's grade
             feedbackDocument.setGrade((double) document.get("grade"));
