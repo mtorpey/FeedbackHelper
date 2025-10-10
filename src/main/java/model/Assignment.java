@@ -26,35 +26,47 @@ public class Assignment implements Serializable {
 
     // Heading styles map
     private static final List<String> headingStyles = Collections.unmodifiableList(
-            new ArrayList<String>() {{
+        new ArrayList<String>() {
+            {
                 add("#");
                 add("##");
-            }});
+            }
+        }
+    );
 
     // Heading underline style map
     private final List<String> underlineStyles = Collections.unmodifiableList(
-            new ArrayList<String>() {{
+        new ArrayList<String>() {
+            {
                 add("-");
                 add("=");
-            }});
+            }
+        }
+    );
 
     // Line spacing map
     private final List<Integer> lineSpacings = Collections.unmodifiableList(
-            new ArrayList<Integer>() {{
+        new ArrayList<Integer>() {
+            {
                 add(1);
                 add(2);
                 add(3);
-            }});
+            }
+        }
+    );
 
     // Line marker map
     private final List<String> lineMarkers = Collections.unmodifiableList(
-            new ArrayList<String>() {{
+        new ArrayList<String>() {
+            {
                 add("-");
                 add("->");
                 add("=>");
                 add("*");
                 add("+");
-            }});
+            }
+        }
+    );
 
     // Instance variables
     private String assignmentTitle;
@@ -87,8 +99,10 @@ public class Assignment implements Serializable {
      */
     public static Assignment loadAssignment(String filePath) {
         Assignment loadedAssignment = null;
-        try (FileInputStream fileInputStream = new FileInputStream(filePath);
-             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
+        try (
+            FileInputStream fileInputStream = new FileInputStream(filePath);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)
+        ) {
             loadedAssignment = (Assignment) objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -245,7 +259,7 @@ public class Assignment implements Serializable {
      */
     public void setAssignmentTitle(String assignmentTitle) {
         this.assignmentTitle = assignmentTitle;
-        this.databaseName = assignmentTitle.replace(" ", "-").toLowerCase();  // no extension
+        this.databaseName = assignmentTitle.replace(" ", "-").toLowerCase(); // no extension
         this.databaseCollectionName = assignmentTitle.replace(" ", "-").toLowerCase() + "-feedback-docs";
     }
 
@@ -266,7 +280,9 @@ public class Assignment implements Serializable {
     public void setAssignmentHeadings(String assignmentHeadings) {
         this.assignmentHeadings = new ArrayList<String>(Arrays.asList(assignmentHeadings.split("\n")));
         // Remove empty lines
-        this.assignmentHeadings = this.assignmentHeadings.stream().filter(heading -> !heading.trim().isEmpty()).collect(Collectors.toList());
+        this.assignmentHeadings = this.assignmentHeadings.stream()
+            .filter(heading -> !heading.trim().isEmpty())
+            .collect(Collectors.toList());
     }
 
     /**
@@ -282,7 +298,7 @@ public class Assignment implements Serializable {
                 String name = f.getName();
                 // Does this look like a string of digits?
                 if (name.matches("\\d+(\\..*)?")) {
-                    String studentId = name.split("\\.")[0];  // everything before the dot
+                    String studentId = name.split("\\.")[0]; // everything before the dot
                     FeedbackDocument feedbackDocument = new FeedbackDocument(this, studentId);
                     this.studentIdAndFeedbackDocumentMap.put(studentId, feedbackDocument);
                 }
@@ -309,10 +325,9 @@ public class Assignment implements Serializable {
      * @return A list of the feedback documents.
      */
     public List<FeedbackDocument> getFeedbackDocuments() {
-        return this.studentIdAndFeedbackDocumentMap
-            .values()
+        return this.studentIdAndFeedbackDocumentMap.values()
             .stream()
-            .sorted()  // FeedbackDocument implements compareTo using studentId
+            .sorted() // FeedbackDocument implements compareTo using studentId
             .collect(Collectors.toList());
     }
 
@@ -333,8 +348,12 @@ public class Assignment implements Serializable {
      * @param fileName The file name to save the assignment to.
      */
     public void saveAssignmentDetails(String fileName) {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(assignmentDirectoryPath + File.separator + fileName + ".fht");
-             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
+        try (
+            FileOutputStream fileOutputStream = new FileOutputStream(
+                assignmentDirectoryPath + File.separator + fileName + ".fht"
+            );
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)
+        ) {
             objectOutputStream.writeObject(this);
         } catch (IOException e) {
             e.printStackTrace();
@@ -364,5 +383,4 @@ public class Assignment implements Serializable {
     public FeedbackDocument getFeedbackDocumentForStudent(String studentId) {
         return studentIdAndFeedbackDocumentMap.get(studentId);
     }
-
 }

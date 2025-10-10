@@ -1,11 +1,10 @@
 package model;
 
-import junit.framework.TestCase;
-import view.PhraseType;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import junit.framework.TestCase;
+import view.PhraseType;
 
 public class AppModelTest extends TestCase {
 
@@ -30,7 +29,12 @@ public class AppModelTest extends TestCase {
         model.setCurrentHeadingPhraseSet("Heading 1", currentPhrases);
         model.setPreviousHeadingPhraseSet("Heading 2", previousPhrases);
 
-        assignment = model.createAssignment("Test", "Heading 1 \n Heading 2 \n Heading 3", new File("Empty file"), "Example-Directory");
+        assignment = model.createAssignment(
+            "Test",
+            "Heading 1 \n Heading 2 \n Heading 3",
+            new File("Empty file"),
+            "Example-Directory"
+        );
     }
 
     @Override
@@ -47,7 +51,12 @@ public class AppModelTest extends TestCase {
     }
 
     public void testCreateAssignment() {
-        Assignment createdAssignment = model.createAssignment("Test-2", "1 \n 2\n 3\n", new File("Empty file 2"), "Test-Directory");
+        Assignment createdAssignment = model.createAssignment(
+            "Test-2",
+            "1 \n 2\n 3\n",
+            new File("Empty file 2"),
+            "Test-Directory"
+        );
         assertEquals("Test-2", createdAssignment.getAssignmentTitle());
         assertEquals(3, createdAssignment.getAssignmentHeadings().size());
         assertEquals("Test-Directory", createdAssignment.getAssignmentDirectoryPath());
@@ -86,12 +95,12 @@ public class AppModelTest extends TestCase {
         assertEquals(41, grades.size());
 
         // Check the 6 grades set
-        assertEquals(1, grades.get(0).intValue());   // 1 person got 0.0
-        assertEquals(1, grades.get(8).intValue());   // 1 person got 4.0
-        assertEquals(1, grades.get(16).intValue());  // 1 person got 8.0
-        assertEquals(1, grades.get(24).intValue());  // 1 person got 12.0
-        assertEquals(1, grades.get(32).intValue());  // 1 person got 16.0
-        assertEquals(1, grades.get(40).intValue());  // 1 person got 20.0
+        assertEquals(1, grades.get(0).intValue()); // 1 person got 0.0
+        assertEquals(1, grades.get(8).intValue()); // 1 person got 4.0
+        assertEquals(1, grades.get(16).intValue()); // 1 person got 8.0
+        assertEquals(1, grades.get(24).intValue()); // 1 person got 12.0
+        assertEquals(1, grades.get(32).intValue()); // 1 person got 16.0
+        assertEquals(1, grades.get(40).intValue()); // 1 person got 20.0
     }
 
     public void testSetAndGetCurrentHeadingBeingEdited() {
@@ -128,5 +137,4 @@ public class AppModelTest extends TestCase {
         assertEquals(3, model.getLineSpacing());
         assertEquals("=> ", model.getLineMarker());
     }
-
 }

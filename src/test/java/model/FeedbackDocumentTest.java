@@ -48,5 +48,4 @@ public class FeedbackDocumentTest extends TestCase {
     public void testToString() {
         assertEquals("FeedbackDocument{assignment=test, studentId=1}", feedbackDocument.toString());
     }
-
 }

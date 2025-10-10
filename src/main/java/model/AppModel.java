@@ -55,7 +55,6 @@ public class AppModel implements IAppModel {
     private PhraseType currentPhrasePanelInView;
     private PropertyChangeSupport subscribers;
 
-
     /**
      * Constructor.
      */
@@ -64,7 +63,6 @@ public class AppModel implements IAppModel {
         this.currentHeadingAndUsedPhrases = new HashMap<String, List<Phrase>>();
         this.previousHeadingAndUsedPhrases = new HashMap<String, List<Phrase>>();
     }
-
 
     /* SUBSCRIBER METHODS */
 
@@ -124,7 +122,12 @@ public class AppModel implements IAppModel {
      * @return - The Assignment object that was created.
      */
     @Override
-    public Assignment createAssignment(String assignmentTitle, String assignmentHeadings, File studentManifestFile, String assignmentDirectoryPath) {
+    public Assignment createAssignment(
+        String assignmentTitle,
+        String assignmentHeadings,
+        File studentManifestFile,
+        String assignmentDirectoryPath
+    ) {
         // Create assignment object
         Assignment assignment = new Assignment();
         assignment.setAssignmentTitle(assignmentTitle);
@@ -179,7 +182,12 @@ public class AppModel implements IAppModel {
             File studentManifestFile = new File(studentManifestFileLocation);
 
             // Create the assignment and set style preferences
-            Assignment assignment = createAssignment(title, headingsString.toString(), studentManifestFile, assignmentLocation);
+            Assignment assignment = createAssignment(
+                title,
+                headingsString.toString(),
+                studentManifestFile,
+                assignmentLocation
+            );
             setAssignmentPreferences(headingMarker, headingUnderlineStyle, (int) numLinesAfterSectionEnds, lineMarker);
             this.assignment = assignment;
         } catch (IOException | ParseException e) {
@@ -198,7 +206,12 @@ public class AppModel implements IAppModel {
      * @param lineMarker     The line marker for each new line.
      */
     @Override
-    public void setAssignmentPreferences(String headingStyle, String underlineStyle, int lineSpacing, String lineMarker) {
+    public void setAssignmentPreferences(
+        String headingStyle,
+        String underlineStyle,
+        int lineSpacing,
+        String lineMarker
+    ) {
         this.assignment.setHeadingStyle(headingStyle);
         this.assignment.setUnderlineStyle(underlineStyle);
         this.assignment.setLineSpacing(lineSpacing);
@@ -257,7 +270,6 @@ public class AppModel implements IAppModel {
         return assignment.getLineSpacing();
     }
 
-
     /* FEEDBACK DOCUMENT METHODS */
 
     /**
@@ -294,7 +306,6 @@ public class AppModel implements IAppModel {
         }
     }
 
-
     /* HEADING MANAGEMENT METHODS */
 
     /**
@@ -328,7 +339,6 @@ public class AppModel implements IAppModel {
         return this.previousHeadingBeingEdited;
     }
 
-
     /* USER EXPORTS AND OPERATIONS */
 
     /**
@@ -339,48 +349,58 @@ public class AppModel implements IAppModel {
     @Override
     public void exportFeedbackDocuments(Assignment assignment) {
         // Create the output directory if it does not exist
-        File outputDirectory = new File(assignment.getAssignmentDirectoryPath() + File.separator + assignment.getAssignmentTitle().trim().replace(" ", "-"));
+        File outputDirectory = new File(
+            assignment.getAssignmentDirectoryPath() +
+                File.separator +
+                assignment.getAssignmentTitle().trim().replace(" ", "-")
+        );
         if (!outputDirectory.exists()) {
             outputDirectory.mkdir();
         }
 
         // Write out each feedback document as a text file
-        assignment.getFeedbackDocuments().forEach(feedbackDocument -> {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputDirectory + File.separator + feedbackDocument.getStudentId() + ".txt"))) {
-                for (String heading : assignment.getAssignmentHeadings()) {
-                    // Heading
-                    writer.write(assignment.getHeadingStyle() + heading);
-                    writer.newLine();
+        assignment
+            .getFeedbackDocuments()
+            .forEach(feedbackDocument -> {
+                try (
+                    BufferedWriter writer = new BufferedWriter(
+                        new FileWriter(outputDirectory + File.separator + feedbackDocument.getStudentId() + ".txt")
+                    )
+                ) {
+                    for (String heading : assignment.getAssignmentHeadings()) {
+                        // Heading
+                        writer.write(assignment.getHeadingStyle() + heading);
+                        writer.newLine();
 
-                    // Underline heading if required
-                    String underlineStyle = assignment.getUnderlineStyle();
-                    if (!underlineStyle.isEmpty()) {
-                        for (int i = 0; i < assignment.getHeadingStyle().length() + heading.length(); i++) {
-                            writer.write(underlineStyle);
+                        // Underline heading if required
+                        String underlineStyle = assignment.getUnderlineStyle();
+                        if (!underlineStyle.isEmpty()) {
+                            for (int i = 0; i < assignment.getHeadingStyle().length() + heading.length(); i++) {
+                                writer.write(underlineStyle);
+                            }
                         }
-                    }
 
-                    // Data
-                    writer.newLine();
-                    String headingData = feedbackDocument.getHeadingData(heading);
-                    List<String> dataAsList = Arrays.stream(headingData.split("\n")).collect(Collectors.toList());
-                    for (String line : dataAsList) {
-                        if (!line.trim().equals(getLineMarker().trim())) {
-                            writer.write(line);
+                        // Data
+                        writer.newLine();
+                        String headingData = feedbackDocument.getHeadingData(heading);
+                        List<String> dataAsList = Arrays.stream(headingData.split("\n")).collect(Collectors.toList());
+                        for (String line : dataAsList) {
+                            if (!line.trim().equals(getLineMarker().trim())) {
+                                writer.write(line);
+                                writer.newLine();
+                            }
+                        }
+
+                        // End section spacing
+                        for (int i = 0; i < assignment.getLineSpacing(); i++) {
                             writer.newLine();
                         }
                     }
-
-                    // End section spacing
-                    for (int i = 0; i < assignment.getLineSpacing(); i++) {
-                        writer.newLine();
-                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    notifySubscribers(ERROR_MESSAGE, "Something went wrong during grade export!");
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                notifySubscribers(ERROR_MESSAGE, "Something went wrong during grade export!");
-            }
-        });
+            });
     }
 
     /**
@@ -391,13 +411,21 @@ public class AppModel implements IAppModel {
     @Override
     public void exportGrades(Assignment assignment) {
         // Create the output directory if it does not exist
-        File outputDirectory = new File(assignment.getAssignmentDirectoryPath() + File.separator + assignment.getAssignmentTitle().trim().replace(" ", "-"));
+        File outputDirectory = new File(
+            assignment.getAssignmentDirectoryPath() +
+                File.separator +
+                assignment.getAssignmentTitle().trim().replace(" ", "-")
+        );
         if (!outputDirectory.exists()) {
             outputDirectory.mkdir();
         }
 
         // Write out the student ids and grades, one per line
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputDirectory + File.separator + GRADES_FILENAME))) {
+        try (
+            BufferedWriter writer = new BufferedWriter(
+                new FileWriter(outputDirectory + File.separator + GRADES_FILENAME)
+            )
+        ) {
             for (FeedbackDocument feedbackDocument : assignment.getFeedbackDocuments()) {
                 writer.write(feedbackDocument.getStudentId() + "," + feedbackDocument.getGrade());
                 writer.newLine();
@@ -423,19 +451,20 @@ public class AppModel implements IAppModel {
         }
 
         // Count the number of students that got each grade
-        assignment.getFeedbackDocuments().forEach(feedbackDocument -> {
-            // Round the grade to the nearest 0.5
-            // Rounding code adapted from: https://stackoverflow.com/questions/23449662/java-round-to-nearest-5
-            double grade = feedbackDocument.getGrade();
-            grade = Math.round(grade * 2) / 2.0;
-            int currentCount = gradeAndNumber.get(grade);
-            gradeAndNumber.put(grade, currentCount + 1);
-        });
+        assignment
+            .getFeedbackDocuments()
+            .forEach(feedbackDocument -> {
+                // Round the grade to the nearest 0.5
+                // Rounding code adapted from: https://stackoverflow.com/questions/23449662/java-round-to-nearest-5
+                double grade = feedbackDocument.getGrade();
+                grade = Math.round(grade * 2) / 2.0;
+                int currentCount = gradeAndNumber.get(grade);
+                gradeAndNumber.put(grade, currentCount + 1);
+            });
 
         // Return order list of grades
         return new ArrayList<>(gradeAndNumber.values());
     }
-
 
     /* PHRASE MANAGEMENT METHODS */
 
@@ -550,21 +579,4 @@ public class AppModel implements IAppModel {
         this.currentPhrasePanelInView = currentPhrasePanelInView;
         notifySubscribers(PHRASE_PANEL_CHANGE_MESSAGE, currentPhrasePanelInView);
     }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

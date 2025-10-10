@@ -21,5 +21,4 @@ public abstract class UserPreferences {
     public static void addPreferenceChangeListener(PreferenceChangeListener listener) {
         prefs.addPreferenceChangeListener(listener);
     }
-
 }

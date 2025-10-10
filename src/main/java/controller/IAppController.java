@@ -12,7 +12,6 @@ import java.util.Map;
  * App Controller Interface.
  */
 public interface IAppController {
-
     /**
      * Register as a subscriber of the model.
      *
@@ -36,7 +35,12 @@ public interface IAppController {
      * @param assignmentDirectoryPath The directory location to save assignment related documents.
      * @return - The Assignment object that was created.
      */
-    Assignment createAssignment(String assignmentTitle, String headings, File studentManifestFile, String assignmentDirectoryPath);
+    Assignment createAssignment(
+        String assignmentTitle,
+        String headings,
+        File studentManifestFile,
+        String assignmentDirectoryPath
+    );
 
     /**
      * Create an assignment from a configuration file.
@@ -115,7 +119,12 @@ public interface IAppController {
      * @param headingsAndData The feedback data to save.
      * @param grade           The grade to save.
      */
-    void saveFeedbackDocument(Assignment assignment, String studentId, Map<String, String> headingsAndData, double grade);
+    void saveFeedbackDocument(
+        Assignment assignment,
+        String studentId,
+        Map<String, String> headingsAndData,
+        double grade
+    );
 
     /**
      * Get the last document ID that was edited.
@@ -288,5 +297,4 @@ public interface IAppController {
      * @param errorMessage The error message to show.
      */
     void error(String errorMessage);
-
 }

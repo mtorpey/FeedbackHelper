@@ -10,7 +10,6 @@ import java.util.List;
  * App Model Interface.
  */
 public interface IAppModel {
-
     /**
      * Allow an observer to subscribe for changes to the model.
      *
@@ -52,7 +51,12 @@ public interface IAppModel {
      * @param assignmentDirectoryPath The directory location to save assignment related documents.
      * @return - The Assignment object that was created.
      */
-    Assignment createAssignment(String assignmentTitle, String assignmentHeadings, File studentManifestFile, String assignmentDirectoryPath);
+    Assignment createAssignment(
+        String assignmentTitle,
+        String assignmentHeadings,
+        File studentManifestFile,
+        String assignmentDirectoryPath
+    );
 
     /**
      * Create an assignment from a configuration file.
@@ -249,5 +253,4 @@ public interface IAppModel {
      * @param currentPhrasePanelInView The phrase panel type.
      */
     void setCurrentPhrasePanelInView(PhraseType currentPhrasePanelInView);
-
 }

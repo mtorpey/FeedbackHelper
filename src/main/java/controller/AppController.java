@@ -59,7 +59,6 @@ public class AppController implements IAppController {
         appModel.subscribe(propertyChangeListener);
     }
 
-
     /* ASSIGNMENT METHODS */
 
     /**
@@ -82,13 +81,20 @@ public class AppController implements IAppController {
      * @return - The Assignment object that was created.
      */
     @Override
-    public Assignment createAssignment(String assignmentTitle, String headings, File studentManifestFile, String assignmentDirectoryPath) {
+    public Assignment createAssignment(
+        String assignmentTitle,
+        String headings,
+        File studentManifestFile,
+        String assignmentDirectoryPath
+    ) {
         // Create assignment in the model
-        Assignment assignment = appModel.createAssignment(assignmentTitle, headings, studentManifestFile, assignmentDirectoryPath);
-        assignment.saveAssignmentDetails(assignmentTitle
-                .toLowerCase()
-                .replace(" ", "-")
-                .replace(".db", ""));
+        Assignment assignment = appModel.createAssignment(
+            assignmentTitle,
+            headings,
+            studentManifestFile,
+            assignmentDirectoryPath
+        );
+        assignment.saveAssignmentDetails(assignmentTitle.toLowerCase().replace(" ", "-").replace(".db", ""));
 
         // Create the assignment database
         documentDatabase.createDocumentDatabase(assignment.getFullyQualifiedDatabaseName());
@@ -113,10 +119,9 @@ public class AppController implements IAppController {
     public Assignment createAssignmentFromConfig(String configFilePath) {
         // Create the assignment and save it to an FHT file
         Assignment assignment = appModel.createAssignmentFromConfig(configFilePath);
-        assignment.saveAssignmentDetails(assignment.getAssignmentTitle()
-                .toLowerCase()
-                .replace(" ", "-")
-                .replace(".db", ""));
+        assignment.saveAssignmentDetails(
+            assignment.getAssignmentTitle().toLowerCase().replace(" ", "-").replace(".db", "")
+        );
 
         // Create the assignment database
         documentDatabase.createDocumentDatabase(assignment.getFullyQualifiedDatabaseName());
@@ -140,7 +145,12 @@ public class AppController implements IAppController {
      * @param lineMarker     The line marker for each new line.
      */
     @Override
-    public void setAssignmentPreferences(String headingStyle, String underlineStyle, int lineSpacing, String lineMarker) {
+    public void setAssignmentPreferences(
+        String headingStyle,
+        String underlineStyle,
+        int lineSpacing,
+        String lineMarker
+    ) {
         appModel.setAssignmentPreferences(headingStyle, underlineStyle, lineSpacing, lineMarker);
     }
 
@@ -222,7 +232,6 @@ public class AppController implements IAppController {
         return appModel.getLineSpacing();
     }
 
-
     /* FEEDBACK DOCUMENT METHODS */
 
     /**
@@ -241,11 +250,13 @@ public class AppController implements IAppController {
         assignment.setFeedbackDocuments(feedbackDocuments);
 
         // Get the phrases data for each heading from the graph database
-        assignment.getAssignmentHeadings().forEach(heading -> {
-            List<Phrase> phrasesForHeading = graphDatabase.getPhrasesForHeading(heading);
-            appModel.setPreviousHeadingPhraseSet(heading, phrasesForHeading);
-            appModel.setCurrentHeadingPhraseSet(heading, phrasesForHeading);
-        });
+        assignment
+            .getAssignmentHeadings()
+            .forEach(heading -> {
+                List<Phrase> phrasesForHeading = graphDatabase.getPhrasesForHeading(heading);
+                appModel.setPreviousHeadingPhraseSet(heading, phrasesForHeading);
+                appModel.setCurrentHeadingPhraseSet(heading, phrasesForHeading);
+            });
     }
 
     /**
@@ -267,12 +278,19 @@ public class AppController implements IAppController {
      * @param grade           The grade to save.
      */
     @Override
-    public void saveFeedbackDocument(Assignment assignment, String studentId, Map<String, String> headingsAndData, double grade) {
+    public void saveFeedbackDocument(
+        Assignment assignment,
+        String studentId,
+        Map<String, String> headingsAndData,
+        double grade
+    ) {
         documentDatabase.saveFeedbackDocument(assignment, studentId, headingsAndData, grade);
         FeedbackDocument feedbackDocumentForStudent = assignment.getFeedbackDocumentForStudent(studentId);
-        assignment.getAssignmentHeadings().forEach(heading -> {
-            feedbackDocumentForStudent.setDataForHeading(heading, headingsAndData.get(heading));
-        });
+        assignment
+            .getAssignmentHeadings()
+            .forEach(heading -> {
+                feedbackDocumentForStudent.setDataForHeading(heading, headingsAndData.get(heading));
+            });
         feedbackDocumentForStudent.setGrade(grade);
     }
 
@@ -337,10 +355,9 @@ public class AppController implements IAppController {
         // Find the first line of the document
         for (String heading : assignment.getAssignmentHeadings()) {
             if (!feedbackDocumentForStudent.getHeadingData(heading).isEmpty()) {
-                List<String> dataAsList = Arrays
-                        .stream(feedbackDocumentForStudent.getHeadingData(heading).split("\n"))
-                        .filter(line -> line.startsWith(getLineMarker()))
-                        .collect(Collectors.toList());
+                List<String> dataAsList = Arrays.stream(feedbackDocumentForStudent.getHeadingData(heading).split("\n"))
+                    .filter(line -> line.startsWith(getLineMarker()))
+                    .collect(Collectors.toList());
 
                 // Get the line and remove the line marker
                 if (dataAsList.size() > 0) {
@@ -351,7 +368,6 @@ public class AppController implements IAppController {
 
         return returnString;
     }
-
 
     /* HEADING MANAGEMENT METHODS */
 
@@ -474,22 +490,24 @@ public class AppController implements IAppController {
         Map<String, List<String>> summary = new HashMap<String, List<String>>();
 
         // Get the 3 most used phrases for a given heading
-        assignment.getAssignmentHeadings().forEach(heading -> {
-            summary.put(heading, new ArrayList<>());
+        assignment
+            .getAssignmentHeadings()
+            .forEach(heading -> {
+                summary.put(heading, new ArrayList<>());
 
-            // Get the phrases
-            List<Phrase> phrasesForHeading = graphDatabase.getPhrasesForHeading(heading);
-            Collections.sort(phrasesForHeading);
+                // Get the phrases
+                List<Phrase> phrasesForHeading = graphDatabase.getPhrasesForHeading(heading);
+                Collections.sort(phrasesForHeading);
 
-            // Only store phrases if there are 3 or more
-            if (phrasesForHeading.size() >= 3) {
-                List<String> phrases = new ArrayList<String>();
-                for (int i = 0; i < 3; i++) {
-                    phrases.add(phrasesForHeading.get(i).getPhraseAsString());
+                // Only store phrases if there are 3 or more
+                if (phrasesForHeading.size() >= 3) {
+                    List<String> phrases = new ArrayList<String>();
+                    for (int i = 0; i < 3; i++) {
+                        phrases.add(phrasesForHeading.get(i).getPhraseAsString());
+                    }
+                    summary.put(heading, phrases);
                 }
-                summary.put(heading, phrases);
-            }
-        });
+            });
 
         return summary;
     }
@@ -565,8 +583,14 @@ public class AppController implements IAppController {
         appModel.setCurrentHeadingPhraseSet(heading, currentPhrasesForHeading);
 
         // Find what's changed and send those changes to GUI
-        List<Phrase> removalsFromList = Utilities.getRemovalsFromList(previousPhrasesForHeading, currentPhrasesForHeading);
-        List<Phrase> additionsToList = Utilities.getAdditionsToList(previousPhrasesForHeading, currentPhrasesForHeading);
+        List<Phrase> removalsFromList = Utilities.getRemovalsFromList(
+            previousPhrasesForHeading,
+            currentPhrasesForHeading
+        );
+        List<Phrase> additionsToList = Utilities.getAdditionsToList(
+            previousPhrasesForHeading,
+            currentPhrasesForHeading
+        );
 
         // Find what's stayed same and update the usage counts
         List<Phrase> stayedSameList = Utilities.getIntersection(previousPhrasesForHeading, currentPhrasesForHeading);
@@ -574,11 +598,11 @@ public class AppController implements IAppController {
         // Perform updates
         removalsFromList.forEach(appModel::removePhraseFromView);
         additionsToList.forEach(appModel::addNewPhraseToView);
-        stayedSameList.forEach(appModel::updatePhraseCounterInView);  // takes some time
+        stayedSameList.forEach(appModel::updatePhraseCounterInView); // takes some time
 
         // Update custom panel
         resetPhrasesPanel(PhraseType.CUSTOM);
-        showCustomPhrases();  // takes a long time on startup for big sets
+        showCustomPhrases(); // takes a long time on startup for big sets
 
         // Update insights panel
         //resetPhrasesPanel(PhraseType.INSIGHTS);
@@ -632,5 +656,4 @@ public class AppController implements IAppController {
     public void error(String errorMessage) {
         appModel.notifySubscribers("error", errorMessage);
     }
-
 }

@@ -59,5 +59,4 @@ public class PhraseTest extends TestCase {
     public void testToString() {
         assertEquals("This is a phrase", phrase.toString());
     }
-
 }

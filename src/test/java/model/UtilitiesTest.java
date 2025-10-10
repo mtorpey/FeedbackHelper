@@ -1,9 +1,8 @@
 package model;
 
-import junit.framework.TestCase;
-
 import java.util.ArrayList;
 import java.util.List;
+import junit.framework.TestCase;
 
 public class UtilitiesTest extends TestCase {
 
@@ -78,5 +77,4 @@ public class UtilitiesTest extends TestCase {
         assertEquals("new-1", pairsToAdd.get(1).getFirst());
         assertEquals("new-2", pairsToAdd.get(1).getSecond());
     }
-
 }

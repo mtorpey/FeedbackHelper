@@ -106,5 +106,4 @@ public class Phrase implements Comparable<Phrase> {
     public int compareTo(Phrase o) {
         return o.getUsageCount() - this.getUsageCount();
     }
-
 }

@@ -34,5 +34,4 @@ public class FeedbackHelperTool {
         // Start the view
         view.start();
     }
-
 }

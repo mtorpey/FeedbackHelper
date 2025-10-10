@@ -106,10 +106,7 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      */
     @Override
     public String toString() {
-        return "FeedbackDocument{" +
-                "assignment=" + assignment.getDatabaseName() +
-                ", studentId=" + studentId +
-                '}';
+        return "FeedbackDocument{" + "assignment=" + assignment.getDatabaseName() + ", studentId=" + studentId + '}';
     }
 
     /** Comparable by student id. */
@@ -117,5 +114,4 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
     public int compareTo(FeedbackDocument other) {
         return getStudentId().compareTo(other.getStudentId());
     }
-
 }

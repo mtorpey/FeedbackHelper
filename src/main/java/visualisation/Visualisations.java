@@ -1,12 +1,11 @@
 package visualisation;
 
+import java.util.List;
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.plotly.Plot;
 import tech.tablesaw.plotly.api.VerticalBarPlot;
-
-import java.util.List;
 
 /**
  * Visualisation Class.
@@ -37,5 +36,4 @@ public class Visualisations {
         // Display the visualisation
         Plot.show(VerticalBarPlot.create("Grade distribution", dataTable, "gradeLabels", "gradeValues"));
     }
-
 }

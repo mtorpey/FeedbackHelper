@@ -141,7 +141,7 @@
                     </devDependencies>
                     <config>
                       <tabWidth>4</tabWidth>
-                      <printWidth>100</printWidth>
+                      <printWidth>120</printWidth>
                       <parser>java</parser>
                       <plugins>prettier-plugin-java</plugins>
                     </config>
