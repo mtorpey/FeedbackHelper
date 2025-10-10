@@ -1,11 +1,10 @@
 package view;
 
+import controller.IAppController;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-
-import controller.IAppController;
 
 /**
  * Grade Box Class.
@@ -53,10 +52,7 @@ public class GradeBox extends JPanel {
     }
 
     private void saveGrade() {
-        try {
-            getGrade();
-            this.controller.saveFeedbackDocument(this.studentId);
-        } catch (NumberFormatException e) {}
+        this.controller.saveFeedbackDocument(this.studentId);
     }
 
     /**
