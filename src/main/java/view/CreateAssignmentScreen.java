@@ -1,7 +1,7 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -70,10 +69,15 @@ public class CreateAssignmentScreen extends JFrame {
     // Instance variables
     private final IAppController controller;
     private JPanel configFormPanel;
-    private Map<String, Component> editableComponents;
 
     // How many cells on the config panel are filled
     private int gridBagCounter;
+
+    // Components with user inputs
+    private JTextField assignmentTitleField, assignmentDirectoryField, studentListField;
+    private JTextArea assignmentHeadingsTextArea;
+    private JComboBox<String> headingStyleChooser, underlineChooser, lineMarkerChooser;
+    private JComboBox<Integer> spacingChooser;
 
     /**
      * Constructor.
@@ -98,7 +102,6 @@ public class CreateAssignmentScreen extends JFrame {
 
         // Store attributes
         this.controller = controller;
-        this.editableComponents = new HashMap<String, Component>();
 
         // Setup components
         setupTitleLabel();
@@ -203,28 +206,22 @@ public class CreateAssignmentScreen extends JFrame {
 
     private void confirmClicked(ActionEvent e) {
         // Load all the user preferences
-        String assignmentTitle = ((JTextField) this.editableComponents.get("assignmentTitle")).getText();
-        String assignmentHeadings = ((JTextArea) this.editableComponents.get("assignmentHeadings")).getText();
-        String assignmentDirectoryPath = ((JTextField) this.editableComponents.get(
-                "assignmentDirectory")).getText();
-        String headingStyle = (String) ((JComboBox<String>) this.editableComponents.get(
-                "headingStyle")).getSelectedItem();
-        String headingUnderlineStyle = (String) ((JComboBox<String>) this.editableComponents.get(
-                "headingUnderlineStyle")).getSelectedItem();
-        int lineSpacing = (Integer) ((JComboBox<Integer>) this.editableComponents.get(
-                "headingLineSpacing")).getSelectedItem();
-        String lineMarker = (String) ((JComboBox<String>) this.editableComponents.get(
-                "lineMarker")).getSelectedItem();
-        File studentManifestFile = new File(((JTextField) this.editableComponents.get("studentManifest")).getText());
+        String assignmentTitle = assignmentTitleField.getText();
+        String assignmentHeadings = assignmentHeadingsTextArea.getText();
+        String assignmentDirectoryPath = assignmentDirectoryField.getText();
+        String headingStyle = headingStyleChooser.getItemAt(headingStyleChooser.getSelectedIndex());
+        String headingUnderlineStyle = underlineChooser.getItemAt(underlineChooser.getSelectedIndex());
+        int lineSpacing = spacingChooser.getItemAt(spacingChooser.getSelectedIndex());
+        String lineMarker = lineMarkerChooser.getItemAt(lineMarkerChooser.getSelectedIndex());
+        File studentListFile = new File(studentListField.getText());
 
         // If no student list exists before creating the feedback screen, inform the
         // user that the
         // software will try to guess
-        if (studentManifestFile == null || !studentManifestFile.exists()) {
+        if (studentListFile == null || !studentListFile.exists()) {
             JOptionPane.showMessageDialog(
                     this,
-                    "No student manifest file defined! Will try to guess student ids by directory names in " +
-                            "the assignment directory!",
+                    "No student list file given. Searching for files in the assignment directory...",
                     "Warning!",
                     JOptionPane.WARNING_MESSAGE
             );
@@ -237,7 +234,7 @@ public class CreateAssignmentScreen extends JFrame {
         Assignment assignmentFromInputs = this.controller.createAssignment(
                 assignmentTitle,
                 assignmentHeadings,
-                studentManifestFile,
+                studentListFile,
                 assignmentDirectoryPath
         );
         this.controller.setAssignmentPreferences(
@@ -260,29 +257,25 @@ public class CreateAssignmentScreen extends JFrame {
         if (configPath != null) {
             try {
                 JSONObject configDoc = (JSONObject) new JSONParser().parse(new FileReader(configPath));
+                StringJoiner sj = new StringJoiner("\n");
 
                 // Extract styling options
-                ((JTextField) this.editableComponents.get("assignmentTitle")).setText((String) configDoc.get("title"));
-                StringJoiner sj = new StringJoiner("\n");
+                assignmentTitleField.setText((String) configDoc.get("title"));
                 ((JSONArray) configDoc.get("headings")).forEach(h -> sj.add((String) h));
-                ((JTextArea) this.editableComponents.get("assignmentHeadings")).setText(sj.toString());
-                ((JTextField) this.editableComponents.get("assignmentDirectory")).setText(
-                    (String) configDoc.get("assignment_location")
-                );
+                assignmentHeadingsTextArea.setText(sj.toString());
+                assignmentDirectoryField.setText((String) configDoc.get("assignment_location"));
 
                 Map headingStyle = ((Map) configDoc.get("heading_style"));
-                ((JComboBox<String>) this.editableComponents.get("headingStyle")).setSelectedItem(
+                headingStyleChooser.setSelectedItem(
                     getKey(HEADING_STYLES, (String) headingStyle.get("heading_marker"))
                 );
-                ((JComboBox<String>) this.editableComponents.get("headingUnderlineStyle")).setSelectedItem(
+                underlineChooser.setSelectedItem(
                     getKey(UNDERLINE_STYLES, (String) headingStyle.get("heading_underline_style"))
                 );
-                ((JComboBox<Integer>) this.editableComponents.get("headingLineSpacing")).setSelectedItem(
+                spacingChooser.setSelectedItem(
                     ((Long) headingStyle.get("num_lines_after_section_ends")).intValue()
                 );
-                ((JComboBox<String>) this.editableComponents.get("lineMarker")).setSelectedItem(
-                    configDoc.get("line_marker")
-                );
+                lineMarkerChooser.setSelectedItem(configDoc.get("line_marker"));
             } catch (IOException | ParseException e) {
                 JOptionPane.showMessageDialog(
                     this,
@@ -301,7 +294,7 @@ public class CreateAssignmentScreen extends JFrame {
      * @param map Map to search in
      * @param value Value to find key for
      */
-    private <K, V> K getKey(Map<K, V> map, V value) {
+    private static <K, V> K getKey(Map<K, V> map, V value) {
         return map
             .entrySet()
             .stream()
@@ -316,9 +309,8 @@ public class CreateAssignmentScreen extends JFrame {
      */
     private void setupAssignmentTitlePanel() {
         addToConfigForm(new JLabel("Assignment title: ", SwingConstants.RIGHT));
-        JTextField assignmentTitleTextField = new JTextField("CS5000-P1");
-        this.editableComponents.put("assignmentTitle", assignmentTitleTextField);
-        addToConfigForm(assignmentTitleTextField, 2);
+        assignmentTitleField = new JTextField("CS5000-P1");
+        addToConfigForm(assignmentTitleField, 2);
     }
 
     /**
@@ -329,22 +321,21 @@ public class CreateAssignmentScreen extends JFrame {
 
         // Text field
         String defaultDir = System.getProperty("user.home");
-        JTextField assignmentDirectoryTextField = new JTextField(defaultDir);
-        addToConfigForm(assignmentDirectoryTextField, true);
+        assignmentDirectoryField = new JTextField(defaultDir);
+        addToConfigForm(assignmentDirectoryField, true);
 
         // Directory chooser
         JButton assignmentDirectoryChooser = new JButton("Select directory");
         assignmentDirectoryChooser.addActionListener(
-            e -> assignmentDirectoryTextField.setText(
+            e -> assignmentDirectoryField.setText(
                 selectPathWithDialog(
-                    assignmentDirectoryTextField.getText(),
+                    assignmentDirectoryField.getText(),
                     JFileChooser.DIRECTORIES_ONLY,
                     "Select assignment directory...",
                     "Submit"
                 )
             )
         );
-        this.editableComponents.put("assignmentDirectory", assignmentDirectoryTextField);
         addToConfigForm(assignmentDirectoryChooser);
     }
 
@@ -353,9 +344,10 @@ public class CreateAssignmentScreen extends JFrame {
      */
     private void setupAssignmentHeadingsPanel() {
         addToConfigForm(new JLabel("Assignment headings: ", SwingConstants.RIGHT));
-        JTextArea assignmentHeadingsTextArea = new JTextArea(7, 30);
-        this.editableComponents.put("assignmentHeadings", assignmentHeadingsTextArea);
-        addToConfigForm(new JScrollPane(assignmentHeadingsTextArea), 2);
+        assignmentHeadingsTextArea = new JTextArea(7, 30);
+        JScrollPane scrollPane = new JScrollPane(assignmentHeadingsTextArea);
+        scrollPane.setMinimumSize(new Dimension(0, 100)); // stop this collapsing
+        addToConfigForm(scrollPane, 2);
     }
 
     /**
@@ -365,23 +357,22 @@ public class CreateAssignmentScreen extends JFrame {
         addToConfigForm(new JLabel("Student manifest file: ", SwingConstants.RIGHT));
 
         // Text field
-        JTextField studentManifestTextField = new JTextField();
-        this.editableComponents.put("studentManifest", studentManifestTextField);
-        addToConfigForm(studentManifestTextField, true);
+        studentListField = new JTextField();
+        addToConfigForm(studentListField, true);
 
         // Button
-        JButton studentManifestFileButton = new JButton("Select file");
-        studentManifestFileButton.addActionListener(
-            e -> studentManifestTextField.setText(
+        JButton studentListFileButton = new JButton("Select file");
+        studentListFileButton.addActionListener(
+            e -> studentListField.setText(
                 selectPathWithDialog(
-                    studentManifestTextField.getText(),
+                    studentListField.getText(),
                     JFileChooser.FILES_ONLY,
                     "Choose a student manifest file...",
                     "Select"
                 )
             )
         );
-        addToConfigForm(studentManifestFileButton);
+        addToConfigForm(studentListFileButton);
     }
 
     /**
@@ -389,11 +380,8 @@ public class CreateAssignmentScreen extends JFrame {
      */
     private void setupHeadingStylePanel() {
         addToConfigForm(new JLabel("Heading style: ", SwingConstants.RIGHT));
-        JComboBox<String> selections = new JComboBox<String>(
-            HEADING_STYLES.keySet().toArray(new String[0])
-        );
-        this.editableComponents.put("headingStyle", selections);
-        addToConfigForm(selections, 2);
+        headingStyleChooser = new JComboBox<String>(HEADING_STYLES.keySet().toArray(new String[0]));
+        addToConfigForm(headingStyleChooser, 2);
     }
 
     /**
@@ -401,11 +389,8 @@ public class CreateAssignmentScreen extends JFrame {
      */
     private void setupHeadingUnderlinePanel() {
         addToConfigForm(new JLabel("Heading underline: ", SwingConstants.RIGHT));
-        JComboBox<String> selections = new JComboBox<String>(
-            UNDERLINE_STYLES.keySet().toArray(new String[0])
-        );
-        this.editableComponents.put("headingUnderlineStyle", selections);
-        addToConfigForm(selections, 2);
+        underlineChooser = new JComboBox<>(UNDERLINE_STYLES.keySet().toArray(new String[0]));
+        addToConfigForm(underlineChooser, 2);
     }
 
     /**
@@ -413,9 +398,8 @@ public class CreateAssignmentScreen extends JFrame {
      */
     private void setupHeadingLineSpacingPanel() {
         addToConfigForm(new JLabel("Line spacing between sections: ", SwingConstants.RIGHT));
-        JComboBox<Integer> selections = new JComboBox<>(new Integer[] {1, 2, 3});
-        this.editableComponents.put("headingLineSpacing", selections);
-        addToConfigForm(selections, 2);
+        spacingChooser = new JComboBox<>(new Integer[] {1, 2, 3});
+        addToConfigForm(spacingChooser, 2);
     }
 
     /**
@@ -423,11 +407,11 @@ public class CreateAssignmentScreen extends JFrame {
      */
     private void setupLineMarkerPanel() {
         addToConfigForm(new JLabel("Line marker style:", SwingConstants.RIGHT));
-        JComboBox<String> selections = new JComboBox<>(new String[] { "-", "->", "=>", "*", "+" });
-        this.editableComponents.put("lineMarker", selections);
-        addToConfigForm(selections, 2);
+        lineMarkerChooser = new JComboBox<>(new String[] { "-", "->", "=>", "*", "+" });
+        addToConfigForm(lineMarkerChooser, 2);
     }
 
+    /* Prompt the user to pick a file, and return the result. */
     private String selectPathWithDialog(String startPath, int fileSelectionMode, String title, String submit) {
         // Open file chooser
         JFileChooser fileChooser = new JFileChooser(startPath);
