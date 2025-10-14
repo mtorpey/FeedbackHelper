@@ -2,7 +2,6 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -38,9 +37,9 @@ import controller.IAppController;
 import model.Assignment;
 
 /**
- * Create Assignment Screen Class.
+ * Configuration window for creating a new assignment 
  */
-public class CreateAssignmentScreen {
+public class CreateAssignmentScreen extends JFrame {
 
     // Underline styles map
     private static final Map<String, String> UNDERLINE_STYLES = Collections.unmodifiableMap(
@@ -64,9 +63,12 @@ public class CreateAssignmentScreen {
         }
     );
 
+    // Style constants
+    private static final int SPACING = 5;
+    private static final int GRID_WIDTH = 3;
+
     // Instance variables
     private final IAppController controller;
-    private JFrame createAssignmentScreen;
     private JPanel configFormPanel;
     private Map<String, Component> editableComponents;
 
@@ -89,27 +91,34 @@ public class CreateAssignmentScreen {
      * @param configPath Config path either null or to pre-fill the screen
      */
     public CreateAssignmentScreen(IAppController controller, String configPath) {
+        // Setup as a JFrame
+        super("Create assignment");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout(SPACING, SPACING));
+
+        // Store attributes
         this.controller = controller;
         this.editableComponents = new HashMap<String, Component>();
 
         // Setup components
-        setupAssignmentScreen();
         setupTitleLabel();
         setupConfigForm();
-        setupConfirmationPanel(configPath);
+        writeConfigOptions(configPath);
+        setupConfirmationPanel();
 
-        this.createAssignmentScreen.pack(); // resize to fit components
-        this.createAssignmentScreen.setLocationRelativeTo(null); // center
-        this.createAssignmentScreen.setVisible(true);
+        // Finish setting up as a JFrame
+        pack(); // resize to fit components
+        setLocationRelativeTo(null); // center
+        setVisible(true);
     }
 
     /**
-     * Setup the assignment screen.
+     * Setup the title label.
      */
-    private void setupAssignmentScreen() {
-        this.createAssignmentScreen = new JFrame("Create Asssignment");
-        this.createAssignmentScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.createAssignmentScreen.setLayout(new BorderLayout());
+    public void setupTitleLabel() {
+        JLabel titleLabel = new JLabel("Assignment Configuration", JLabel.CENTER);
+        titleLabel.setFont(Configuration.getTitleFont());
+        add(titleLabel, BorderLayout.NORTH);
     }
 
     /**
@@ -131,7 +140,7 @@ public class CreateAssignmentScreen {
         setupStudentManifestPanel();
 
         // Add config panel to the screen panel
-        this.createAssignmentScreen.add(this.configFormPanel, BorderLayout.CENTER);
+        add(this.configFormPanel, BorderLayout.CENTER);
     }
 
     private void addToConfigForm(JComponent component) {
@@ -157,9 +166,9 @@ public class CreateAssignmentScreen {
     private void addToConfigForm(JComponent component, boolean fill, int width) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL; // Expand to fill cell
-        gbc.insets = new Insets(5, 5, 5, 5); // Padding around components
-        gbc.gridx = gridBagCounter % 3; // Grid is 3 cells wide
-        gbc.gridy = gridBagCounter / 3;
+        gbc.insets = new Insets(SPACING, SPACING, SPACING, SPACING); // Padding around components
+        gbc.gridx = gridBagCounter % GRID_WIDTH; // Grid is 3 cells wide
+        gbc.gridy = gridBagCounter / GRID_WIDTH;
         gbc.gridwidth = width; // How many columns it spans
         gbc.weightx = fill ? 1 : 0;   // Make it stretch evenly
         gbc.weighty = 1;
@@ -169,22 +178,11 @@ public class CreateAssignmentScreen {
     }
 
     /**
-     * Setup the title label.
-     */
-    public void setupTitleLabel() {
-        JLabel titleLabel = new JLabel();
-        titleLabel.setText("Assignment Configuration");
-        titleLabel.setFont(new Font("Helvetica Neue", Font.PLAIN, 28));
-        titleLabel.setHorizontalAlignment(JLabel.CENTER);
-        this.createAssignmentScreen.add(titleLabel, BorderLayout.NORTH);
-    }
-
-    /**
      * Setup the confirmation panel.
      *
      * @param configPath for prefilling values (can be null)
      */
-    private void setupConfirmationPanel(String configPath) {
+    private void setupConfirmationPanel() {
         // Create panel and buttons
         JPanel confirmationPanel = new JPanel();
         JButton backButton = new JButton("Back");
@@ -198,9 +196,66 @@ public class CreateAssignmentScreen {
         // On back button press go back to the setup options screen
         backButton.addActionListener(e -> {
             new SetupOptionsScreen(this.controller);
-            this.createAssignmentScreen.dispose();
+            dispose();
         });
+        add(confirmationPanel, BorderLayout.SOUTH);
+    }
 
+    private void confirmClicked(ActionEvent e) {
+        // Load all the user preferences
+        String assignmentTitle = ((JTextField) this.editableComponents.get("assignmentTitle")).getText();
+        String assignmentHeadings = ((JTextArea) this.editableComponents.get("assignmentHeadings")).getText();
+        String assignmentDirectoryPath = ((JTextField) this.editableComponents.get(
+                "assignmentDirectory")).getText();
+        String headingStyle = (String) ((JComboBox<String>) this.editableComponents.get(
+                "headingStyle")).getSelectedItem();
+        String headingUnderlineStyle = (String) ((JComboBox<String>) this.editableComponents.get(
+                "headingUnderlineStyle")).getSelectedItem();
+        int lineSpacing = (Integer) ((JComboBox<Integer>) this.editableComponents.get(
+                "headingLineSpacing")).getSelectedItem();
+        String lineMarker = (String) ((JComboBox<String>) this.editableComponents.get(
+                "lineMarker")).getSelectedItem();
+        File studentManifestFile = new File(((JTextField) this.editableComponents.get("studentManifest")).getText());
+
+        // If no student list exists before creating the feedback screen, inform the
+        // user that the
+        // software will try to guess
+        if (studentManifestFile == null || !studentManifestFile.exists()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No student manifest file defined! Will try to guess student ids by directory names in " +
+                            "the assignment directory!",
+                    "Warning!",
+                    JOptionPane.WARNING_MESSAGE
+            );
+        }
+
+        // Setup assignment and db for it
+        dispose();
+
+        // Create the assignment
+        Assignment assignmentFromInputs = this.controller.createAssignment(
+                assignmentTitle,
+                assignmentHeadings,
+                studentManifestFile,
+                assignmentDirectoryPath
+        );
+        this.controller.setAssignmentPreferences(
+                HEADING_STYLES.get(headingStyle),
+                UNDERLINE_STYLES.get(headingUnderlineStyle),
+                lineSpacing,
+                lineMarker
+        );
+        this.controller.saveAssignment(
+                assignmentFromInputs,
+                assignmentFromInputs.getAssignmentTitle().toLowerCase().replace(" ", "-")
+        );
+
+        // Create the feedback screen
+        new FeedbackScreen(this.controller, assignmentFromInputs);
+    }
+
+    private void writeConfigOptions(String configPath) {
         //prefilled values
         if (configPath != null) {
             try {
@@ -230,69 +285,14 @@ public class CreateAssignmentScreen {
                 );
             } catch (IOException | ParseException e) {
                 JOptionPane.showMessageDialog(
-                    this.createAssignmentScreen,
-                    "Could not find or parse config file, have to manually configure." + "Could not parse config file",
+                    this,
+                    "Could not find or parse config file, have to manually configure."
+                    + "Could not parse config file",
                     "Warning!",
                     JOptionPane.WARNING_MESSAGE
                 );
             }
         }
-
-        this.createAssignmentScreen.add(confirmationPanel, BorderLayout.SOUTH);
-    }
-
-    private void confirmClicked(ActionEvent e) {
-        // Load all the user preferences
-        String assignmentTitle = ((JTextField) this.editableComponents.get("assignmentTitle")).getText();
-        String assignmentHeadings = ((JTextArea) this.editableComponents.get("assignmentHeadings")).getText();
-        String assignmentDirectoryPath = ((JTextField) this.editableComponents.get(
-                "assignmentDirectory")).getText();
-        String headingStyle = (String) ((JComboBox<String>) this.editableComponents.get(
-                "headingStyle")).getSelectedItem();
-        String headingUnderlineStyle = (String) ((JComboBox<String>) this.editableComponents.get(
-                "headingUnderlineStyle")).getSelectedItem();
-        int lineSpacing = (Integer) ((JComboBox<Integer>) this.editableComponents.get(
-                "headingLineSpacing")).getSelectedItem();
-        String lineMarker = (String) ((JComboBox<String>) this.editableComponents.get(
-                "lineMarker")).getSelectedItem();
-        File studentManifestFile = new File(((JTextField) this.editableComponents.get("studentManifest")).getText());
-
-        // If no student list exists before creating the feedback screen, inform the
-        // user that the
-        // software will try to guess
-        if (studentManifestFile == null || !studentManifestFile.exists()) {
-            JOptionPane.showMessageDialog(
-                    this.createAssignmentScreen,
-                    "No student manifest file defined! Will try to guess student ids by directory names in " +
-                            "the assignment directory!",
-                    "Warning!",
-                    JOptionPane.WARNING_MESSAGE
-            );
-        }
-
-        // Setup assignment and db for it
-        this.createAssignmentScreen.dispose();
-
-        // Create the assignment
-        Assignment assignmentFromInputs = this.controller.createAssignment(
-                assignmentTitle,
-                assignmentHeadings,
-                studentManifestFile,
-                assignmentDirectoryPath
-        );
-        this.controller.setAssignmentPreferences(
-                HEADING_STYLES.get(headingStyle),
-                UNDERLINE_STYLES.get(headingUnderlineStyle),
-                lineSpacing,
-                lineMarker
-        );
-        this.controller.saveAssignment(
-                assignmentFromInputs,
-                assignmentFromInputs.getAssignmentTitle().toLowerCase().replace(" ", "-")
-        );
-
-        // Create the feedback screen
-        new FeedbackScreen(this.controller, assignmentFromInputs);
     }
 
     /**
@@ -431,11 +431,11 @@ public class CreateAssignmentScreen {
     private String selectPathWithDialog(String startPath, int fileSelectionMode, String title, String submit) {
         // Open file chooser
         JFileChooser fileChooser = new JFileChooser(startPath);
-        fileChooser.setDialogTitle("Choose a student manifest file...");
         fileChooser.setFileSelectionMode(fileSelectionMode);
+        fileChooser.setDialogTitle(title);
 
         // Store the chosen file path
-        int returnValue = fileChooser.showDialog(createAssignmentScreen, submit);
+        int returnValue = fileChooser.showDialog(this, submit);
         String path = null;
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             path = fileChooser.getSelectedFile().getPath();
