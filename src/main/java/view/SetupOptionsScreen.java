@@ -166,12 +166,6 @@ public class SetupOptionsScreen {
         this.setupOptionsScreen = new JFrame("Please select a setup option");
         this.setupOptionsScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setupOptionsScreen.setSize(800, 600);
-
-        // Centre the screen
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screenSize.width - this.setupOptionsScreen.getWidth()) / 2;
-        int y = (screenSize.height - this.setupOptionsScreen.getHeight()) / 2;
-        this.setupOptionsScreen.setLocation(x, y);
     }
 
     /**

@@ -53,12 +53,6 @@ public class DocumentViewer extends JFrame {
     protected void setupDocumentViewerScreen() {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setSize(700, 900);
-
-        // Centre the screen
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screenSize.width - this.getWidth()) / 2;
-        int y = (screenSize.height - this.getHeight()) / 2;
-        this.setLocation(x, y);
     }
 
     /**

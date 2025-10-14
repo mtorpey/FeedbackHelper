@@ -112,12 +112,6 @@ public class FeedbackScreen implements PropertyChangeListener {
         this.feedbackScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.feedbackScreen.setSize(1200, 800);
         this.feedbackScreen.setLayout(new BorderLayout());
-
-        // Centre the screen
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screenSize.width - this.feedbackScreen.getWidth()) / 2;
-        int y = 20; // Just below top of screen
-        this.feedbackScreen.setLocation(x, y);
     }
 
     /**

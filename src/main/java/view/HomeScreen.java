@@ -74,12 +74,6 @@ public class HomeScreen {
         this.homeScreenPanel.add(this.loadButton);
         this.homeScreenPanel.add(Box.createRigidArea(new Dimension(100, 20)));
 
-        // Centre the screen
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screenSize.width - this.homeScreen.getWidth()) / 2;
-        int y = (screenSize.height - this.homeScreen.getHeight()) / 2;
-        this.homeScreen.setLocation(x, y);
-
         // Add home screen panel to home screen frame and set visibility
         this.homeScreen.add(this.homeScreenPanel);
         this.homeScreen.setVisible(true);

@@ -110,12 +110,6 @@ public class CreateAssignmentScreen {
         this.createAssignmentScreen = new JFrame("Create Assignment");
         this.createAssignmentScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.createAssignmentScreen.setSize(1000, 800);
-
-        // Centre the screen
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screenSize.width - this.createAssignmentScreen.getWidth()) / 2;
-        int y = (screenSize.height - this.createAssignmentScreen.getHeight()) / 2;
-        this.createAssignmentScreen.setLocation(x, y);
     }
 
     /**
