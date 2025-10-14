@@ -1,17 +1,15 @@
 package view;
 
 import java.awt.Color;
+import java.awt.Font;
+
+import javax.swing.UIManager;
 
 /**
  * Visual configuration options for the tool.
  *
- * Currently this just specifies some colours that are used in the view, so that
- * they can be changed altogether in one place.
- *
- * In future, there should be a programmatic way to change these, rather than
- * using hard-coded constants (e.g. a dark mode option).  We should also set
- * some more colours explicitly, since a lot of the view currently uses the
- * default Swing colours.
+ * We're trying to move away from this sort of hard-coded stuff and leave more
+ * to Swing's look-and-feel (LAF) system.
  */
 public abstract class Configuration {
 
@@ -20,4 +18,20 @@ public abstract class Configuration {
 
     /** Colour used for the border of a component when it is selected. */
     public static final Color COLOR_BORDER_SELECTED = Color.GREEN;
+
+    /**
+     * Return a font that can be used for titles, following the current
+     * look-and-feel as much as possible.
+     */
+    public static Font getTitleFont() {
+        // Look for a large font from the L&F
+        Font titleFont = UIManager.getFont("Label.large.font");
+
+        // If not found, make a big bold version of the standard font
+        if (titleFont == null) {
+            Font baseFont = UIManager.getFont("Label.font");
+            titleFont = baseFont.deriveFont(Font.BOLD, baseFont.getSize() * 2f);
+        }
+        return titleFont;
+    }
 }
