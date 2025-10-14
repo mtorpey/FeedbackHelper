@@ -36,7 +36,7 @@ import controller.IAppController;
 import model.Assignment;
 
 /**
- * Configuration window for creating a new assignment 
+ * Configuration window for creating a new assignment
  */
 public class CreateAssignmentScreen extends JFrame {
 
@@ -131,7 +131,7 @@ public class CreateAssignmentScreen extends JFrame {
         this.configFormPanel = new JPanel();
         this.configFormPanel.setLayout(new GridBagLayout());
         this.gridBagCounter = 0;
-        
+
         // Setup config components
         setupAssignmentTitlePanel();
         setupAssignmentDirectoryPanel();
@@ -173,7 +173,7 @@ public class CreateAssignmentScreen extends JFrame {
         gbc.gridx = gridBagCounter % GRID_WIDTH; // Grid is 3 cells wide
         gbc.gridy = gridBagCounter / GRID_WIDTH;
         gbc.gridwidth = width; // How many columns it spans
-        gbc.weightx = fill ? 1 : 0;   // Make it stretch evenly
+        gbc.weightx = fill ? 1 : 0; // Make it stretch evenly
         gbc.weighty = 1;
 
         gridBagCounter += width;
@@ -220,10 +220,10 @@ public class CreateAssignmentScreen extends JFrame {
         // software will try to guess
         if (studentListFile == null || !studentListFile.exists()) {
             JOptionPane.showMessageDialog(
-                    this,
-                    "No student list file given. Searching for files in the assignment directory...",
-                    "Warning!",
-                    JOptionPane.WARNING_MESSAGE
+                this,
+                "No student list file given. Searching for files in the assignment directory...",
+                "Warning!",
+                JOptionPane.WARNING_MESSAGE
             );
         }
 
@@ -232,20 +232,20 @@ public class CreateAssignmentScreen extends JFrame {
 
         // Create the assignment
         Assignment assignmentFromInputs = this.controller.createAssignment(
-                assignmentTitle,
-                assignmentHeadings,
-                studentListFile,
-                assignmentDirectoryPath
+            assignmentTitle,
+            assignmentHeadings,
+            studentListFile,
+            assignmentDirectoryPath
         );
         this.controller.setAssignmentPreferences(
-                HEADING_STYLES.get(headingStyle),
-                UNDERLINE_STYLES.get(headingUnderlineStyle),
-                lineSpacing,
-                lineMarker
+            HEADING_STYLES.get(headingStyle),
+            UNDERLINE_STYLES.get(headingUnderlineStyle),
+            lineSpacing,
+            lineMarker
         );
         this.controller.saveAssignment(
-                assignmentFromInputs,
-                assignmentFromInputs.getAssignmentTitle().toLowerCase().replace(" ", "-")
+            assignmentFromInputs,
+            assignmentFromInputs.getAssignmentTitle().toLowerCase().replace(" ", "-")
         );
 
         // Create the feedback screen
@@ -272,15 +272,12 @@ public class CreateAssignmentScreen extends JFrame {
                 underlineChooser.setSelectedItem(
                     getKey(UNDERLINE_STYLES, (String) headingStyle.get("heading_underline_style"))
                 );
-                spacingChooser.setSelectedItem(
-                    ((Long) headingStyle.get("num_lines_after_section_ends")).intValue()
-                );
+                spacingChooser.setSelectedItem(((Long) headingStyle.get("num_lines_after_section_ends")).intValue());
                 lineMarkerChooser.setSelectedItem(configDoc.get("line_marker"));
             } catch (IOException | ParseException e) {
                 JOptionPane.showMessageDialog(
                     this,
-                    "Could not find or parse config file, have to manually configure."
-                    + "Could not parse config file",
+                    "Could not find or parse config file, have to manually configure." + "Could not parse config file",
                     "Warning!",
                     JOptionPane.WARNING_MESSAGE
                 );
@@ -326,8 +323,8 @@ public class CreateAssignmentScreen extends JFrame {
 
         // Directory chooser
         JButton assignmentDirectoryChooser = new JButton("Select directory");
-        assignmentDirectoryChooser.addActionListener(
-            e -> assignmentDirectoryField.setText(
+        assignmentDirectoryChooser.addActionListener(e ->
+            assignmentDirectoryField.setText(
                 selectPathWithDialog(
                     assignmentDirectoryField.getText(),
                     JFileChooser.DIRECTORIES_ONLY,
@@ -362,8 +359,8 @@ public class CreateAssignmentScreen extends JFrame {
 
         // Button
         JButton studentListFileButton = new JButton("Select file");
-        studentListFileButton.addActionListener(
-            e -> studentListField.setText(
+        studentListFileButton.addActionListener(e ->
+            studentListField.setText(
                 selectPathWithDialog(
                     studentListField.getText(),
                     JFileChooser.FILES_ONLY,
@@ -398,7 +395,7 @@ public class CreateAssignmentScreen extends JFrame {
      */
     private void setupHeadingLineSpacingPanel() {
         addToConfigForm(new JLabel("Line spacing between sections: ", SwingConstants.RIGHT));
-        spacingChooser = new JComboBox<>(new Integer[] {1, 2, 3});
+        spacingChooser = new JComboBox<>(new Integer[] { 1, 2, 3 });
         addToConfigForm(spacingChooser, 2);
     }
 
