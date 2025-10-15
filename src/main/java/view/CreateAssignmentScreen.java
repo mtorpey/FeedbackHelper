@@ -324,7 +324,7 @@ public class CreateAssignmentScreen extends JFrame {
 
         // On back button press go back to the setup options screen
         backButton.addActionListener(e -> {
-            new SetupOptionsScreen(this.controller);
+            new HomeScreen(this.controller);
             dispose();
         });
         add(confirmationPanel, BorderLayout.SOUTH);

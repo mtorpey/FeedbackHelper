@@ -1,36 +1,30 @@
 package view;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextPane;
+import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import controller.IAppController;
 import model.Assignment;
 
 /**
- * Home Screen Class.
+ * Welcome screen showing initial options.
  */
-public class HomeScreen {
+public class HomeScreen extends JFrame {
 
     // Instance variables
     private final IAppController controller;
-    private JFrame homeScreen;
-    private JPanel homeScreenPanel;
-    private JButton startNewButton;
-    private JLabel titleLabel;
-    private JTextPane descriptionLabel;
-    private JButton loadButton;
+
+    // Styling
+    private static final int SPACING = 15;
 
     /**
      * Constructor.
@@ -38,107 +32,100 @@ public class HomeScreen {
      * @param controller The controller.
      */
     public HomeScreen(IAppController controller) {
+        // Setup as a JFrame
+        super("Feedback Helper Tool");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout(SPACING, SPACING));
+
+        // Store attributes
         this.controller = controller;
 
-        // Create the home screen jFrame
-        this.homeScreen = new JFrame("Feedback Helper Tool");
-        this.homeScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.homeScreen.setSize(800, 600);
-
         // Setup the components and display the screen
-        createHomeScreenComponents();
-        displayHomeScreen();
+        createComponents();
+
+        // To pick a dimension that fits your UI,
+        // You simply call pack() and Swing gives it a try.
+        pack();
+
+        // If line-wrapped components don't look very nice,
+        // Then how do you solve it? You just call pack() twice!
+        pack();
+
+        // Do Windows or Mac machines work in this way?
+        // I have no idea. Let's just hope and pray.
+
+        // Finish setting up JFrame
+        setLocationRelativeTo(null); // center
+        setVisible(true);
     }
 
     /**
      * Create the home screen components.
      */
-    public void createHomeScreenComponents() {
-        createHomeScreenPanel();
-        createTitleLabel();
+    public void createComponents() {
+        createFrameTitle();
         createDescriptionArea();
         createButtons();
-    }
-
-    /**
-     * Display the home screen.
-     */
-    public void displayHomeScreen() {
-        // Add components
-        this.homeScreenPanel.add(this.titleLabel);
-        this.homeScreenPanel.add(Box.createRigidArea(new Dimension(100, 20)));
-        this.homeScreenPanel.add(this.descriptionLabel);
-        this.homeScreenPanel.add(Box.createRigidArea(new Dimension(100, 20)));
-        this.homeScreenPanel.add(this.startNewButton);
-        this.homeScreenPanel.add(Box.createRigidArea(new Dimension(100, 20)));
-        this.homeScreenPanel.add(this.loadButton);
-        this.homeScreenPanel.add(Box.createRigidArea(new Dimension(100, 20)));
-
-        // Add home screen panel to home screen frame and set visibility
-        this.homeScreen.add(this.homeScreenPanel);
-        this.homeScreen.setVisible(true);
-    }
-
-    /**
-     * Create the home screen panel.
-     */
-    public void createHomeScreenPanel() {
-        this.homeScreenPanel = new JPanel();
-
-        // Layout from top to bottom
-        this.homeScreenPanel.setLayout(new BoxLayout(this.homeScreenPanel, BoxLayout.PAGE_AXIS));
-        this.homeScreenPanel.setBorder(BorderCreator.createEmptyBorderLeavingBottom(BorderCreator.PADDING_50_PIXELS));
-    }
+   }
 
     /**
      * Create the title label.
      */
-    public void createTitleLabel() {
-        this.titleLabel = new JLabel();
-        this.titleLabel.setText("Feedback Helper Tool");
-        this.titleLabel.setFont(new Font("Helvetica Neue", Font.PLAIN, 28));
-        this.titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        this.titleLabel.setBorder(BorderCreator.createEmptyBorderBottomOnly(BorderCreator.PADDING_20_PIXELS));
+    public void createFrameTitle() {
+        JLabel title = new JLabel("Feedback Helper", JLabel.CENTER);
+        title.setFont(Configuration.getTitleFont());
+        title.setBorder(BorderFactory.createEmptyBorder(SPACING, SPACING, SPACING, SPACING));
+        add(title, BorderLayout.NORTH);
     }
 
     /**
      * Create the description area.
      */
     public void createDescriptionArea() {
-        this.descriptionLabel = new JTextPane();
-        this.descriptionLabel.setText(
-            "Welcome to the Feedback Helper Tool! " +
-                "To get started with creating feedback documents click the 'Start New Assignment' button. " +
-                "You will then be prompted to setup your assignment via a JSON configuration file or through a manual guided setup. " +
-                "To resume creating feedback documents click the 'Load Assignment' button and select your '.fht' file."
+        JTextArea description = new JTextArea();
+        description.setText("""
+            Welcome to the Feedback Helper Tool!
+
+            To get started with creating feedback documents click the 'Start New Assignment' button. You will then be prompted for some details to set up the project.
+
+            To resume work on an existing assignment, click the 'Load Assignment' button and select your '.fht' file."""
         );
-        this.descriptionLabel.setBorder(BorderCreator.createAllSidesEmptyBorder(20));
-        this.descriptionLabel.setMaximumSize(new Dimension(500, 210));
-        this.descriptionLabel.setPreferredSize(new Dimension(500, 210));
-        this.descriptionLabel.setMinimumSize(new Dimension(500, 210));
-        this.descriptionLabel.setFont(new Font("Helvetica Neue", Font.PLAIN, 18));
-        this.descriptionLabel.setEditable(false);
-        this.descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        description.setEditable(false);
+        description.setLineWrap(true);
+        description.setWrapStyleWord(true);
+        description.setOpaque(false);
+        description.setBorder(BorderFactory.createEmptyBorder(SPACING, SPACING, SPACING, SPACING));
+        add(description, BorderLayout.CENTER);
+    }
+
+    /** Create both buttons and arrange them. */
+    public void createButtons() {
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        createStartButton(buttonPanel);
+        createLoadButton(buttonPanel);
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
     /**
-     * Create the buttons.
+     * Create the start button.
      */
-    public void createButtons() {
-        createStartButton();
-        createLoadButton();
+    private void createStartButton(JPanel parent) {
+        JButton startButton = new JButton("Start New Assignment");
+        //startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        startButton.addActionListener(e -> {
+            dispose();
+            new CreateAssignmentScreen(this.controller);
+        });
+        parent.add(startButton);
     }
 
     /**
      * Create the load button.
      */
-    private void createLoadButton() {
-        this.loadButton = new JButton("Resume Assignment");
-        this.loadButton.setMaximumSize(new Dimension(300, 50));
-        this.loadButton.setPreferredSize(new Dimension(300, 50));
-        this.loadButton.setMinimumSize(new Dimension(300, 50));
-        this.loadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        this.loadButton.addActionListener(e -> {
+    private void createLoadButton(JPanel parent) {
+        JButton loadButton = new JButton("Resume Assignment");
+        //loadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loadButton.addActionListener(e -> {
             // Show a file chooser
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Choose an assignment to resume");
@@ -149,11 +136,11 @@ public class HomeScreen {
             fileChooser.addChoosableFileFilter(filter);
 
             // Get the selected file
-            int returnValue = fileChooser.showDialog(this.homeScreen, "Resume this assignment");
+            int returnValue = fileChooser.showDialog(this, "Resume this assignment");
             String assignmentFilePath = null;
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 assignmentFilePath = fileChooser.getSelectedFile().getPath();
-                this.homeScreen.dispose();
+                dispose();
             }
 
             // Ensure selected file is valid and show feedback screen
@@ -162,20 +149,6 @@ public class HomeScreen {
                 new FeedbackScreen(this.controller, assignment);
             }
         });
-    }
-
-    /**
-     * Create the start button.
-     */
-    private void createStartButton() {
-        this.startNewButton = new JButton("Start New Assignment");
-        this.startNewButton.setMaximumSize(new Dimension(300, 50));
-        this.startNewButton.setPreferredSize(new Dimension(300, 50));
-        this.startNewButton.setMinimumSize(new Dimension(300, 50));
-        this.startNewButton.addActionListener(e -> {
-            this.homeScreen.dispose();
-            new SetupOptionsScreen(this.controller);
-        });
-        this.startNewButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        parent.add(loadButton);
     }
 }
