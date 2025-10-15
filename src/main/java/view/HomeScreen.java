@@ -123,7 +123,7 @@ public class HomeScreen extends JFrame {
      * Create the load button.
      */
     private void createLoadButton(JPanel parent) {
-        JButton loadButton = new JButton("Resume Assignment");
+        JButton loadButton = new JButton("Load Assignment");
         //loadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loadButton.addActionListener(e -> {
             // Show a file chooser
