@@ -7,12 +7,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.StringJoiner;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -26,11 +23,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import controller.IAppController;
 import model.Assignment;
@@ -85,16 +77,6 @@ public class CreateAssignmentScreen extends JFrame {
      * @param controller The controller.
      */
     public CreateAssignmentScreen(IAppController controller) {
-        this(controller, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param controller The controller.
-     * @param configPath Config path either null or to pre-fill the screen
-     */
-    public CreateAssignmentScreen(IAppController controller, String configPath) {
         // Setup as a JFrame
         super("Create assignment");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -106,7 +88,6 @@ public class CreateAssignmentScreen extends JFrame {
         // Setup components
         setupFrameTitle();
         setupConfigForm();
-        writeConfigOptions(configPath);
         setupConfirmationPanel();
 
         // Finish setting up as a JFrame
@@ -375,55 +356,5 @@ public class CreateAssignmentScreen extends JFrame {
 
         // Create the feedback screen
         new FeedbackScreen(this.controller, assignmentFromInputs);
-    }
-
-    /** Load configuration from the config file into the fields. */
-    private void writeConfigOptions(String configPath) {
-        //prefilled values
-        if (configPath != null) {
-            try {
-                JSONObject configDoc = (JSONObject) new JSONParser().parse(new FileReader(configPath));
-                StringJoiner sj = new StringJoiner("\n");
-
-                // Extract styling options
-                assignmentTitleField.setText((String) configDoc.get("title"));
-                ((JSONArray) configDoc.get("headings")).forEach(h -> sj.add((String) h));
-                assignmentHeadingsTextArea.setText(sj.toString());
-                assignmentDirectoryField.setText((String) configDoc.get("assignment_location"));
-
-                Map headingStyle = ((Map) configDoc.get("heading_style"));
-                headingStyleChooser.setSelectedItem(
-                    getKey(HEADING_STYLES, (String) headingStyle.get("heading_marker"))
-                );
-                underlineChooser.setSelectedItem(
-                    getKey(UNDERLINE_STYLES, (String) headingStyle.get("heading_underline_style"))
-                );
-                spacingChooser.setSelectedItem(((Long) headingStyle.get("num_lines_after_section_ends")).intValue());
-                lineMarkerChooser.setSelectedItem(configDoc.get("line_marker"));
-            } catch (IOException | ParseException e) {
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Could not find or parse config file, have to manually configure." + "Could not parse config file",
-                    "Warning!",
-                    JOptionPane.WARNING_MESSAGE
-                );
-            }
-        }
-    }
-
-    /**
-     * Gets the key for a value in a map
-     *
-     * @param map Map to search in
-     * @param value Value to find key for
-     */
-    private static <K, V> K getKey(Map<K, V> map, V value) {
-        return map
-            .entrySet()
-            .stream()
-            .filter(entry -> value.equals(entry.getValue()))
-            .map(Map.Entry::getKey)
-            .findFirst()
-            .orElse(null);
     }
 }
