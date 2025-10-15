@@ -180,6 +180,10 @@ public class CreateAssignmentScreen extends JFrame {
         this.configFormPanel.add(component, gbc);
     }
 
+    private void addLabelToConfigForm(String text) {
+        addToConfigForm(new JLabel(text, SwingConstants.RIGHT));
+    }
+
     /**
      * Setup the confirmation panel.
      *
@@ -305,7 +309,7 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the assignment title panel.
      */
     private void setupAssignmentTitlePanel() {
-        addToConfigForm(new JLabel("Assignment title: ", SwingConstants.RIGHT));
+        addLabelToConfigForm("Assignment title:");
         assignmentTitleField = new JTextField("CS5000-P1");
         addToConfigForm(assignmentTitleField, 2);
     }
@@ -314,7 +318,7 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the assignment directory panel.
      */
     private void setupAssignmentDirectoryPanel() {
-        addToConfigForm(new JLabel("Assignment directory: ", SwingConstants.RIGHT));
+        addLabelToConfigForm("Assignment directory:");
 
         // Text field
         String defaultDir = System.getProperty("user.home");
@@ -340,7 +344,7 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the assignment headings panel.
      */
     private void setupAssignmentHeadingsPanel() {
-        addToConfigForm(new JLabel("Assignment headings: ", SwingConstants.RIGHT));
+        addLabelToConfigForm("Assignment headings:");
         assignmentHeadingsTextArea = new JTextArea(7, 30);
         JScrollPane scrollPane = new JScrollPane(assignmentHeadingsTextArea);
         scrollPane.setMinimumSize(new Dimension(0, 100)); // stop this collapsing
@@ -351,7 +355,7 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the student list panel.
      */
     private void setupStudentManifestPanel() {
-        addToConfigForm(new JLabel("Student manifest file: ", SwingConstants.RIGHT));
+        addLabelToConfigForm("Student manifest file: ");
 
         // Text field
         studentListField = new JTextField();
@@ -376,7 +380,7 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the heading style panel.
      */
     private void setupHeadingStylePanel() {
-        addToConfigForm(new JLabel("Heading style: ", SwingConstants.RIGHT));
+        addLabelToConfigForm("Heading style:");
         headingStyleChooser = new JComboBox<String>(HEADING_STYLES.keySet().toArray(new String[0]));
         addToConfigForm(headingStyleChooser, 2);
     }
@@ -385,7 +389,7 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the heading underline panel.
      */
     private void setupHeadingUnderlinePanel() {
-        addToConfigForm(new JLabel("Heading underline: ", SwingConstants.RIGHT));
+        addLabelToConfigForm("Heading underline:");
         underlineChooser = new JComboBox<>(UNDERLINE_STYLES.keySet().toArray(new String[0]));
         addToConfigForm(underlineChooser, 2);
     }
@@ -394,7 +398,7 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup heading line spacing panel.
      */
     private void setupHeadingLineSpacingPanel() {
-        addToConfigForm(new JLabel("Line spacing between sections: ", SwingConstants.RIGHT));
+        addLabelToConfigForm("Line spacing between sections:");
         spacingChooser = new JComboBox<>(new Integer[] { 1, 2, 3 });
         addToConfigForm(spacingChooser, 2);
     }
@@ -403,7 +407,7 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the line marker panel.
      */
     private void setupLineMarkerPanel() {
-        addToConfigForm(new JLabel("Line marker style:", SwingConstants.RIGHT));
+        addLabelToConfigForm("Line marker style:");
         lineMarkerChooser = new JComboBox<>(new String[] { "-", "->", "=>", "*", "+" });
         addToConfigForm(lineMarkerChooser, 2);
     }
