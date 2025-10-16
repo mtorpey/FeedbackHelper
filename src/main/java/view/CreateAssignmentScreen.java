@@ -260,6 +260,8 @@ public class CreateAssignmentScreen extends JFrame {
         };
         assignmentDirectoryField.getDocument().addDocumentListener(studentListListener);
         studentListField.getDocument().addDocumentListener(studentListListener);
+
+        updateStudentListIndicator();
     }
 
     /** Show an indication of the list of students that would currently be used with the present settings. */
