@@ -246,15 +246,15 @@ public class CreateAssignmentScreen extends JFrame {
 
         // Set up a listener that will update the indicator when the user's selection changes
         studentListListener = new DocumentListener() {
-            public void changedUpdate(DocumentEvent arg0) {
+            public void changedUpdate(DocumentEvent e) {
                 updateStudentListIndicator();
             }
 
-            public void insertUpdate(DocumentEvent arg0) {
+            public void insertUpdate(DocumentEvent e) {
                 updateStudentListIndicator();
             }
 
-            public void removeUpdate(DocumentEvent arg0) {
+            public void removeUpdate(DocumentEvent e) {
                 updateStudentListIndicator();
             }
         };
