@@ -292,31 +292,65 @@ public class Assignment implements Serializable {
      * @param assignmentDirectoryPath The assignment directory.
      */
     public void setStudentIds(File studentManifestFile, String assignmentDirectoryPath) {
-        // If manifest is undefined, try to guess from directories in the assignment dir
-        if (studentManifestFile == null) {
-            for (File f : new File(assignmentDirectoryPath).listFiles()) {
-                String name = f.getName();
-                // Does this look like a string of digits?
-                if (name.matches("\\d+(\\..*)?")) {
-                    String studentId = name.split("\\.")[0]; // everything before the dot
-                    FeedbackDocument feedbackDocument = new FeedbackDocument(this, studentId);
-                    this.studentIdAndFeedbackDocumentMap.put(studentId, feedbackDocument);
-                }
-            }
-        } else {
-            // Read the file and store the student id and feedback document in a map
-            try (BufferedReader reader = new BufferedReader(new FileReader(studentManifestFile))) {
-                while (reader.ready()) {
-                    String studentId = reader.readLine().trim();
-                    if (!studentId.isEmpty()) {
-                        FeedbackDocument feedbackDocument = new FeedbackDocument(this, studentId);
-                        this.studentIdAndFeedbackDocumentMap.put(studentId, feedbackDocument);
-                    }
-                }
-            } catch (IOException e) {
-                System.err.println("Something went wrong when loading the file: " + studentManifestFile);
+        // Get the ids
+        List<String> studentIds = findStudentIds(studentManifestFile, assignmentDirectoryPath);
+        System.out.println("Using student ids " + studentIds);
+
+        // Create and install documents
+        for (String studentId : studentIds) {
+            FeedbackDocument feedbackDocument = new FeedbackDocument(this, studentId);
+            this.studentIdAndFeedbackDocumentMap.put(studentId, feedbackDocument);
+        }
+    }
+
+    /** Get the list of students from a file or by guessing from the directory contents. */
+    public static List<String> findStudentIds(File studentManifestFile, String assignmentDirectoryPath) {
+        List<String> studentIds;
+        try {
+            System.out.println("Looking for student ids in file '" + studentManifestFile + "'...");
+            studentIds = findStudentIdsFromFile(studentManifestFile);
+        } catch (IOException | NullPointerException e) {
+            System.out.println("Failed to read file");
+            System.out.println("Searching for submissions in " + assignmentDirectoryPath + " ...");
+            try {
+                studentIds = findStudentIdsFromDirectory(assignmentDirectoryPath);
+            } catch (NullPointerException e2) {
+                System.out.println("Unable to find any submissions");
+                studentIds = new ArrayList<>();
             }
         }
+        return studentIds;
+    }
+
+    /** Get a list of student IDs from the given file. */
+    public static List<String> findStudentIdsFromFile(File file) throws IOException, NullPointerException {
+        List<String> studentIds = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            while (reader.ready()) {
+                String studentId = reader.readLine().trim();
+                if (!studentId.isEmpty()) {
+                    studentIds.add(studentId);
+                }
+            }
+        }
+        return studentIds;
+    }
+
+    /**
+     * Search the given directory for files/directories that look like student IDs.
+     *
+     * @param path The directory to search
+     */
+    public static List<String> findStudentIdsFromDirectory(String path) {
+        List<String> studentIds = new ArrayList<>();
+        for (File f : new File(path).listFiles()) {
+            String name = f.getName();
+            // Does this look like a string of digits?
+            if (name.matches("\\d+(\\..*)?")) {
+                studentIds.add(name.split("\\.")[0]); // everything before the dot
+            }
+        }
+        return studentIds;
     }
 
     /**

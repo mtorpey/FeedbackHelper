@@ -9,7 +9,9 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -23,6 +25,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import controller.IAppController;
 import model.Assignment;
@@ -61,6 +65,8 @@ public class CreateAssignmentScreen extends JFrame {
     // Instance variables
     private final IAppController controller;
     private JPanel configFormPanel;
+    private JLabel studentListIndicator;
+    private DocumentListener studentListListener;
 
     // How many cells on the config panel are filled
     private int gridBagCounter;
@@ -120,6 +126,7 @@ public class CreateAssignmentScreen extends JFrame {
         setupLineMarkerControls();
         setupHeadingLineSpacingControls();
         setupStudentListControls();
+        setupStudentListIndicator();
 
         add(this.configFormPanel, BorderLayout.CENTER);
     }
@@ -171,10 +178,46 @@ public class CreateAssignmentScreen extends JFrame {
     }
 
     /**
+     * Setup the heading style controls.
+     */
+    private void setupHeadingStyleControls() {
+        addLabelToConfigForm("Heading style:");
+        headingStyleChooser = new JComboBox<String>(HEADING_STYLES.keySet().toArray(new String[0]));
+        addToConfigForm(headingStyleChooser, 2);
+    }
+
+    /**
+     * Setup the heading underline controls.
+     */
+    private void setupHeadingUnderlineControls() {
+        addLabelToConfigForm("Heading underline:");
+        underlineChooser = new JComboBox<>(UNDERLINE_STYLES.keySet().toArray(new String[0]));
+        addToConfigForm(underlineChooser, 2);
+    }
+
+    /**
+     * Setup the line marker controls.
+     */
+    private void setupLineMarkerControls() {
+        addLabelToConfigForm("Line marker style:");
+        lineMarkerChooser = new JComboBox<>(new String[] { "-", "->", "=>", "*", "+" });
+        addToConfigForm(lineMarkerChooser, 2);
+    }
+
+    /**
+     * Setup heading line spacing controls.
+     */
+    private void setupHeadingLineSpacingControls() {
+        addLabelToConfigForm("Line spacing between sections:");
+        spacingChooser = new JComboBox<>(new Integer[] { 1, 2, 3 });
+        addToConfigForm(spacingChooser, 2);
+    }
+
+    /**
      * Setup the student list controls.
      */
     private void setupStudentListControls() {
-        addLabelToConfigForm("Student manifest file: ");
+        addLabelToConfigForm("Student list file:");
 
         // Text field
         studentListField = new JTextField();
@@ -195,40 +238,48 @@ public class CreateAssignmentScreen extends JFrame {
         addToConfigForm(studentListFileButton);
     }
 
-    /**
-     * Setup the heading style controls.
-     */
-    private void setupHeadingStyleControls() {
-        addLabelToConfigForm("Heading style:");
-        headingStyleChooser = new JComboBox<String>(HEADING_STYLES.keySet().toArray(new String[0]));
-        addToConfigForm(headingStyleChooser, 2);
+    /** Setup the indicator for the expected list of students that will be imported. */
+    private void setupStudentListIndicator() {
+        // Add the indicator to the panel
+        studentListIndicator = new JLabel("", JLabel.CENTER);
+        addToConfigForm(studentListIndicator, true, 3);
+
+        // Set up a listener that will update the indicator when the user's selection changes
+        studentListListener = new DocumentListener() {
+            public void changedUpdate(DocumentEvent arg0) {
+                updateStudentListIndicator();
+            }
+
+            public void insertUpdate(DocumentEvent arg0) {
+                updateStudentListIndicator();
+            }
+
+            public void removeUpdate(DocumentEvent arg0) {
+                updateStudentListIndicator();
+            }
+        };
+        assignmentDirectoryField.getDocument().addDocumentListener(studentListListener);
+        studentListField.getDocument().addDocumentListener(studentListListener);
     }
 
-    /**
-     * Setup the heading underline controls.
-     */
-    private void setupHeadingUnderlineControls() {
-        addLabelToConfigForm("Heading underline:");
-        underlineChooser = new JComboBox<>(UNDERLINE_STYLES.keySet().toArray(new String[0]));
-        addToConfigForm(underlineChooser, 2);
-    }
-
-    /**
-     * Setup heading line spacing controls.
-     */
-    private void setupHeadingLineSpacingControls() {
-        addLabelToConfigForm("Line spacing between sections:");
-        spacingChooser = new JComboBox<>(new Integer[] { 1, 2, 3 });
-        addToConfigForm(spacingChooser, 2);
-    }
-
-    /**
-     * Setup the line marker controls.
-     */
-    private void setupLineMarkerControls() {
-        addLabelToConfigForm("Line marker style:");
-        lineMarkerChooser = new JComboBox<>(new String[] { "-", "->", "=>", "*", "+" });
-        addToConfigForm(lineMarkerChooser, 2);
+    /** Show an indication of the list of students that would currently be used with the present settings. */
+    private void updateStudentListIndicator() {
+        List<String> studentIds = Assignment.findStudentIds(
+            new File(studentListField.getText()),
+            assignmentDirectoryField.getText()
+        );
+        String message;
+        int nrStudents = studentIds.size();
+        if (nrStudents == 0) {
+            message = "No student IDs found";
+        } else {
+            message = "Found " + nrStudents + " student IDs: ";
+            message += studentIds.stream().limit(3).collect(Collectors.joining(", "));
+            if (nrStudents > 3) {
+                message += ", and " + (nrStudents - 3) + " others";
+            }
+        }
+        studentListIndicator.setText(message);
     }
 
     /** Add a label component to the config form, aligned right. */
