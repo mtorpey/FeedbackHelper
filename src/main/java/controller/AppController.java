@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import configuration.UserPreferences;
 import database.DocumentDatabaseManager;
 import database.GraphDatabaseManager;
 import database.IDocumentDatabase;
@@ -143,6 +144,9 @@ public class AppController implements IAppController {
             // Change working directory to current directory
             assignment.setAssignmentDirectoryPath(currentDirectory);
         }
+
+        // Since this was successful, remember it as the default for next load
+        UserPreferences.setLastOpenedAssignmentPath(assignmentFilePath);
 
         // Load the feedback documents into the assignment
         loadFeedbackDocuments(assignment);

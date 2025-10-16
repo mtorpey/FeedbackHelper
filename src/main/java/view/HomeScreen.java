@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import configuration.UserPreferences;
 import controller.IAppController;
 import model.Assignment;
 
@@ -111,7 +112,6 @@ public class HomeScreen extends JFrame {
      */
     private void createStartButton(JPanel parent) {
         JButton startButton = new JButton("Start New Assignment");
-        //startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         startButton.addActionListener(e -> {
             dispose();
             new CreateAssignmentScreen(this.controller);
@@ -124,10 +124,9 @@ public class HomeScreen extends JFrame {
      */
     private void createLoadButton(JPanel parent) {
         JButton loadButton = new JButton("Load Assignment");
-        //loadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loadButton.addActionListener(e -> {
             // Show a file chooser
-            JFileChooser fileChooser = new JFileChooser();
+            JFileChooser fileChooser = new JFileChooser(UserPreferences.getLastOpenedAssignmentPath());
             fileChooser.setDialogTitle("Choose an assignment to resume");
 
             // Only allow FHT files to be selected
@@ -136,7 +135,7 @@ public class HomeScreen extends JFrame {
             fileChooser.addChoosableFileFilter(filter);
 
             // Get the selected file
-            int returnValue = fileChooser.showDialog(this, "Resume this assignment");
+            int returnValue = fileChooser.showDialog(this, "Open");
             String assignmentFilePath = null;
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 assignmentFilePath = fileChooser.getSelectedFile().getPath();
