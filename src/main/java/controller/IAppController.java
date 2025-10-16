@@ -43,14 +43,6 @@ public interface IAppController {
     );
 
     /**
-     * Create an assignment from a configuration file.
-     *
-     * @param configFilePath The location of the configuration file.
-     * @return The newly created Assignment object.
-     */
-    Assignment createAssignmentFromConfig(String configFilePath);
-
-    /**
      * Set the style preferences for an assignment's exports.
      *
      * @param headingStyle   The heading style.

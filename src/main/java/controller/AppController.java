@@ -105,33 +105,6 @@ public class AppController implements IAppController {
     }
 
     /**
-     * Create an assignment from a configuration file.
-     *
-     * @param configFilePath The location of the configuration file.
-     * @return The newly created Assignment object.
-     */
-    @Override
-    public Assignment createAssignmentFromConfig(String configFilePath) {
-        // Create the assignment and save it to an FHT file
-        Assignment assignment = appModel.createAssignmentFromConfig(configFilePath);
-        assignment.saveAssignmentDetails(
-            assignment.getAssignmentTitle().toLowerCase().replace(" ", "-").replace(".db", "")
-        );
-
-        // Create the assignment database
-        documentDatabase.createDocumentDatabase(assignment.getFullyQualifiedDatabaseName());
-
-        // Create the feedback files for the assignment in the database
-        documentDatabase.createFeedbackDocuments(assignment);
-
-        // Setup the graph database
-        graphDatabase.createGraphDatabase(assignment.getFullyQualifiedDatabaseName());
-        graphDatabase.setUpGraphDatabaseForAssignment(assignment.getAssignmentHeadings());
-
-        return assignment;
-    }
-
-    /**
      * Set the style preferences for an assignment's exports.
      *
      * @param headingStyle   The heading style.

@@ -149,56 +149,6 @@ public class AppModel implements IAppModel {
     }
 
     /**
-     * Create an assignment from a configuration file.
-     *
-     * @param configFilePath The location of the configuration file.
-     * @return The newly created Assignment object.
-     */
-    @Override
-    public Assignment createAssignmentFromConfig(String configFilePath) {
-        try {
-            // Load the assignment file as a JSON object
-            JSONObject configDoc = (JSONObject) new JSONParser().parse(new FileReader(configFilePath));
-
-            // Extract configuration options
-            String title = (String) configDoc.get("title");
-            String assignmentLocation = (String) configDoc.get("assignment_location");
-            String lineMarker = (String) configDoc.get("line_marker");
-            JSONArray headings = (JSONArray) configDoc.get("headings");
-
-            // Build a string of headings
-            StringBuilder headingsString = new StringBuilder();
-            headings.forEach(heading -> {
-                headingsString.append(heading);
-                headingsString.append("\n");
-            });
-
-            // Extract styling options
-            Map headingStyle = ((Map) configDoc.get("heading_style"));
-            String headingMarker = (String) headingStyle.get("heading_marker");
-            String headingUnderlineStyle = (String) headingStyle.get("heading_underline_style");
-            long numLinesAfterSectionEnds = (long) headingStyle.get("num_lines_after_section_ends");
-
-            String studentManifestFileLocation = (String) configDoc.get("student_manifest_location");
-            File studentManifestFile = new File(studentManifestFileLocation);
-
-            // Create the assignment and set style preferences
-            Assignment assignment = createAssignment(
-                title,
-                headingsString.toString(),
-                studentManifestFile,
-                assignmentLocation
-            );
-            setAssignmentPreferences(headingMarker, headingUnderlineStyle, (int) numLinesAfterSectionEnds, lineMarker);
-            this.assignment = assignment;
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
-
-        return this.assignment;
-    }
-
-    /**
      * Set the style preferences for an assignment's exports.
      *
      * @param headingStyle   The heading style.
