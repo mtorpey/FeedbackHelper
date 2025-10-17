@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
-import model.LinkedPhrases;
 import model.Phrase;
 
 /**
@@ -112,12 +111,4 @@ public interface IGraphDatabase {
      * @param newList The new set of phrases.
      */
     void managePhraseLinks(String heading, List<String> oldList, List<String> newList);
-
-    /**
-     * Get a list of linked phrases.
-     *
-     * @param heading The heading the linked phrases are for.
-     * @return A list of linked phrases for the given heading.
-     */
-    List<LinkedPhrases> getLinkedPhrases(String heading);
 }

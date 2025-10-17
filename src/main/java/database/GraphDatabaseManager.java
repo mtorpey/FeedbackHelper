@@ -14,7 +14,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import model.LinkedPhrases;
 import model.Pair;
 import model.Phrase;
 import model.Utilities;
@@ -406,18 +405,5 @@ public class GraphDatabaseManager implements IGraphDatabase {
                 createFollowedByLink(heading, pair.getFirst(), pair.getSecond());
             }
         });
-    }
-
-    /**
-     * Get a list of linked phrases.
-     *
-     * @param heading The heading the linked phrases are for.
-     * @return A list of linked phrases for the given heading.
-     */
-    @Override
-    public List<LinkedPhrases> getLinkedPhrases(String heading) {
-        // Empty list
-        List<LinkedPhrases> linkedPhrasesList = new ArrayList<LinkedPhrases>();
-        return linkedPhrasesList;
     }
 }

@@ -190,13 +190,6 @@ public interface IAppModel {
     void addNewCustomPhraseToView(Phrase phrase);
 
     /**
-     * Add new linked phrase.
-     *
-     * @param linkedPhrases The linked phrases to add.
-     */
-    void addNewLinkedPhrasesToView(LinkedPhrases linkedPhrases);
-
-    /**
      * Update the counter on a phrase.
      *
      * @param phrase The phrase to update.

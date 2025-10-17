@@ -18,7 +18,6 @@ import database.IGraphDatabase;
 import model.Assignment;
 import model.FeedbackDocument;
 import model.IAppModel;
-import model.LinkedPhrases;
 import model.Phrase;
 import model.Utilities;
 import view.PhraseType;

@@ -40,7 +40,6 @@ public class AppModel implements IAppModel {
     private final String INSERT_PHRASE_MESSAGE = "insertPhrase";
     private final String NEW_PHRASE_MESSAGE = "newPhrase";
     private final String NEW_CUSTOM_PHRASE_MESSAGE = "newCustomPhrase";
-    private final String NEW_LINKED_PHRASES_MESSAGE = "newLinkedPhrases";
     private final String UPDATE_PHRASE_COUNTER_MESSAGE = "updatePhraseCounter";
     private final String DELETE_PHRASE_MESSAGE = "deletePhrase";
     private final String RESET_PHRASES_PANEL_MESSAGE = "resetPhrasesPanel";
@@ -447,16 +446,6 @@ public class AppModel implements IAppModel {
     @Override
     public void addNewCustomPhraseToView(Phrase phrase) {
         notifySubscribers(NEW_CUSTOM_PHRASE_MESSAGE, phrase);
-    }
-
-    /**
-     * Add new linked phrase.
-     *
-     * @param linkedPhrases The linked phrases to add.
-     */
-    @Override
-    public void addNewLinkedPhrasesToView(LinkedPhrases linkedPhrases) {
-        notifySubscribers(NEW_LINKED_PHRASES_MESSAGE, linkedPhrases);
     }
 
     /**
