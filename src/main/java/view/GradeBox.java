@@ -1,6 +1,8 @@
 package view;
 
 import controller.IAppController;
+import model.StudentId;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -21,7 +23,7 @@ public class GradeBox extends JPanel {
     private final IAppController controller;
     private JLabel label;
     private JSpinner chooser;
-    private String studentId;
+    private StudentId studentId;
 
     /**
      * Constructor.
@@ -85,7 +87,7 @@ public class GradeBox extends JPanel {
      *
      * @param studentId The student ID that the grade is for.
      */
-    public void setStudentId(String studentId) {
+    public void setStudentId(StudentId studentId) {
         this.studentId = studentId;
     }
 }

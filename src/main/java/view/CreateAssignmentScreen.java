@@ -30,6 +30,7 @@ import javax.swing.event.DocumentListener;
 
 import controller.IAppController;
 import model.Assignment;
+import model.StudentId;
 
 /**
  * Configuration window for creating a new assignment
@@ -266,7 +267,7 @@ public class CreateAssignmentScreen extends JFrame {
 
     /** Show an indication of the list of students that would currently be used with the present settings. */
     private void updateStudentListIndicator() {
-        List<String> studentIds = Assignment.findStudentIds(
+        List<StudentId> studentIds = Assignment.findStudentIds(
             new File(studentListField.getText()),
             assignmentDirectoryField.getText()
         );
@@ -276,7 +277,7 @@ public class CreateAssignmentScreen extends JFrame {
             message = "No student IDs found";
         } else {
             message = "Found " + nrStudents + " student IDs: ";
-            message += studentIds.stream().limit(3).collect(Collectors.joining(", "));
+            message += studentIds.stream().limit(3).map(StudentId::toString).collect(Collectors.joining(", "));
             if (nrStudents > 3) {
                 message += ", and " + (nrStudents - 3) + " others";
             }

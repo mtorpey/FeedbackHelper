@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Toolkit;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -31,6 +30,7 @@ import controller.IAppController;
 import model.Assignment;
 import model.FeedbackDocument;
 import model.Phrase;
+import model.StudentId;
 
 /**
  * Feedback Screen Class.
@@ -38,7 +38,7 @@ import model.Phrase;
 public class FeedbackScreen implements PropertyChangeListener {
 
     //Remember Scrolling, not ideal because reset at restart, but quick fix that helps a lot
-    private static Map<String, Integer> scrollbarValues = new HashMap<>(); // TODO: is this the problem?
+    private static Map<StudentId, Integer> scrollbarValues = new HashMap<>(); // TODO: is this the problem?
 
     // Instance variables
     private final IAppController controller;
@@ -273,24 +273,18 @@ public class FeedbackScreen implements PropertyChangeListener {
         addStudentOption.addActionListener(l -> {
             String input = JOptionPane.showInputDialog(this.feedbackScreen, "Enter the new student id");
 
-            // Check that the new student id is not blank
-            if (input.isBlank()) {
-                JOptionPane.showMessageDialog(this.feedbackScreen, "The student id is blank.");
-                return;
-            }
-
-            String studentId;
+            // Get the new student id and check it
+            StudentId studentId;
             try {
-                Integer.parseInt(input);
-                studentId = input;
-            } catch (NumberFormatException exception) {
-                JOptionPane.showMessageDialog(this.feedbackScreen, "The student id is not a number.");
+                studentId = new StudentId(input);
+            } catch (IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(this.feedbackScreen, e.getMessage());
                 return;
             }
 
             // Create the new feedback document
-            FeedbackDocument feedbackDoc = new FeedbackDocument(assignment, studentId.toString());
-            assignment.setFeedbackDocument(studentId.toString(), feedbackDoc);
+            FeedbackDocument feedbackDoc = new FeedbackDocument(assignment, studentId);
+            assignment.setFeedbackDocument(studentId, feedbackDoc);
 
             // Create the feedback files for the assignment in the document database
             controller.createFeedbackDocuments(assignment);
@@ -328,7 +322,7 @@ public class FeedbackScreen implements PropertyChangeListener {
                 this.previewPanel.unhighlightPreviewBox(pb.getHeading());
             }
             // Select the new student
-            controller.displayNewDocument(assignment, studentId.toString());
+            controller.displayNewDocument(assignment, studentId);
 
             // Confirm completion
             JOptionPane.showMessageDialog(this.feedbackScreen, "Added document for student: " + studentId);
@@ -601,7 +595,6 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Change the heading for each student
         List<FeedbackDocument> feedbackDocuments = this.assignment.getFeedbackDocuments();
         feedbackDocuments.forEach(feedbackDocument -> {
-            String studentId = feedbackDocument.getStudentId();
             // Change the data to the new key
             String data = feedbackDocument.getHeadingData(previousHeading);
             feedbackDocument.setDataForHeading(currentHeading, data);
@@ -611,6 +604,7 @@ public class FeedbackScreen implements PropertyChangeListener {
                 headingsAndData.put(heading, feedbackDocument.getHeadingData(heading));
             });
 
+            StudentId studentId = feedbackDocument.getStudentId();
             double grade = feedbackDocument.getGrade();
             this.controller.saveFeedbackDocument(this.assignment, studentId, headingsAndData, grade);
             this.previewPanel.updatePreviewBox(
@@ -632,7 +626,7 @@ public class FeedbackScreen implements PropertyChangeListener {
      * @param event The event notification from the model.
      */
     private void performDocumentSave(PropertyChangeEvent event) {
-        String studentId = (String) event.getNewValue();
+        StudentId studentId = (StudentId) event.getNewValue();
         Map<String, String> headingsAndData = this.editorPanel.saveDataAsMap();
         double grade = this.editorPanel.getGrade();
         if (grade >= 0) {
@@ -651,8 +645,8 @@ public class FeedbackScreen implements PropertyChangeListener {
      * @param event The event notification from the model.
      */
     private void performDocumentViewChange(PropertyChangeEvent event) {
-        String newDocInView = (String) event.getNewValue();
-        this.editorPanel.setData(this.assignment.getFeedbackDocumentForStudent(newDocInView));
+        StudentId newDocId = (StudentId) event.getNewValue();
+        this.editorPanel.setData(this.assignment.getFeedbackDocumentForStudent(newDocId));
 
         // Update the preview boxes
         if (this.controller.getLastDocumentInView() != null) {
@@ -662,7 +656,7 @@ public class FeedbackScreen implements PropertyChangeListener {
             );
             this.previewPanel.unhighlightPreviewBox(this.controller.getLastDocumentInView());
         }
-        this.previewPanel.highlightPreviewBox(newDocInView);
+        this.previewPanel.highlightPreviewBox(newDocId);
 
         // Refresh UI
         this.previewPanel.repaint();

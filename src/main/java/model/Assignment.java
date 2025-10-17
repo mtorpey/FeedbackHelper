@@ -71,9 +71,7 @@ public class Assignment implements Serializable {
     // Instance variables
     private String assignmentTitle;
     private List<String> assignmentHeadings;
-    private List<String> studentIds;
-    private List<FeedbackDocument> feedbackDocuments;
-    private Map<String, FeedbackDocument> studentIdAndFeedbackDocumentMap;
+    private Map<StudentId, FeedbackDocument> studentIdAndFeedbackDocumentMap;
     private String headingStyle;
     private String underlineStyle;
     private int lineSpacing;
@@ -86,9 +84,8 @@ public class Assignment implements Serializable {
      * Constructor.
      */
     public Assignment() {
-        this.studentIds = new ArrayList<String>();
         this.assignmentHeadings = new ArrayList<String>();
-        studentIdAndFeedbackDocumentMap = new HashMap<String, FeedbackDocument>();
+        studentIdAndFeedbackDocumentMap = new HashMap<StudentId, FeedbackDocument>();
     }
 
     /**
@@ -239,7 +236,7 @@ public class Assignment implements Serializable {
      * @param studentId        The student ID the feedback document is for.
      * @param feedbackDocument The feedback document for the student.
      */
-    public void setFeedbackDocument(String studentId, FeedbackDocument feedbackDocument) {
+    public void setFeedbackDocument(StudentId studentId, FeedbackDocument feedbackDocument) {
         this.studentIdAndFeedbackDocumentMap.put(studentId, feedbackDocument);
     }
 
@@ -293,19 +290,19 @@ public class Assignment implements Serializable {
      */
     public void setStudentIds(File studentManifestFile, String assignmentDirectoryPath) {
         // Get the ids
-        List<String> studentIds = findStudentIds(studentManifestFile, assignmentDirectoryPath);
+        List<StudentId> studentIds = findStudentIds(studentManifestFile, assignmentDirectoryPath);
         System.out.println("Using student ids " + studentIds);
 
         // Create and install documents
-        for (String studentId : studentIds) {
+        for (StudentId studentId : studentIds) {
             FeedbackDocument feedbackDocument = new FeedbackDocument(this, studentId);
             this.studentIdAndFeedbackDocumentMap.put(studentId, feedbackDocument);
         }
     }
 
     /** Get the list of students from a file or by guessing from the directory contents. */
-    public static List<String> findStudentIds(File studentManifestFile, String assignmentDirectoryPath) {
-        List<String> studentIds;
+    public static List<StudentId> findStudentIds(File studentManifestFile, String assignmentDirectoryPath) {
+        List<StudentId> studentIds;
         try {
             System.out.println("Looking for student ids in file '" + studentManifestFile + "'...");
             studentIds = findStudentIdsFromFile(studentManifestFile);
@@ -323,13 +320,16 @@ public class Assignment implements Serializable {
     }
 
     /** Get a list of student IDs from the given file. */
-    public static List<String> findStudentIdsFromFile(File file) throws IOException, NullPointerException {
-        List<String> studentIds = new ArrayList<>();
+    public static List<StudentId> findStudentIdsFromFile(File file) throws IOException, NullPointerException {
+        List<StudentId> studentIds = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             while (reader.ready()) {
-                String studentId = reader.readLine().trim();
-                if (!studentId.isEmpty()) {
+                try {
+                    StudentId studentId = new StudentId(reader.readLine().trim());
                     studentIds.add(studentId);
+                } catch (IllegalArgumentException e) {
+                    // not a valid id, so skip
+                    continue;
                 }
             }
         }
@@ -341,13 +341,13 @@ public class Assignment implements Serializable {
      *
      * @param path The directory to search
      */
-    public static List<String> findStudentIdsFromDirectory(String path) {
-        List<String> studentIds = new ArrayList<>();
+    public static List<StudentId> findStudentIdsFromDirectory(String path) {
+        List<StudentId> studentIds = new ArrayList<>();
         for (File f : new File(path).listFiles()) {
             String name = f.getName();
-            // Does this look like a string of digits?
-            if (name.matches("\\d+(\\..*)?")) {
-                studentIds.add(name.split("\\.")[0]); // everything before the dot
+            // Look for St Andrews-style matric numbers with extensions
+            if (name.matches(StudentId.ST_ANDREWS_PATTERN + "(\\..*)?")) {
+                studentIds.add(new StudentId(name.split("\\.")[0])); // everything before the dot
             }
         }
         return studentIds;
@@ -414,7 +414,7 @@ public class Assignment implements Serializable {
      * @param studentId The student ID to get the feedback document for.
      * @return The feedback document for the given student ID.
      */
-    public FeedbackDocument getFeedbackDocumentForStudent(String studentId) {
+    public FeedbackDocument getFeedbackDocumentForStudent(StudentId studentId) {
         return studentIdAndFeedbackDocumentMap.get(studentId);
     }
 }

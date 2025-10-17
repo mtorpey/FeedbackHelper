@@ -12,6 +12,7 @@ import org.dizitart.no2.filters.Filters;
 
 import model.Assignment;
 import model.FeedbackDocument;
+import model.StudentId;
 
 /**
  * Document Database Manager Class.
@@ -173,7 +174,7 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
     @Override
     public boolean saveFeedbackDocument(
         Assignment assignment,
-        String studentId,
+        StudentId studentId,
         Map<String, String> headingsAndData,
         double grade
     ) {
@@ -211,7 +212,7 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
      * @param studentId  The student ID of the feedback document.
      */
     @Override
-    public void updateFeedbackDocument(Assignment assignment, String studentId) {
+    public void updateFeedbackDocument(Assignment assignment, StudentId studentId) {
         // Check if the collection exists
         if (databaseConnection.hasCollection(assignment.getDatabaseCollectionName())) {
             // Get the collection

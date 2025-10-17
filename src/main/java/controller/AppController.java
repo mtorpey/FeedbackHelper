@@ -19,6 +19,7 @@ import model.Assignment;
 import model.FeedbackDocument;
 import model.IAppModel;
 import model.Phrase;
+import model.StudentId;
 import model.Utilities;
 import view.PhraseType;
 import visualisation.Visualisations;
@@ -236,7 +237,7 @@ public class AppController implements IAppController {
      * @param studentId The ID of the feedback document to save.
      */
     @Override
-    public void saveFeedbackDocument(String studentId) {
+    public void saveFeedbackDocument(StudentId studentId) {
         appModel.notifySubscribers("saveDoc", studentId);
     }
 
@@ -251,7 +252,7 @@ public class AppController implements IAppController {
     @Override
     public void saveFeedbackDocument(
         Assignment assignment,
-        String studentId,
+        StudentId studentId,
         Map<String, String> headingsAndData,
         double grade
     ) {
@@ -271,7 +272,7 @@ public class AppController implements IAppController {
      * @return The last document's ID.
      */
     @Override
-    public String getLastDocumentInView() {
+    public StudentId getLastDocumentInView() {
         return appModel.getLastDocumentInView();
     }
 
@@ -281,7 +282,7 @@ public class AppController implements IAppController {
      * @return The current document's ID.
      */
     @Override
-    public String getCurrentDocumentInView() {
+    public StudentId getCurrentDocumentInView() {
         return appModel.getCurrentDocumentInView();
     }
 
@@ -291,7 +292,7 @@ public class AppController implements IAppController {
      * @param studentId The current document's ID.
      */
     @Override
-    public void setCurrentDocumentInView(String studentId) {
+    public void setCurrentDocumentInView(StudentId studentId) {
         appModel.setCurrentDocumentInView(studentId, false);
     }
 
@@ -302,7 +303,7 @@ public class AppController implements IAppController {
      * @param studentId  The ID of the document to display.
      */
     @Override
-    public void displayNewDocument(Assignment assignment, String studentId) {
+    public void displayNewDocument(Assignment assignment, StudentId studentId) {
         // Get the latest data for the requested document
         documentDatabase.updateFeedbackDocument(assignment, studentId);
         appModel.setCurrentDocumentInView(studentId, true);
@@ -316,7 +317,7 @@ public class AppController implements IAppController {
      * @return The first line of the document if it exists or a default message.
      */
     @Override
-    public String getFirstLineFromDocument(Assignment assignment, String studentId) {
+    public String getFirstLineFromDocument(Assignment assignment, StudentId studentId) {
         // Set the default text
         String returnString = "<no preview available>";
 

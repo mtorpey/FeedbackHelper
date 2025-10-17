@@ -10,6 +10,7 @@ import javax.swing.border.Border;
 
 import controller.IAppController;
 import model.Assignment;
+import model.StudentId;
 
 /**
  * Preview Box Class.
@@ -18,7 +19,7 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
 
     // Instance variables
     private final IAppController controller;
-    private String heading;
+    private StudentId heading;
     private String firstLine;
     private double grade;
     private JTextArea textPane;
@@ -30,11 +31,11 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
      * Constructor.
      *
      * @param controller The controller.
-     * @param heading    The heading of the preview box (usually student ID)
+     * @param heading    The heading of the preview box (a student ID)
      * @param grade      The grade of the student.
      * @param firstLine  A unique line from the student's feedback document.
      */
-    public PreviewBox(IAppController controller, String heading, double grade, String firstLine) {
+    public PreviewBox(IAppController controller, StudentId heading, double grade, String firstLine) {
         // Store variables
         this.controller = controller;
         this.heading = heading;
@@ -101,7 +102,7 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
      *
      * @return The heading of the preview box.
      */
-    public String getHeading() {
+    public StudentId getHeading() {
         return this.heading;
     }
 
@@ -154,19 +155,12 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
     }
 
     /**
-     * Compare the preview box to another preview box. Used to order the boxes.
+     * Compare the preview box to another preview box.
      *
-     * @param o The preview box to compare with.
-     * @return An integer >0, <0 or equal to 0.
+     * Uses headings.
      */
     @Override
-    public int compareTo(PreviewBox o) {
-        try {
-            int thisNum = Integer.parseInt(heading);
-            int otherNum = Integer.parseInt(o.getHeading());
-            return thisNum - otherNum;
-        } catch (NumberFormatException | ClassCastException e) {
-            return 0;
-        }
+    public int compareTo(PreviewBox other) {
+        return getHeading().compareTo(other.getHeading());
     }
 }

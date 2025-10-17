@@ -11,7 +11,7 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
 
     // Instance variables
     private Assignment assignment;
-    private String studentId;
+    private StudentId studentId;
     private HashMap<String, String> headingAndData;
     private double grade;
 
@@ -21,7 +21,7 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      * @param assignment The assignment the feedback document belongs to.
      * @param studentId  The student ID the feedback document is for.
      */
-    public FeedbackDocument(Assignment assignment, String studentId) {
+    public FeedbackDocument(Assignment assignment, StudentId studentId) {
         this.assignment = assignment;
         this.studentId = studentId;
         this.headingAndData = new HashMap<String, String>();
@@ -86,7 +86,7 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      *
      * @return The student ID of the feedback document
      */
-    public String getStudentId() {
+    public StudentId getStudentId() {
         return studentId;
     }
 

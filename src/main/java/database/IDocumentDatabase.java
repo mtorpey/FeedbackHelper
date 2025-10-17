@@ -7,6 +7,7 @@ import org.dizitart.no2.NitriteCollection;
 
 import model.Assignment;
 import model.FeedbackDocument;
+import model.StudentId;
 
 /**
  * Document Database Interface.
@@ -70,7 +71,7 @@ public interface IDocumentDatabase {
      */
     boolean saveFeedbackDocument(
         Assignment assignment,
-        String studentId,
+        StudentId studentId,
         Map<String, String> headingsAndData,
         double grade
     );
@@ -81,5 +82,5 @@ public interface IDocumentDatabase {
      * @param assignment The assignment the feedback document belongs to.
      * @param studentId  The student ID of the feedback document.
      */
-    void updateFeedbackDocument(Assignment assignment, String studentId);
+    void updateFeedbackDocument(Assignment assignment, StudentId studentId);
 }

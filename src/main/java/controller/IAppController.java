@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import model.Assignment;
+import model.StudentId;
 import view.PhraseType;
 
 /**
@@ -101,7 +102,7 @@ public interface IAppController {
      *
      * @param studentId The ID of the feedback document to save.
      */
-    void saveFeedbackDocument(String studentId);
+    void saveFeedbackDocument(StudentId studentId);
 
     /**
      * Save the feedback document.
@@ -113,7 +114,7 @@ public interface IAppController {
      */
     void saveFeedbackDocument(
         Assignment assignment,
-        String studentId,
+        StudentId studentId,
         Map<String, String> headingsAndData,
         double grade
     );
@@ -123,21 +124,21 @@ public interface IAppController {
      *
      * @return The last document's ID.
      */
-    String getLastDocumentInView();
+    StudentId getLastDocumentInView();
 
     /**
      * Get the document ID of the current document being edited.
      *
      * @return The current document's ID.
      */
-    String getCurrentDocumentInView();
+    StudentId getCurrentDocumentInView();
 
     /**
      * Update the model with the current ID of the document that is being edited.
      *
      * @param studentId The current document's ID.
      */
-    void setCurrentDocumentInView(String studentId);
+    void setCurrentDocumentInView(StudentId studentId);
 
     /**
      * Process a request to display a new document to edit.
@@ -145,7 +146,7 @@ public interface IAppController {
      * @param assignment The assignment the document belongs to.
      * @param studentId  The ID of the document to display.
      */
-    void displayNewDocument(Assignment assignment, String studentId);
+    void displayNewDocument(Assignment assignment, StudentId studentId);
 
     /**
      * Get the first line of a feedback document.
@@ -154,7 +155,7 @@ public interface IAppController {
      * @param studentId  The student id of the document.
      * @return The first line of the document if it exists or a default message.
      */
-    String getFirstLineFromDocument(Assignment assignment, String studentId);
+    String getFirstLineFromDocument(Assignment assignment, StudentId studentId);
 
     /**
      * Notify the model of the current feedback box heading being edited.

@@ -109,21 +109,21 @@ public interface IAppModel {
      *
      * @return The last document's ID.
      */
-    String getLastDocumentInView();
+    StudentId getLastDocumentInView();
 
     /**
      * Get the document ID of the current document being edited.
      *
      * @return The current document's ID.
      */
-    String getCurrentDocumentInView();
+    StudentId getCurrentDocumentInView();
 
     /**
      * Update the model with the current ID of the document that is being edited.
      *
      * @param studentId The current document's ID.
      */
-    void setCurrentDocumentInView(String studentId, boolean changeDoc);
+    void setCurrentDocumentInView(StudentId studentId, boolean changeDoc);
 
     /**
      * Get the current feedback box heading being edited.

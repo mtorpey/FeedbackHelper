@@ -46,8 +46,8 @@ public class AppModel implements IAppModel {
 
     // Instance variables
     private Assignment assignment;
-    private String currentStudentId;
-    private String lastStudentId;
+    private StudentId currentStudentId;
+    private StudentId lastStudentId;
     private String currentHeadingBeingEdited;
     private String previousHeadingBeingEdited;
     private Map<String, List<Phrase>> currentHeadingAndUsedPhrases;
@@ -228,7 +228,7 @@ public class AppModel implements IAppModel {
      * @return The last document's ID.
      */
     @Override
-    public String getLastDocumentInView() {
+    public StudentId getLastDocumentInView() {
         return this.lastStudentId;
     }
 
@@ -238,7 +238,7 @@ public class AppModel implements IAppModel {
      * @return The current document's ID.
      */
     @Override
-    public String getCurrentDocumentInView() {
+    public StudentId getCurrentDocumentInView() {
         return this.currentStudentId;
     }
 
@@ -248,7 +248,7 @@ public class AppModel implements IAppModel {
      * @param studentId The current document's ID.
      */
     @Override
-    public void setCurrentDocumentInView(String studentId, boolean changeDoc) {
+    public void setCurrentDocumentInView(StudentId studentId, boolean changeDoc) {
         this.lastStudentId = this.currentStudentId;
         this.currentStudentId = studentId;
         if (changeDoc) {
