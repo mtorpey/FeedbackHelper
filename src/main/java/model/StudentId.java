@@ -28,7 +28,7 @@ public record StudentId(String id) implements Comparable<StudentId>, Serializabl
     public String toString() {
         return id;
     }
-    
+
     @Override
     public int compareTo(StudentId other) {
         return id.compareTo(other.id);

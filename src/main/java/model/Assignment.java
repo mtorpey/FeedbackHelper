@@ -1,5 +1,7 @@
 package model;
 
+import static java.util.function.Predicate.not;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,8 +18,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.function.Predicate.not;
 
 /**
  * Assignment Class.
@@ -96,9 +96,7 @@ public class Assignment implements Serializable {
      */
     public static Assignment loadAssignment(Path fhtFile) {
         Assignment loadedAssignment = null;
-        try (
-            ObjectInputStream objectInputStream = new ObjectInputStream(Files.newInputStream(fhtFile))
-        ) {
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(Files.newInputStream(fhtFile))) {
             loadedAssignment = (Assignment) objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -309,8 +307,7 @@ public class Assignment implements Serializable {
      * @throws IOException if something goes wrong while reading
      * @throws NullPointerException if the argument is null
      */
-    private static List<StudentId> findStudentIdsFromFile(Path file)
-        throws IOException, NullPointerException {
+    private static List<StudentId> findStudentIdsFromFile(Path file) throws IOException, NullPointerException {
         if (!Files.isRegularFile(file)) {
             throw new FileNotFoundException("not a regular file");
         }
@@ -380,9 +377,7 @@ public class Assignment implements Serializable {
     public void saveAssignmentDetails() throws IOException {
         String fileName = getFileSafeTitle() + ".fht";
         Path fhtFile = directory.resolve(fileName);
-        try (
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(Files.newOutputStream(fhtFile))
-        ) {
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(Files.newOutputStream(fhtFile))) {
             objectOutputStream.writeObject(this);
             System.out.println("Saved to " + fhtFile);
         }

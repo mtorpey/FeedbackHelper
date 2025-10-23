@@ -106,8 +106,8 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
     /** Export feedback to a text document in the given directory. */
     public void export(Path directory) throws IOException {
         Path outFile = directory.resolve(getStudentId() + ".txt");
-        
-        try( BufferedWriter writer = Files.newBufferedWriter(outFile) ) {
+
+        try (BufferedWriter writer = Files.newBufferedWriter(outFile)) {
             for (String heading : getHeadings()) {
                 // Heading
                 String fullHeading = assignment.getHeadingStyle() + heading;
@@ -145,7 +145,16 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      */
     @Override
     public String toString() {
-        return "FeedbackDocument{" + "assignment=" + assignment.getFileSafeTitle() + ", studentId=" + studentId + ", text=" +  sectionContents + '}';
+        return (
+            "FeedbackDocument{" +
+            "assignment=" +
+            assignment.getFileSafeTitle() +
+            ", studentId=" +
+            studentId +
+            ", text=" +
+            sectionContents +
+            '}'
+        );
     }
 
     /** Comparable by student id. */

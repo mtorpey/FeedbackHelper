@@ -68,7 +68,7 @@ public class HomeScreen extends JFrame {
         createFrameTitle();
         createDescriptionArea();
         createButtons();
-   }
+    }
 
     /**
      * Create the title label.
@@ -85,7 +85,8 @@ public class HomeScreen extends JFrame {
      */
     public void createDescriptionArea() {
         JTextArea description = new JTextArea();
-        description.setText("""
+        description.setText(
+            """
             Welcome to the Feedback Helper Tool!
 
             To get started with creating feedback documents click the 'Start New Assignment' button. You will then be prompted for some details to set up the project.

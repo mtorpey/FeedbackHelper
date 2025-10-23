@@ -2,7 +2,6 @@ package controller;
 
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,9 +13,9 @@ import java.util.stream.Collectors;
 
 import configuration.UserPreferences;
 import database.GraphDatabaseManager;
+import model.AppModel;
 import model.Assignment;
 import model.FeedbackDocument;
-import model.AppModel;
 import model.Phrase;
 import model.StudentId;
 import model.Utilities;
@@ -283,7 +282,9 @@ public class AppController {
         // Find the first line of the document
         for (String heading : assignment.getHeadings()) {
             if (!feedbackDocumentForStudent.getSectionContents(heading).isEmpty()) {
-                List<String> dataAsList = Arrays.stream(feedbackDocumentForStudent.getSectionContents(heading).split("\n"))
+                List<String> dataAsList = Arrays.stream(
+                    feedbackDocumentForStudent.getSectionContents(heading).split("\n")
+                )
                     .filter(line -> line.startsWith(getLineMarker()))
                     .collect(Collectors.toList());
 
