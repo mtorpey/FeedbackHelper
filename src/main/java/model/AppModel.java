@@ -3,10 +3,10 @@ package model;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NotDirectoryException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -117,28 +117,32 @@ public class AppModel implements IAppModel {
      *
      * @param assignmentTitle         The title of the assignment.
      * @param assignmentHeadings      The headings of the feedback document.
-     * @param studentManifestFile     The student list file.
-     * @param assignmentDirectoryPath The directory location to save assignment related documents.
+     * @param studentListFile     The student list file.
+     * @param assignmentDirectory The directory location to save assignment related documents.
      * @return - The Assignment object that was created.
      */
     @Override
     public Assignment createAssignment(
         String assignmentTitle,
         String assignmentHeadings,
-        File studentManifestFile,
-        String assignmentDirectoryPath
-    ) {
-        // Create assignment object
+        Path studentListFile,
+        Path assignmentDirectory
+    ) throws NotDirectoryException, IOException {
+        // create assignment object
         Assignment assignment = new Assignment();
         assignment.setAssignmentTitle(assignmentTitle);
         assignment.setAssignmentHeadings(assignmentHeadings);
-        assignment.setStudentIds(studentManifestFile, assignmentDirectoryPath);
-        assignment.setAssignmentDirectoryPath(assignmentDirectoryPath);
+        assignment.setStudentIds(studentListFile, assignmentDirectory);
+        assignment.setDirectory(assignmentDirectory);
 
         // Create the assignment directory if it does not exist
-        File outputDirectory = new File(assignmentDirectoryPath);
-        if (!outputDirectory.exists()) {
-            outputDirectory.mkdir();
+        if (!Files.exists(assignmentDirectory)) {
+            Files.createDirectories(assignmentDirectory);
+        }
+
+        // Cancel if it already exists and isn't a directory
+        if (!Files.isDirectory(assignmentDirectory)) {
+            throw new NotDirectoryException(assignmentDirectory.toString());
         }
 
         // Once an assignment is created, notify the observers
@@ -171,13 +175,30 @@ public class AppModel implements IAppModel {
     /**
      * Load an assignment from an FHT file.
      *
-     * @param assignmentFilePath The location of the assignment FHT file.
+     * @param fhtFile Path to the assignment's FHT file.
      * @return The Assignment object for the assignment.
      */
     @Override
-    public Assignment loadAssignment(String assignmentFilePath) {
-        this.assignment = Assignment.loadAssignment(assignmentFilePath);
+    public Assignment loadAssignment(Path fhtFile) {
+        this.assignment = Assignment.loadAssignment(fhtFile);
         return this.assignment;
+    }
+
+    /**
+     * Save the assignment to disk.
+     *
+     * It may be unnecessary to pass the assignment as a parameter, since it
+     * should be equal to this.assignment, but this works for now. Importantly,
+     * this allows us to handle any IOException using the model's notification
+     * system.
+     */
+    @Override
+    public void saveAssignment(Assignment assignment) {
+        try {
+            assignment.saveAssignmentDetails();
+        } catch (IOException e) {
+            notifySubscribers(ERROR_MESSAGE, "Error saving assignment: " + e.getMessage());
+        }
     }
 
     /**
@@ -298,59 +319,15 @@ public class AppModel implements IAppModel {
      */
     @Override
     public void exportFeedbackDocuments(Assignment assignment) {
-        // Create the output directory if it does not exist
-        File outputDirectory = new File(
-            assignment.getAssignmentDirectoryPath() +
-                File.separator +
-                assignment.getAssignmentTitle().trim().replace(" ", "-")
-        );
-        if (!outputDirectory.exists()) {
-            outputDirectory.mkdir();
-        }
-
         // Write out each feedback document as a text file
-        assignment
-            .getFeedbackDocuments()
-            .forEach(feedbackDocument -> {
-                try (
-                    BufferedWriter writer = new BufferedWriter(
-                        new FileWriter(outputDirectory + File.separator + feedbackDocument.getStudentId() + ".txt")
-                    )
-                ) {
-                    for (String heading : assignment.getAssignmentHeadings()) {
-                        // Heading
-                        writer.write(assignment.getHeadingStyle() + heading);
-                        writer.newLine();
-
-                        // Underline heading if required
-                        String underlineStyle = assignment.getUnderlineStyle();
-                        if (!underlineStyle.isEmpty()) {
-                            for (int i = 0; i < assignment.getHeadingStyle().length() + heading.length(); i++) {
-                                writer.write(underlineStyle);
-                            }
-                        }
-
-                        // Data
-                        writer.newLine();
-                        String headingData = feedbackDocument.getHeadingData(heading);
-                        List<String> dataAsList = Arrays.stream(headingData.split("\n")).collect(Collectors.toList());
-                        for (String line : dataAsList) {
-                            if (!line.trim().equals(getLineMarker().trim())) {
-                                writer.write(line);
-                                writer.newLine();
-                            }
-                        }
-
-                        // End section spacing
-                        for (int i = 0; i < assignment.getLineSpacing(); i++) {
-                            writer.newLine();
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    notifySubscribers(ERROR_MESSAGE, "Something went wrong during grade export!");
-                }
-            });
+        try {
+            Path outputDirectory = assignment.createFeedbackOutputDirectory();
+            for (FeedbackDocument document : assignment.getFeedbackDocuments()) {
+                document.export(outputDirectory);
+            }
+        } catch (IOException e) {
+            notifySubscribers(ERROR_MESSAGE, "Error writing feedback documents: " + e.getMessage());
+        }
     }
 
     /**
@@ -360,29 +337,19 @@ public class AppModel implements IAppModel {
      */
     @Override
     public void exportGrades(Assignment assignment) {
-        // Create the output directory if it does not exist
-        File outputDirectory = new File(
-            assignment.getAssignmentDirectoryPath() +
-                File.separator +
-                assignment.getAssignmentTitle().trim().replace(" ", "-")
-        );
-        if (!outputDirectory.exists()) {
-            outputDirectory.mkdir();
-        }
-
         // Write out the student ids and grades, one per line
-        try (
-            BufferedWriter writer = new BufferedWriter(
-                new FileWriter(outputDirectory + File.separator + GRADES_FILENAME)
-            )
-        ) {
-            for (FeedbackDocument feedbackDocument : assignment.getFeedbackDocuments()) {
-                writer.write(feedbackDocument.getStudentId() + "," + feedbackDocument.getGrade());
-                writer.newLine();
+        try {
+            Path outputDirectory = assignment.createFeedbackOutputDirectory();
+            Path gradesFile = outputDirectory.resolve(GRADES_FILENAME);
+            try (BufferedWriter writer = Files.newBufferedWriter(gradesFile)) {
+                for (FeedbackDocument document : assignment.getFeedbackDocuments()) {
+                    writer.write(document.getStudentId() + "," + document.getGrade());
+                    writer.newLine();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
-            notifySubscribers(ERROR_MESSAGE, "Something went wrong during grade export!");
+            notifySubscribers(ERROR_MESSAGE, "Error during grade export: " + e.getMessage());
         }
     }
 

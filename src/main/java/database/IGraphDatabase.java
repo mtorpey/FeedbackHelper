@@ -1,5 +1,6 @@
 package database;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -13,18 +14,20 @@ public interface IGraphDatabase {
     /**
      * Open the database.
      *
-     * @param databasePath The database file to open.
+     * @param assignmentDirectory The directory containing the assignment.
+     * @param databaseName The assignment name to be used for this database's filename.
      * @return True if the database was successfully opened, false otherwise.
      */
-    boolean openGraphDatabase(String databasePath);
+    boolean openGraphDatabase(Path assignmentDirectory, String databaseName);
 
     /**
      * Create a database.
      *
-     * @param databasePath The database file to create.
+     * @param assignmentDirectory The directory containing the assignment.
+     * @param databaseName The assignment name to be used for this database's filename.
      * @return True if the database was successfully opened, false otherwise.
      */
-    boolean createGraphDatabase(String databasePath);
+    boolean createGraphDatabase(Path assignmentDirectory, String databaseName);
 
     /**
      * Setup the graph database for an assignment.

@@ -152,7 +152,7 @@ public class EditorPanel extends JPanel {
         // Set the data for each feedback box
         this.feedbackBoxes.forEach(feedbackBox -> {
             feedbackBox.setTextAreaText("");
-            feedbackBox.setTextAreaText(feedbackDocument.getHeadingData(feedbackBox.getHeading()));
+            feedbackBox.setTextAreaText(feedbackDocument.getSectionContents(feedbackBox.getHeading()));
         });
 
         // Set the grade box

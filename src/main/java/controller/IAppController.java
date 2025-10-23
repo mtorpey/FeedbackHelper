@@ -1,7 +1,8 @@
 package controller;
 
 import java.beans.PropertyChangeListener;
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -32,16 +33,16 @@ public interface IAppController {
      *
      * @param assignmentTitle         The title of the assignment.
      * @param headings                The headings of the feedback document.
-     * @param studentManifestFile     The student list file.
-     * @param assignmentDirectoryPath The directory location to save assignment related documents.
+     * @param studentListFile     The student list file.
+     * @param assignmentDirectory The directory location to save assignment related documents.
      * @return - The Assignment object that was created.
      */
     Assignment createAssignment(
         String assignmentTitle,
         String headings,
-        File studentManifestFile,
-        String assignmentDirectoryPath
-    );
+        Path studentListFile,
+        Path assignmentDirectory
+    ) throws IOException;
 
     /**
      * Set the style preferences for an assignment's exports.
@@ -56,18 +57,17 @@ public interface IAppController {
     /**
      * Load an assignment from an FHT file.
      *
-     * @param assignmentFilePath The location of the assignment FHT file.
+     * @param fhtFile Path to the assignment's FHT file.
      * @return The Assignment object for the assignment.
      */
-    Assignment loadAssignment(String assignmentFilePath);
+    Assignment loadAssignment(Path fhtFile);
 
     /**
      * Save an assignment.
      *
      * @param assignment The assignment to save.
-     * @param fileName   The file name to save the assignment FHT as.
      */
-    void saveAssignment(Assignment assignment, String fileName);
+    void saveAssignment(Assignment assignment);
 
     /**
      * Get the line marker to use for denoting new lines.

@@ -1,5 +1,6 @@
 package database;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -31,18 +32,20 @@ public interface IDocumentDatabase {
     /**
      * Open the database.
      *
-     * @param databasePath The database file to open.
+     * @param assignmentDirectory The directory containing the assignment.
+     * @param databaseName The assignment name to be used for this database's filename.
      * @return True if the database was successfully opened, false otherwise.
      */
-    boolean openDocumentDatabase(String databasePath);
+    boolean openDocumentDatabase(Path assignmentDirectory, String databaseName);
 
     /**
      * Create a database.
      *
-     * @param databasePath The database file to create.
+     * @param assignmentDirectory The directory containing the assignment.
+     * @param databaseName The assignment name to be used for this database's filename.
      * @return True if the database was successfully opened, false otherwise.
      */
-    boolean createDocumentDatabase(String databasePath);
+    boolean createDocumentDatabase(Path assignmentDirectory, String databaseName);
 
     /**
      * Create the feedback documents in the database.

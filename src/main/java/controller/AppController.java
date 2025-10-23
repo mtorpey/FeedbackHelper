@@ -1,7 +1,9 @@
 package controller;
 
 import java.beans.PropertyChangeListener;
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,35 +74,35 @@ public class AppController implements IAppController {
      *
      * @param assignmentTitle         The title of the assignment.
      * @param headings                The headings of the feedback document.
-     * @param studentManifestFile     The student list file.
-     * @param assignmentDirectoryPath The directory location to save assignment related documents.
+     * @param studentListFile     The student list file.
+     * @param assignmentDirectory The directory location to save assignment related documents.
      * @return - The Assignment object that was created.
      */
     @Override
     public Assignment createAssignment(
         String assignmentTitle,
         String headings,
-        File studentManifestFile,
-        String assignmentDirectoryPath
-    ) {
+        Path studentListFile,
+        Path assignmentDirectory
+    ) throws IOException {
         // Create assignment in the model
         Assignment assignment = appModel.createAssignment(
             assignmentTitle,
             headings,
-            studentManifestFile,
-            assignmentDirectoryPath
+            studentListFile,
+            assignmentDirectory
         );
-        assignment.saveAssignmentDetails(assignmentTitle.toLowerCase().replace(" ", "-").replace(".db", ""));
+        assignment.saveAssignmentDetails();
 
         // Create the assignment database
-        documentDatabase.createDocumentDatabase(assignment.getFullyQualifiedDatabaseName());
+        documentDatabase.createDocumentDatabase(assignment.getDirectory(), assignment.getFileSafeTitle());
 
         // Create the feedback files for the assignment in the document database
         documentDatabase.createFeedbackDocuments(assignment);
 
         // Create the graph database
-        graphDatabase.createGraphDatabase(assignment.getFullyQualifiedDatabaseName());
-        graphDatabase.setUpGraphDatabaseForAssignment(assignment.getAssignmentHeadings());
+        graphDatabase.createGraphDatabase(assignment.getDirectory(), assignment.getFileSafeTitle());
+        graphDatabase.setUpGraphDatabaseForAssignment(assignment.getHeadings());
 
         return assignment;
     }
@@ -126,27 +128,22 @@ public class AppController implements IAppController {
     /**
      * Load an assignment from an FHT file.
      *
-     * @param assignmentFilePath The location of the assignment FHT file.
+     * @param fhtFile Path to the assignment's FHT file
      * @return The Assignment object for the assignment.
      */
     @Override
-    public Assignment loadAssignment(String assignmentFilePath) {
+    public Assignment loadAssignment(Path fhtFile) {
         // Load the assignment
-        Assignment assignment = appModel.loadAssignment(assignmentFilePath);
+        Assignment assignment = appModel.loadAssignment(fhtFile);
 
         // Get the file at the path
-        File file = new File(assignmentFilePath);
-        String currentDirectory = file.getParent();
+        Path currentDirectory = fhtFile.getParent().toAbsolutePath();
 
-        // Check if the assignment working directory matches the current directory
-        if (!assignment.getAssignmentDirectoryPath().equals(currentDirectory)) {
-            System.out.println("Changing directory to " + currentDirectory);
-            // Change working directory to current directory
-            assignment.setAssignmentDirectoryPath(currentDirectory);
-        }
+        // The assignment may have moved since being saved, so its directory is not serialised
+        assignment.setDirectory(currentDirectory);
 
         // Since this was successful, remember it as the default for next load
-        UserPreferences.setLastOpenedAssignmentPath(assignmentFilePath);
+        UserPreferences.setLastOpenedAssignment(fhtFile);
 
         // Load the feedback documents into the assignment
         loadFeedbackDocuments(assignment);
@@ -157,11 +154,10 @@ public class AppController implements IAppController {
      * Save an assignment.
      *
      * @param assignment The assignment to save.
-     * @param fileName   The file name to save the assignment FHT as.
      */
     @Override
-    public void saveAssignment(Assignment assignment, String fileName) {
-        assignment.saveAssignmentDetails(fileName);
+    public void saveAssignment(Assignment assignment) {
+        appModel.saveAssignment(assignment);
     }
 
     /**
@@ -213,17 +209,16 @@ public class AppController implements IAppController {
      */
     private void loadFeedbackDocuments(Assignment assignment) {
         // Open the databases
-        System.out.println("Loading files " + assignment.getFullyQualifiedDatabaseName() + ".*");
-        documentDatabase.openDocumentDatabase(assignment.getFullyQualifiedDatabaseName());
-        graphDatabase.openGraphDatabase(assignment.getFullyQualifiedDatabaseName());
+        documentDatabase.openDocumentDatabase(assignment.getDirectory(), assignment.getFileSafeTitle());
+        graphDatabase.openGraphDatabase(assignment.getDirectory(), assignment.getFileSafeTitle());
 
         // Get the feedback documents from the document database
         List<FeedbackDocument> feedbackDocuments = documentDatabase.loadFeedbackDocumentsForAssignment(assignment);
-        assignment.setFeedbackDocuments(feedbackDocuments);
+        assignment.addFeedbackDocuments(feedbackDocuments);
 
         // Get the phrases data for each heading from the graph database
         assignment
-            .getAssignmentHeadings()
+            .getHeadings()
             .forEach(heading -> {
                 List<Phrase> phrasesForHeading = graphDatabase.getPhrasesForHeading(heading);
                 appModel.setPreviousHeadingPhraseSet(heading, phrasesForHeading);
@@ -259,7 +254,7 @@ public class AppController implements IAppController {
         documentDatabase.saveFeedbackDocument(assignment, studentId, headingsAndData, grade);
         FeedbackDocument feedbackDocumentForStudent = assignment.getFeedbackDocumentForStudent(studentId);
         assignment
-            .getAssignmentHeadings()
+            .getHeadings()
             .forEach(heading -> {
                 feedbackDocumentForStudent.setDataForHeading(heading, headingsAndData.get(heading));
             });
@@ -325,9 +320,9 @@ public class AppController implements IAppController {
         FeedbackDocument feedbackDocumentForStudent = assignment.getFeedbackDocumentForStudent(studentId);
 
         // Find the first line of the document
-        for (String heading : assignment.getAssignmentHeadings()) {
-            if (!feedbackDocumentForStudent.getHeadingData(heading).isEmpty()) {
-                List<String> dataAsList = Arrays.stream(feedbackDocumentForStudent.getHeadingData(heading).split("\n"))
+        for (String heading : assignment.getHeadings()) {
+            if (!feedbackDocumentForStudent.getSectionContents(heading).isEmpty()) {
+                List<String> dataAsList = Arrays.stream(feedbackDocumentForStudent.getSectionContents(heading).split("\n"))
                     .filter(line -> line.startsWith(getLineMarker()))
                     .collect(Collectors.toList());
 
@@ -463,7 +458,7 @@ public class AppController implements IAppController {
 
         // Get the 3 most used phrases for a given heading
         assignment
-            .getAssignmentHeadings()
+            .getHeadings()
             .forEach(heading -> {
                 summary.put(heading, new ArrayList<>());
 

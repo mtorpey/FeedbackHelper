@@ -1,21 +1,23 @@
 package model;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.function.Predicate.not;
 
 /**
  * Assignment Class.
@@ -71,34 +73,31 @@ public class Assignment implements Serializable {
     // Instance variables
     private String assignmentTitle;
     private List<String> assignmentHeadings;
-    private Map<StudentId, FeedbackDocument> studentIdAndFeedbackDocumentMap;
+    private Map<StudentId, FeedbackDocument> feedbackDocuments;
     private String headingStyle;
     private String underlineStyle;
     private int lineSpacing;
     private String lineMarker;
-    private String databaseName;
-    private String databaseCollectionName;
-    private String assignmentDirectoryPath;
+    private transient Path directory;
 
     /**
      * Constructor.
      */
     public Assignment() {
         this.assignmentHeadings = new ArrayList<String>();
-        studentIdAndFeedbackDocumentMap = new HashMap<StudentId, FeedbackDocument>();
+        feedbackDocuments = new HashMap<StudentId, FeedbackDocument>();
     }
 
     /**
      * Load an assignment from an FHT file.
      *
-     * @param filePath The location of the FHT file.
+     * @param fhtFile The location of the FHT file.
      * @return The Assignment object stored in the file.
      */
-    public static Assignment loadAssignment(String filePath) {
+    public static Assignment loadAssignment(Path fhtFile) {
         Assignment loadedAssignment = null;
         try (
-            FileInputStream fileInputStream = new FileInputStream(filePath);
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)
+            ObjectInputStream objectInputStream = new ObjectInputStream(Files.newInputStream(fhtFile))
         ) {
             loadedAssignment = (Assignment) objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
@@ -179,8 +178,6 @@ public class Assignment implements Serializable {
 
     /**
      * Get the line marker to use for denoting new lines.
-     *
-     * @return The line marker.
      */
     public String getLineMarker() {
         return lineMarker;
@@ -188,8 +185,6 @@ public class Assignment implements Serializable {
 
     /**
      * Set the line marker to use for denoting new lines.
-     *
-     * @param lineMarker The line marker.
      */
     public void setLineMarker(String lineMarker) {
         if (lineMarkers.contains(lineMarker)) {
@@ -200,34 +195,29 @@ public class Assignment implements Serializable {
     }
 
     /**
-     * Get the assignment directory path.
+     * Get an absolute path to the assignment directory.
      *
-     * Note: this is saved when we serialize, but is not actually used
-     * meaningfully when we load an assignment from disk.  We reset it in
-     * AppController.loadAssignment if the location has actually moved on disk.
-     *
-     * @return The assignment directory path.
+     * Note: this is transient (not saved when we serialize) and should always
+     * be set in AppController.loadAssignment immediately after loading from
+     * disk. This allows for the assignment to be moved on disk while the
+     * program is closed.
      */
-    public String getAssignmentDirectoryPath() {
-        return assignmentDirectoryPath;
+    public Path getDirectory() {
+        return directory.toAbsolutePath();
     }
 
     /**
      * Set the assignment directory path.
-     *
-     * @param assignmentDirectoryPath The assignment directory path.
      */
-    public void setAssignmentDirectoryPath(String assignmentDirectoryPath) {
-        this.assignmentDirectoryPath = assignmentDirectoryPath;
+    public void setDirectory(Path directory) {
+        this.directory = directory;
     }
 
     /**
      * Get the database collection name used for the assignment's documents.
-     *
-     * @return The database collection name.
      */
     public String getDatabaseCollectionName() {
-        return this.databaseCollectionName;
+        return getFileSafeTitle() + "-feedback-docs";
     }
 
     /**
@@ -237,27 +227,21 @@ public class Assignment implements Serializable {
      * @param feedbackDocument The feedback document for the student.
      */
     public void setFeedbackDocument(StudentId studentId, FeedbackDocument feedbackDocument) {
-        this.studentIdAndFeedbackDocumentMap.put(studentId, feedbackDocument);
+        this.feedbackDocuments.put(studentId, feedbackDocument);
     }
 
     /**
      * Get the assignment title.
-     *
-     * @return The assignment title.
      */
     public String getAssignmentTitle() {
         return this.assignmentTitle;
     }
 
     /**
-     * Set the assignment title and use it to generate the database name and database collection name.
-     *
-     * @param assignmentTitle The assignment title.
+     * Set the assignment title.
      */
     public void setAssignmentTitle(String assignmentTitle) {
         this.assignmentTitle = assignmentTitle;
-        this.databaseName = assignmentTitle.replace(" ", "-").toLowerCase(); // no extension
-        this.databaseCollectionName = assignmentTitle.replace(" ", "-").toLowerCase() + "-feedback-docs";
     }
 
     /**
@@ -265,52 +249,51 @@ public class Assignment implements Serializable {
      *
      * @return A list of the headings to be used in the feedback documents.
      */
-    public List<String> getAssignmentHeadings() {
+    public List<String> getHeadings() {
         return this.assignmentHeadings;
     }
 
     /**
      * Set a list of the headings to be used in the feedback documents.
      *
-     * @param assignmentHeadings A string containing a list of the headings to be used in the feedback documents, separated by a new line.
+     * @param assignmentHeadings A string containing a list of the headings to
+     * be used in the feedback documents, separated by newline characters
      */
     public void setAssignmentHeadings(String assignmentHeadings) {
-        this.assignmentHeadings = new ArrayList<String>(Arrays.asList(assignmentHeadings.split("\n")));
-        // Remove empty lines
-        this.assignmentHeadings = this.assignmentHeadings.stream()
-            .filter(heading -> !heading.trim().isEmpty())
+        this.assignmentHeadings = Arrays.stream(assignmentHeadings.split("\n"))
+            .map(String::trim)
+            .filter(not(String::isEmpty))
             .collect(Collectors.toList());
     }
 
     /**
      * Set a list of the student ids.
      *
-     * @param studentManifestFile The student list file to read from.
-     * @param assignmentDirectoryPath The assignment directory.
+     * @param studentListFile The student list file to read from.
+     * @param assignmentDirectory The assignment directory.
      */
-    public void setStudentIds(File studentManifestFile, String assignmentDirectoryPath) {
+    public void setStudentIds(Path studentListFile, Path assignmentDirectory) {
         // Get the ids
-        List<StudentId> studentIds = findStudentIds(studentManifestFile, assignmentDirectoryPath);
+        List<StudentId> studentIds = findStudentIds(studentListFile, assignmentDirectory);
         System.out.println("Using student ids " + studentIds);
 
         // Create and install documents
         for (StudentId studentId : studentIds) {
-            FeedbackDocument feedbackDocument = new FeedbackDocument(this, studentId);
-            this.studentIdAndFeedbackDocumentMap.put(studentId, feedbackDocument);
+            feedbackDocuments.put(studentId, new FeedbackDocument(this, studentId));
         }
     }
 
     /** Get the list of students from a file or by guessing from the directory contents. */
-    public static List<StudentId> findStudentIds(File studentManifestFile, String assignmentDirectoryPath) {
+    public static List<StudentId> findStudentIds(Path studentListFile, Path assignmentDirectory) {
         List<StudentId> studentIds;
         try {
-            System.out.println("Looking for student ids in file '" + studentManifestFile + "'...");
-            studentIds = findStudentIdsFromFile(studentManifestFile);
+            System.out.println("Looking for student ids in file '" + studentListFile + "'...");
+            studentIds = findStudentIdsFromFile(studentListFile);
         } catch (IOException | NullPointerException e) {
             System.out.println("Failed to read file");
-            System.out.println("Searching for submissions in " + assignmentDirectoryPath + " ...");
+            System.out.println("Searching for submissions in " + assignmentDirectory + " ...");
             try {
-                studentIds = findStudentIdsFromDirectory(assignmentDirectoryPath);
+                studentIds = findStudentIdsFromDirectory(assignmentDirectory);
             } catch (NullPointerException e2) {
                 System.out.println("Unable to find any submissions");
                 studentIds = new ArrayList<>();
@@ -319,18 +302,30 @@ public class Assignment implements Serializable {
         return studentIds;
     }
 
-    /** Get a list of student IDs from the given file. */
-    public static List<StudentId> findStudentIdsFromFile(File file) throws IOException, NullPointerException {
+    /**
+     * Get a list of student IDs from the given file.
+     *
+     * @throws IOException if something goes wrong while reading
+     * @throws NullPointerException if the argument is null
+     */
+    private static List<StudentId> findStudentIdsFromFile(Path file)
+        throws IOException, NullPointerException {
+        if (!Files.isRegularFile(file)) {
+            throw new FileNotFoundException("not a regular file");
+        }
         List<StudentId> studentIds = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            while (reader.ready()) {
+        try (Scanner scanner = new Scanner(file)) {
+            scanner.useDelimiter("\\s|,|;");
+            while (scanner.hasNext()) {
+                System.out.println("Next");
                 try {
-                    StudentId studentId = new StudentId(reader.readLine().trim());
+                    StudentId studentId = new StudentId(scanner.next());
                     studentIds.add(studentId);
                 } catch (IllegalArgumentException e) {
                     // not a valid id, so skip
                     continue;
                 }
+                System.out.println(studentIds.size() + " students");
             }
         }
         return studentIds;
@@ -339,18 +334,20 @@ public class Assignment implements Serializable {
     /**
      * Search the given directory for files/directories that look like student IDs.
      *
-     * @param path The directory to search
+     * @param directory The directory to search
      */
-    public static List<StudentId> findStudentIdsFromDirectory(String path) {
-        List<StudentId> studentIds = new ArrayList<>();
-        for (File f : new File(path).listFiles()) {
-            String name = f.getName();
-            // Look for St Andrews-style matric numbers with extensions
-            if (name.matches(StudentId.ST_ANDREWS_PATTERN + "(\\..*)?")) {
-                studentIds.add(new StudentId(name.split("\\.")[0])); // everything before the dot
-            }
+    private static List<StudentId> findStudentIdsFromDirectory(Path directory) {
+        try (Stream<Path> files = Files.list(directory)) {
+            return files
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .filter(name -> name.matches(StudentId.ST_ANDREWS_PATTERN + "(\\..*)?"))
+                .map(name -> new StudentId(name.split("\\.")[0]))
+                .collect(Collectors.toList());
+        } catch (IOException e) {
+            // problem searching directory, so none found
+            return List.of();
         }
-        return studentIds;
     }
 
     /**
@@ -359,7 +356,7 @@ public class Assignment implements Serializable {
      * @return A list of the feedback documents.
      */
     public List<FeedbackDocument> getFeedbackDocuments() {
-        return this.studentIdAndFeedbackDocumentMap.values()
+        return this.feedbackDocuments.values()
             .stream()
             .sorted() // FeedbackDocument implements compareTo using studentId
             .collect(Collectors.toList());
@@ -370,42 +367,42 @@ public class Assignment implements Serializable {
      *
      * @param feedbackDocuments The list of feedback documents to set in the student id feedback document map.
      */
-    public void setFeedbackDocuments(List<FeedbackDocument> feedbackDocuments) {
-        feedbackDocuments.forEach(feedbackDocument -> {
-            this.studentIdAndFeedbackDocumentMap.put(feedbackDocument.getStudentId(), feedbackDocument);
-        });
-    }
-
-    /**
-     * Save assignment details into an FHT file.
-     *
-     * @param fileName The file name to save the assignment to.
-     */
-    public void saveAssignmentDetails(String fileName) {
-        try (
-            FileOutputStream fileOutputStream = new FileOutputStream(
-                assignmentDirectoryPath + File.separator + fileName + ".fht"
-            );
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)
-        ) {
-            objectOutputStream.writeObject(this);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void addFeedbackDocuments(List<FeedbackDocument> feedbackDocuments) {
+        for (FeedbackDocument document : feedbackDocuments) {
+            this.feedbackDocuments.put(document.getStudentId(), document);
         }
     }
 
     /**
-     * Get the database name.
-     *
-     * @return The database name.
+     * Save assignment details into an FHT file.
      */
-    public String getDatabaseName() {
-        return this.databaseName;
+    public void saveAssignmentDetails() throws IOException {
+        String fileName = getFileSafeTitle() + ".fht";
+        Path fhtFile = directory.resolve(fileName);
+        try (
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(Files.newOutputStream(fhtFile))
+        ) {
+            objectOutputStream.writeObject(this);
+        }
     }
 
-    /** Get the database name with its full directory path before it. */
-    public String getFullyQualifiedDatabaseName() {
-        return this.getAssignmentDirectoryPath() + File.separator + this.getDatabaseName();
+    /**
+     * Create a directory where exported feedback should be placed, and return its path.
+     */
+    public Path createFeedbackOutputDirectory() throws IOException {
+        Path outputDirectory = getDirectory().resolve(getFileSafeTitle() + "-feedback");
+        if (!Files.exists(outputDirectory)) {
+            Files.createDirectories(outputDirectory);
+        }
+        return outputDirectory;
+    }
+
+    /**
+     * Get the name of this assignment, normalised for use in filenames.
+     */
+    public String getFileSafeTitle() {
+        String rejected = "[^-a-zA-Z_0-9!#$%&\\+=\\^\\{\\}~]+";
+        return assignmentTitle.trim().replaceAll(rejected, "-");
     }
 
     /**
@@ -415,6 +412,6 @@ public class Assignment implements Serializable {
      * @return The feedback document for the given student ID.
      */
     public FeedbackDocument getFeedbackDocumentForStudent(StudentId studentId) {
-        return studentIdAndFeedbackDocumentMap.get(studentId);
+        return feedbackDocuments.get(studentId);
     }
 }

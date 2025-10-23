@@ -1,5 +1,6 @@
 package configuration;
 
+import java.nio.file.Path;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
@@ -19,12 +20,13 @@ public abstract class UserPreferences {
         prefs.put(THEME, name);
     }
 
-    public static String getLastOpenedAssignmentPath() {
-        return prefs.get(LAST_OPENED_ASSIGNMENT_PATH, null);
+    public static Path getLastOpenedAssignmentPath() {
+        String pathStr = prefs.get(LAST_OPENED_ASSIGNMENT_PATH, null);
+        return pathStr == null ? null : Path.of(pathStr);
     }
 
-    public static void setLastOpenedAssignmentPath(String assignmentFilePath) {
-        prefs.put(LAST_OPENED_ASSIGNMENT_PATH, assignmentFilePath);
+    public static void setLastOpenedAssignment(Path assignmentFile) {
+        prefs.put(LAST_OPENED_ASSIGNMENT_PATH, assignmentFile.toAbsolutePath().toString());
     }
 
     public static void addPreferenceChangeListener(PreferenceChangeListener listener) {

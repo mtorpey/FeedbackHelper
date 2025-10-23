@@ -1,9 +1,8 @@
 package database;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,20 +36,21 @@ public class GraphDatabaseManager implements IGraphDatabase {
     private static final String CUSTOM_PHRASES_KEY = "custom_phrases";
 
     // Database is a JSON object, which is written to disk regularly
-    private File databaseFile;
+    private Path databaseFile;
     private JSONObject database;
 
     /**
      * Try to open an existing database.
      *
-     * @param databasePath The database file to open, without the filename suffix.
+     * @param assignmentDirectory The directory containing the assignment.
+     * @param databaseName The assignment name to be used for this database's filename.
      * @return True if the database was successfully opened, false otherwise.
      */
     @Override
-    public boolean openGraphDatabase(String databasePath) {
-        databaseFile = new File(databasePath + FILE_SUFFIX);
+    public boolean openGraphDatabase(Path assignmentDirectory, String databaseName) {
+        databaseFile = assignmentDirectory.resolve(databaseName + FILE_SUFFIX);
         System.out.print("Looking for phrases at " + databaseFile + " . . . ");
-        if (databaseFile.exists()) {
+        if (Files.exists(databaseFile)) {
             // Load the database into memory
             loadFromFile();
             System.out.println("found!");
@@ -64,13 +64,14 @@ public class GraphDatabaseManager implements IGraphDatabase {
     /**
      * Create a database.  See also setUpGraphDatabaseForAssignment.
      *
-     * @param databasePath The database file to create, without the filename suffix.
+     * @param assignmentDirectory The directory containing the assignment.
+     * @param databaseName The assignment name to be used for this database's filename.
      * @return True if the database was successfully opened, false otherwise.
      */
     @Override
-    public boolean createGraphDatabase(String databasePath) {
+    public boolean createGraphDatabase(Path assignmentDirectory, String databaseName) {
         // File should not exist yet
-        if (openGraphDatabase(databasePath)) {
+        if (openGraphDatabase(assignmentDirectory, databaseName)) {
             // initialises databaseFile
             return false;
         }
@@ -316,8 +317,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
 
     /* Populate the JSON model from the file. */
     private void loadFromFile() {
-        try (FileReader reader = new FileReader(databaseFile)) {
-            database = (JSONObject) new JSONParser().parse(reader);
+        try {
+            database = (JSONObject) new JSONParser().parse(Files.readString(databaseFile));
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
@@ -325,8 +326,8 @@ public class GraphDatabaseManager implements IGraphDatabase {
 
     /* Write out the JSON model to the file. */
     private void dumpToFile() {
-        try (FileWriter writer = new FileWriter(databaseFile)) {
-            writer.write(database.toJSONString());
+        try {
+            Files.writeString(databaseFile, database.toJSONString());
         } catch (IOException e) {
             e.printStackTrace();
         }

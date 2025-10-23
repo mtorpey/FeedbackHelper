@@ -28,9 +28,9 @@ public class FeedbackDocumentTest extends TestCase {
     }
 
     public void testGetHeadingData() {
-        assertEquals("Data-1", feedbackDocument.getHeadingData("Heading 1"));
-        assertEquals("Data-2", feedbackDocument.getHeadingData("Heading 2"));
-        assertEquals("Data-3", feedbackDocument.getHeadingData("Heading 3"));
+        assertEquals("Data-1", feedbackDocument.getSectionContents("Heading 1"));
+        assertEquals("Data-2", feedbackDocument.getSectionContents("Heading 2"));
+        assertEquals("Data-3", feedbackDocument.getSectionContents("Heading 3"));
     }
 
     public void testGetAssignment() {

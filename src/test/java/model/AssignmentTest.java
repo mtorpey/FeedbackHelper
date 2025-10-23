@@ -13,7 +13,7 @@ public class AssignmentTest extends TestCase {
         assignment = new Assignment();
         assignment.setAssignmentTitle("Test");
         assignment.setAssignmentHeadings("Heading 1 \n Heading 2 \n Heading 3");
-        assignment.setAssignmentDirectoryPath("Sample Directory Path");
+        assignment.setDirectory("Sample Directory Path");
         assignment.setHeadingStyle("#");
         assignment.setUnderlineStyle("-");
         assignment.setLineMarker("-");
@@ -77,12 +77,12 @@ public class AssignmentTest extends TestCase {
     }
 
     public void testGetAssignmentDirectoryPath() {
-        assertEquals("Sample Directory Path", assignment.getAssignmentDirectoryPath());
+        assertEquals("Sample Directory Path", assignment.getDirectory());
     }
 
     public void testSetAssignmentDirectoryPath() {
-        assignment.setAssignmentDirectoryPath("Testing");
-        assertEquals("Testing", assignment.getAssignmentDirectoryPath());
+        assignment.setDirectory("Testing");
+        assertEquals("Testing", assignment.getDirectory());
     }
 
     public void testGetDatabaseCollectionName() {
@@ -105,13 +105,13 @@ public class AssignmentTest extends TestCase {
     }
 
     public void testGetAssignmentHeadings() {
-        List<String> assignmentHeadings = assignment.getAssignmentHeadings();
+        List<String> assignmentHeadings = assignment.getHeadings();
         assertEquals(3, assignmentHeadings.size());
     }
 
     public void testSetAssignmentHeadings() {
         assignment.setAssignmentHeadings("1\n 2\n 3\n 4\n 5\n");
-        List<String> assignmentHeadings = assignment.getAssignmentHeadings();
+        List<String> assignmentHeadings = assignment.getHeadings();
         assertEquals(5, assignmentHeadings.size());
     }
 
@@ -124,11 +124,11 @@ public class AssignmentTest extends TestCase {
         feedbackDocuments.add(new FeedbackDocument(assignment, "123"));
         feedbackDocuments.add(new FeedbackDocument(assignment, "456"));
         feedbackDocuments.add(new FeedbackDocument(assignment, "789"));
-        assignment.setFeedbackDocuments(feedbackDocuments);
+        assignment.addFeedbackDocuments(feedbackDocuments);
         assertEquals(3, assignment.getFeedbackDocuments().size());
     }
 
     public void testGetDatabaseName() {
-        assertEquals("test", assignment.getDatabaseName());
+        assertEquals("test", assignment.getFileSafeTitle());
     }
 }

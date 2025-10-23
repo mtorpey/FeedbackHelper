@@ -187,7 +187,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         this.editorPanel = new EditorPanel(
             this.controller,
             this.assignment.getAssignmentTitle(),
-            this.assignment.getAssignmentHeadings()
+            this.assignment.getHeadings()
         );
         this.editingPopupMenu = new EditingPopupMenu();
         this.editorPanel.registerPopupMenu(this.editingPopupMenu);
@@ -290,7 +290,7 @@ public class FeedbackScreen implements PropertyChangeListener {
             controller.createFeedbackDocuments(assignment);
 
             // Save the assignment to an FHT file
-            controller.saveAssignment(assignment, assignment.getAssignmentTitle().toLowerCase().replace(" ", "-"));
+            controller.saveAssignment(assignment);
 
             // Create preview boxes
             List<PreviewBox> previewBoxes = new ArrayList<PreviewBox>();
@@ -338,7 +338,7 @@ public class FeedbackScreen implements PropertyChangeListener {
                 this.feedbackScreen,
                 "Exporting assignment grades and feedback documents... \n" +
                     "Please check the directory: " +
-                    this.assignment.getAssignmentDirectoryPath()
+                    this.assignment.getDirectory()
             );
         });
 
@@ -352,7 +352,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         summaryOption.addActionListener(l -> {
             Map<String, List<String>> summary = this.controller.getSummary(this.assignment);
             DocumentViewer documentViewer = new DocumentViewer(this.controller, "Summary of All Feedback Documents");
-            documentViewer.displayData(summary, this.assignment.getAssignmentHeadings());
+            documentViewer.displayData(summary, this.assignment.getHeadings());
         });
 
         // Show the 'about' dialog window
@@ -560,7 +560,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         String currentHeading = (String) event.getNewValue();
 
         // Change assignment heading
-        List<String> assignmentHeadings = this.assignment.getAssignmentHeadings();
+        List<String> assignmentHeadings = this.assignment.getHeadings();
 
         // Check that the new heading is not blank
         if (currentHeading.isBlank()) {
@@ -596,12 +596,12 @@ public class FeedbackScreen implements PropertyChangeListener {
         List<FeedbackDocument> feedbackDocuments = this.assignment.getFeedbackDocuments();
         feedbackDocuments.forEach(feedbackDocument -> {
             // Change the data to the new key
-            String data = feedbackDocument.getHeadingData(previousHeading);
+            String data = feedbackDocument.getSectionContents(previousHeading);
             feedbackDocument.setDataForHeading(currentHeading, data);
 
             Map<String, String> headingsAndData = new HashMap<String, String>();
-            this.assignment.getAssignmentHeadings().forEach(heading -> {
-                headingsAndData.put(heading, feedbackDocument.getHeadingData(heading));
+            this.assignment.getHeadings().forEach(heading -> {
+                headingsAndData.put(heading, feedbackDocument.getSectionContents(heading));
             });
 
             StudentId studentId = feedbackDocument.getStudentId();
@@ -615,9 +615,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         });
 
         // Save the assignment to an FHT file
-        this.assignment.saveAssignmentDetails(
-            this.assignment.getAssignmentTitle().toLowerCase().replace(" ", "-").replace(".db", "")
-        );
+        controller.saveAssignment(assignment);
     }
 
     /**

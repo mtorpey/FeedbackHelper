@@ -1,5 +1,6 @@
 package database;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,14 +49,16 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
     /**
      * Open the database.
      *
-     * @param databasePath The database file to open, without the filename suffix.
+     * @param assignmentDirectory The directory containing the assignment.
+     * @param databaseName The assignment name to be used for this database's filename.
      * @return True if the database was successfully opened, false otherwise.
      */
     @Override
-    public boolean openDocumentDatabase(String databasePath) {
+    public boolean openDocumentDatabase(Path assignmentDirectory, String databaseName) {
+        Path databaseFile = assignmentDirectory.resolve(databaseName + FILE_SUFFIX);
         this.databaseConnection = Nitrite.builder()
             .compressed()
-            .filePath(databasePath + FILE_SUFFIX)
+            .filePath(databaseFile.toString())
             .openOrCreate("user", "password");
 
         return !this.databaseConnection.isClosed();
@@ -64,12 +67,13 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
     /**
      * Create a database.
      *
-     * @param databasePath The database file to create, without the filename suffix.
+     * @param assignmentDirectory The directory containing the assignment.
+     * @param databaseName The assignment name to be used for this database's filename.
      * @return True if the database was successfully opened, false otherwise.
      */
     @Override
-    public boolean createDocumentDatabase(String databasePath) {
-        return openDocumentDatabase(databasePath);
+    public boolean createDocumentDatabase(Path assignmentDirectory, String databaseName) {
+        return openDocumentDatabase(assignmentDirectory, databaseName);
     }
 
     /**
@@ -100,7 +104,7 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
                 dbDoc.put("feedbackDocObject", feedbackDocument);
 
                 // Setup the headings of the document
-                for (String heading : assignment.getAssignmentHeadings()) {
+                for (String heading : assignment.getHeadings()) {
                     dbDoc.put(heading, "");
                 }
 
@@ -114,7 +118,7 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
         // Commit the created documents
         databaseConnection.commit();
 
-        return databaseConnection.hasCollection(assignment.getDatabaseName());
+        return databaseConnection.hasCollection(assignment.getFileSafeTitle());
     }
 
     /**
@@ -143,7 +147,7 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
 
                     // Assign data into feedback document
                     assignment
-                        .getAssignmentHeadings()
+                        .getHeadings()
                         .forEach(heading -> {
                             feedbackDocument.setDataForHeading(heading, (String) result.get(heading));
                         });
@@ -227,7 +231,7 @@ public class DocumentDatabaseManager implements IDocumentDatabase {
 
             // Update the feedback document's data
             assignment
-                .getAssignmentHeadings()
+                .getHeadings()
                 .forEach(heading -> {
                     feedbackDocument.setDataForHeading(heading, (String) document.get(heading));
                 });

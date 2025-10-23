@@ -1,7 +1,9 @@
 package model;
 
 import java.beans.PropertyChangeListener;
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.NotDirectoryException;
+import java.nio.file.Path;
 import java.util.List;
 
 import view.PhraseType;
@@ -54,9 +56,9 @@ public interface IAppModel {
     Assignment createAssignment(
         String assignmentTitle,
         String assignmentHeadings,
-        File studentManifestFile,
-        String assignmentDirectoryPath
-    );
+        Path studentListFile,
+        Path assignmentDirectory
+    ) throws NotDirectoryException, IOException;
 
     /**
      * Set the style preferences for an assignment's exports.
@@ -71,10 +73,12 @@ public interface IAppModel {
     /**
      * Load an assignment from an FHT file.
      *
-     * @param assignmentFilePath The location of the assignment FHT file.
+     * @param fhtFile Path to the assignment's FHT file.
      * @return The Assignment object for the assignment.
      */
-    Assignment loadAssignment(String assignmentFilePath);
+    Assignment loadAssignment(Path fhtFile);
+
+    void saveAssignment(Assignment assignment);
 
     /**
      * Get the line marker to use for denoting new lines.

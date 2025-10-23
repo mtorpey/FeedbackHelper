@@ -2,6 +2,7 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.nio.file.Path;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -126,7 +127,8 @@ public class HomeScreen extends JFrame {
         JButton loadButton = new JButton("Load Assignment");
         loadButton.addActionListener(e -> {
             // Show a file chooser
-            JFileChooser fileChooser = new JFileChooser(UserPreferences.getLastOpenedAssignmentPath());
+            Path lastPath = UserPreferences.getLastOpenedAssignmentPath();
+            JFileChooser fileChooser = new JFileChooser(lastPath.toString());
             fileChooser.setDialogTitle("Choose an assignment to resume");
 
             // Only allow FHT files to be selected
@@ -136,9 +138,9 @@ public class HomeScreen extends JFrame {
 
             // Get the selected file
             int returnValue = fileChooser.showDialog(this, "Open");
-            String assignmentFilePath = null;
+            Path assignmentFilePath = null;
             if (returnValue == JFileChooser.APPROVE_OPTION) {
-                assignmentFilePath = fileChooser.getSelectedFile().getPath();
+                assignmentFilePath = fileChooser.getSelectedFile().toPath();
                 dispose();
             }
 

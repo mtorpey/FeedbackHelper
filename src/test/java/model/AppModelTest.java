@@ -1,6 +1,8 @@
 package model;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,17 +35,15 @@ public class AppModelTest extends TestCase {
         assignment = model.createAssignment(
             "Test",
             "Heading 1 \n Heading 2 \n Heading 3",
-            new File("Empty file"),
-            "Example-Directory"
+            Path.of("Empty file"),
+            Path.of("Example-Directory")
         );
     }
 
     @Override
     protected void tearDown() throws Exception {
-        File file = new File("Example-Directory");
-        if (file.exists()) {
-            file.delete();
-        }
+        Path file = Path.of("Example-Directory");
+        Files.deleteIfExists(file);
     }
 
     public void testSetCurrentPhrasePanelInView() {
@@ -51,43 +51,41 @@ public class AppModelTest extends TestCase {
         model.setCurrentPhrasePanelInView(PhraseType.CUSTOM);
     }
 
-    public void testCreateAssignment() {
+    public void testCreateAssignment() throws IOException {
         Assignment createdAssignment = model.createAssignment(
             "Test-2",
             "1 \n 2\n 3\n",
-            new File("Empty file 2"),
-            "Test-Directory"
+            Path.of("Empty file 2"),
+            Path.of("Test-Directory")
         );
         assertEquals("Test-2", createdAssignment.getAssignmentTitle());
-        assertEquals(3, createdAssignment.getAssignmentHeadings().size());
-        assertEquals("Test-Directory", createdAssignment.getAssignmentDirectoryPath());
+        assertEquals(3, createdAssignment.getHeadings().size());
+        assertEquals("Test-Directory", createdAssignment.getDirectory());
 
         // Remove file
-        File file = new File("Test-Directory");
-        if (file.exists()) {
-            file.delete();
-        }
+        Path file = Path.of("Test-Directory");
+        Files.deleteIfExists(file);
     }
 
     public void testSetAndGetCurrentDocumentInView() {
-        model.setCurrentDocumentInView("123", false);
+        model.setCurrentDocumentInView(new StudentId("123"), false);
         assertEquals("123", model.getCurrentDocumentInView());
     }
 
     public void testGetLastDocumentInView() {
-        model.setCurrentDocumentInView("123", false);
-        model.setCurrentDocumentInView("456", false);
+        model.setCurrentDocumentInView(new StudentId("123"), false);
+        model.setCurrentDocumentInView(new StudentId("456"), false);
         assertEquals("123", model.getLastDocumentInView());
     }
 
     public void testGetGrades() {
         List<FeedbackDocument> feedbackDocuments = new ArrayList<FeedbackDocument>();
         for (int i = 0; i <= 5; i++) {
-            FeedbackDocument feedbackDocument = new FeedbackDocument(assignment, String.valueOf(i));
+            FeedbackDocument feedbackDocument = new FeedbackDocument(assignment, new StudentId(String.valueOf(i)));
             feedbackDocument.setGrade(i * 4);
             feedbackDocuments.add(feedbackDocument);
         }
-        assignment.setFeedbackDocuments(feedbackDocuments);
+        assignment.addFeedbackDocuments(feedbackDocuments);
 
         List<Integer> grades = model.getGrades(assignment);
 

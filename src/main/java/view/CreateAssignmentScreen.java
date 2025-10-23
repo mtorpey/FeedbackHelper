@@ -6,7 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -161,7 +162,7 @@ public class CreateAssignmentScreen extends JFrame {
                     JFileChooser.DIRECTORIES_ONLY,
                     "Select assignment directory...",
                     "Submit"
-                )
+                ).toString()
             )
         );
         addToConfigForm(assignmentDirectoryChooser);
@@ -233,7 +234,7 @@ public class CreateAssignmentScreen extends JFrame {
                     JFileChooser.FILES_ONLY,
                     "Choose a student manifest file...",
                     "Select"
-                )
+                ).toString()
             )
         );
         addToConfigForm(studentListFileButton);
@@ -268,8 +269,8 @@ public class CreateAssignmentScreen extends JFrame {
     /** Show an indication of the list of students that would currently be used with the present settings. */
     private void updateStudentListIndicator() {
         List<StudentId> studentIds = Assignment.findStudentIds(
-            new File(studentListField.getText()),
-            assignmentDirectoryField.getText()
+            Path.of(studentListField.getText()),
+            Path.of(assignmentDirectoryField.getText())
         );
         String message;
         int nrStudents = studentIds.size();
@@ -328,7 +329,7 @@ public class CreateAssignmentScreen extends JFrame {
     }
 
     /** Prompt the user to pick a file, and return the result. */
-    private String selectPathWithDialog(String startPath, int fileSelectionMode, String title, String submit) {
+    private Path selectPathWithDialog(String startPath, int fileSelectionMode, String title, String submit) {
         // Open file chooser
         JFileChooser fileChooser = new JFileChooser(startPath);
         fileChooser.setFileSelectionMode(fileSelectionMode);
@@ -336,9 +337,9 @@ public class CreateAssignmentScreen extends JFrame {
 
         // Store the chosen file path
         int returnValue = fileChooser.showDialog(this, submit);
-        String path = null;
+        Path path = null;
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            path = fileChooser.getSelectedFile().getPath();
+            path = fileChooser.getSelectedFile().toPath();
         }
         return path;
     }
@@ -366,49 +367,46 @@ public class CreateAssignmentScreen extends JFrame {
     }
 
     /** Create new assignment using the supplied user options. */
-    private void confirmClicked(ActionEvent e) {
+    private void confirmClicked(ActionEvent event) {
         // Load all the user preferences
         String assignmentTitle = assignmentTitleField.getText();
         String assignmentHeadings = assignmentHeadingsTextArea.getText();
-        String assignmentDirectoryPath = assignmentDirectoryField.getText();
+        Path assignmentDirectory = Path.of(assignmentDirectoryField.getText());
         String headingStyle = headingStyleChooser.getItemAt(headingStyleChooser.getSelectedIndex());
         String headingUnderlineStyle = underlineChooser.getItemAt(underlineChooser.getSelectedIndex());
         int lineSpacing = spacingChooser.getItemAt(spacingChooser.getSelectedIndex());
         String lineMarker = lineMarkerChooser.getItemAt(lineMarkerChooser.getSelectedIndex());
-        File studentListFile = new File(studentListField.getText());
-
-        // If no student list is selected, we will try to guess
-        if (studentListFile == null || !studentListFile.exists()) {
-            JOptionPane.showMessageDialog(
-                this,
-                "No student list file given. Searching for files in the assignment directory...",
-                "Warning!",
-                JOptionPane.WARNING_MESSAGE
-            );
-        }
-
-        // Setup assignment and db for it
-        dispose();
+        Path studentListFile = Path.of(studentListField.getText());
 
         // Create the assignment
-        Assignment assignmentFromInputs = this.controller.createAssignment(
-            assignmentTitle,
-            assignmentHeadings,
-            studentListFile,
-            assignmentDirectoryPath
-        );
-        this.controller.setAssignmentPreferences(
-            HEADING_STYLES.get(headingStyle),
-            UNDERLINE_STYLES.get(headingUnderlineStyle),
-            lineSpacing,
-            lineMarker
-        );
-        this.controller.saveAssignment(
-            assignmentFromInputs,
-            assignmentFromInputs.getAssignmentTitle().toLowerCase().replace(" ", "-")
-        );
+        try {
+            Assignment assignment = this.controller.createAssignment(
+                assignmentTitle,
+                assignmentHeadings,
+                studentListFile,
+                assignmentDirectory
+            );
+            this.controller.setAssignmentPreferences(
+                HEADING_STYLES.get(headingStyle),
+                UNDERLINE_STYLES.get(headingUnderlineStyle),
+                lineSpacing,
+                lineMarker
+            );
+            this.controller.saveAssignment(assignment);
 
-        // Create the feedback screen
-        new FeedbackScreen(this.controller, assignmentFromInputs);
+            // Delete this screen
+            dispose();
+
+            // Create the feedback screen
+            new FeedbackScreen(this.controller, assignment);
+        } catch (IOException exception) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Error creating assignment: " + exception.toString(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+            exception.printStackTrace();
+        }
     }
 }

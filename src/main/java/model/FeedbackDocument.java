@@ -1,6 +1,10 @@
 package model;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,7 +16,7 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
     // Instance variables
     private Assignment assignment;
     private StudentId studentId;
-    private HashMap<String, String> headingAndData;
+    private HashMap<String, String> sectionContents;
     private double grade;
 
     /**
@@ -24,11 +28,11 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
     public FeedbackDocument(Assignment assignment, StudentId studentId) {
         this.assignment = assignment;
         this.studentId = studentId;
-        this.headingAndData = new HashMap<String, String>();
+        this.sectionContents = new HashMap<String, String>();
 
         // Set the heading data to empty
-        this.assignment.getAssignmentHeadings().forEach(heading -> {
-            headingAndData.put(heading, "");
+        this.assignment.getHeadings().forEach(heading -> {
+            sectionContents.put(heading, "");
         });
 
         this.grade = 0.0;
@@ -59,7 +63,7 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      * @param data    The data associated with the heading.
      */
     public void setDataForHeading(String heading, String data) {
-        this.headingAndData.put(heading, data);
+        this.sectionContents.put(heading, data);
     }
 
     /**
@@ -68,8 +72,8 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      * @param heading The heading to get the data for.
      * @return The data for the given heading.
      */
-    public String getHeadingData(String heading) {
-        return this.headingAndData.get(heading);
+    public String getSectionContents(String heading) {
+        return this.sectionContents.get(heading);
     }
 
     /**
@@ -96,7 +100,42 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      * @return a list of headings used in the feedback document.
      */
     public List<String> getHeadings() {
-        return assignment.getAssignmentHeadings();
+        return assignment.getHeadings();
+    }
+
+    /** Export feedback to a text document in the given directory. */
+    public void export(Path directory) throws IOException {
+        Path outFile = directory.resolve(getStudentId() + ".txt");
+        
+        try( BufferedWriter writer = Files.newBufferedWriter(outFile) ) {
+            for (String heading : getHeadings()) {
+                // Heading
+                String fullHeading = assignment.getHeadingStyle() + heading;
+                writer.write(fullHeading);
+                writer.newLine();
+
+                // Underline heading (may be blank)
+                String underlineStyle = assignment.getUnderlineStyle();
+                writer.write(underlineStyle.repeat(fullHeading.length()));
+
+                // Data
+                writer.newLine();
+                String contents = getSectionContents(heading);
+                String[] lines = contents.split("\n");
+                String lineMarker = assignment.getLineMarker();
+                for (String line : lines) {
+                    if (!line.trim().equals(lineMarker)) {
+                        writer.write(line);
+                        writer.newLine();
+                    }
+                }
+
+                // End section spacing
+                for (int i = 0; i < assignment.getLineSpacing(); i++) {
+                    writer.newLine();
+                }
+            }
+        }
     }
 
     /**
@@ -106,7 +145,7 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      */
     @Override
     public String toString() {
-        return "FeedbackDocument{" + "assignment=" + assignment.getDatabaseName() + ", studentId=" + studentId + '}';
+        return "FeedbackDocument{" + "assignment=" + assignment.getFileSafeTitle() + ", studentId=" + studentId + '}';
     }
 
     /** Comparable by student id. */
