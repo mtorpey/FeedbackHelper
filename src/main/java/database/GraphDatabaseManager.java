@@ -29,7 +29,7 @@ import model.Utilities;
  * value for custom_phrases, is an object with the used phrases as keys and
  * their usage counts as their values.
  */
-public class GraphDatabaseManager implements IGraphDatabase {
+public class GraphDatabaseManager {
 
     private static final String FILE_SUFFIX = "-phrases.json";
     private static final String USED_PHRASES_KEY = "used_phrases";
@@ -46,7 +46,6 @@ public class GraphDatabaseManager implements IGraphDatabase {
      * @param databaseName The assignment name to be used for this database's filename.
      * @return True if the database was successfully opened, false otherwise.
      */
-    @Override
     public boolean openGraphDatabase(Path assignmentDirectory, String databaseName) {
         databaseFile = assignmentDirectory.resolve(databaseName + FILE_SUFFIX);
         System.out.print("Looking for phrases at " + databaseFile + " . . . ");
@@ -68,7 +67,6 @@ public class GraphDatabaseManager implements IGraphDatabase {
      * @param databaseName The assignment name to be used for this database's filename.
      * @return True if the database was successfully opened, false otherwise.
      */
-    @Override
     public boolean createGraphDatabase(Path assignmentDirectory, String databaseName) {
         // File should not exist yet
         if (openGraphDatabase(assignmentDirectory, databaseName)) {
@@ -88,7 +86,6 @@ public class GraphDatabaseManager implements IGraphDatabase {
      *
      * @param headings A list of headings to be used in the assignment feedback documents.
      */
-    @Override
     public void setUpGraphDatabaseForAssignment(List<String> headings) {
         JSONObject usedPhrases = new JSONObject();
         for (String heading : headings) {
@@ -106,7 +103,6 @@ public class GraphDatabaseManager implements IGraphDatabase {
      *
      * @param heading The heading the phrase belongs to.
      */
-    @Override
     public void addHeadingObject(String heading) {
         JSONObject usedPhrases = (JSONObject) database.get(USED_PHRASES_KEY);
         if (!usedPhrases.containsKey(heading)) {
@@ -123,7 +119,6 @@ public class GraphDatabaseManager implements IGraphDatabase {
      *
      * @param heading The heading to remove.
      */
-    @Override
     public JSONObject removeHeadingObject(String heading) {
         JSONObject usedPhrases = (JSONObject) database.get(USED_PHRASES_KEY);
         JSONObject phrases = (JSONObject) usedPhrases.remove(heading);
@@ -140,7 +135,6 @@ public class GraphDatabaseManager implements IGraphDatabase {
      * @param heading The heading the phrase belongs to.
      * @param phrase  The phrase to update.
      */
-    @Override
     public void updatePhrase(String heading, Phrase phrase) {
         updatePhrase(getHeadingObject(heading), phrase);
     }
@@ -158,7 +152,6 @@ public class GraphDatabaseManager implements IGraphDatabase {
      * @param heading The heading the phrase belongs to.
      * @param phrase  The phrase to add.
      */
-    @Override
     public void addPhraseForHeading(final String heading, Phrase phrase) {
         updatePhrase(heading, phrase); // adds a new entry if it does not exist already
     }
@@ -169,7 +162,6 @@ public class GraphDatabaseManager implements IGraphDatabase {
      * @param heading The heading the phrase belongs to.
      * @param phrase  The phrase to remove.
      */
-    @Override
     public void removePhrase(String heading, String phrase) {
         removePhrase(getHeadingObject(heading), phrase);
     }
@@ -191,7 +183,6 @@ public class GraphDatabaseManager implements IGraphDatabase {
      *
      * @param phrase The phrase to add.
      */
-    @Override
     public void addPhraseToCustomNode(Phrase phrase) {
         getCustomObject().put(phrase.getPhraseAsString(), phrase.getUsageCount());
         dumpToFile();
@@ -208,7 +199,6 @@ public class GraphDatabaseManager implements IGraphDatabase {
      * @param heading The heading the phrases are for.
      * @return A list of phrases for the given heading.
      */
-    @Override
     public List<Phrase> getPhrasesForHeading(String heading) {
         return getPhrasesFromObject(getHeadingObject(heading));
     }
@@ -218,7 +208,6 @@ public class GraphDatabaseManager implements IGraphDatabase {
      *
      * @return The list of custom phrases.
      */
-    @Override
     public List<Phrase> getCustomPhrases() {
         return getPhrasesFromObject(getCustomObject());
     }
@@ -251,7 +240,6 @@ public class GraphDatabaseManager implements IGraphDatabase {
      * @param oldPhrases The list of old phrases.
      * @param newPhrases The list of new phrases.
      */
-    @Override
     public void updatePhrasesForHeading(String heading, List<String> oldPhrases, List<String> newPhrases) {
         // Find which phrases have been removed and added.
         List<String> removedPhrases = Utilities.getRemovalsFromList(oldPhrases, newPhrases);
@@ -381,7 +369,6 @@ public class GraphDatabaseManager implements IGraphDatabase {
      * @param oldList The old set of phrases.
      * @param newList The new set of phrases.
      */
-    @Override
     public void managePhraseLinks(String heading, List<String> oldList, List<String> newList) {
         // Get pairs for old and new lists
         List<Pair<String>> oldPairs = Utilities.getPairs(oldList);

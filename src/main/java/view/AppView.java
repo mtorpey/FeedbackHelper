@@ -7,32 +7,31 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 
 import configuration.UserPreferences;
-import controller.IAppController;
+import controller.AppController;
 
 /**
  * App View Class.
  */
-public class AppView implements IAppView {
+public class AppView {
 
     // Scrollar speeds
     public static final int SCROLL_SPEED = 15;
 
     // Instance variable
-    private final IAppController controller;
+    private final AppController controller;
 
     /**
      * Constructor.
      *
      * @param controller The controller.
      */
-    public AppView(IAppController controller) {
+    public AppView(AppController controller) {
         this.controller = controller;
     }
 
     /**
      * Start the app.
      */
-    @Override
     public void start() {
         installThirdPartyThemes();
         applyUserTheme();

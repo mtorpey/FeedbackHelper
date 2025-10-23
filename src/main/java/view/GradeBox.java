@@ -1,6 +1,6 @@
 package view;
 
-import controller.IAppController;
+import controller.AppController;
 import model.StudentId;
 
 import javax.swing.JLabel;
@@ -20,7 +20,7 @@ public class GradeBox extends JPanel {
     private static final double STEP = 0.5;
 
     // Instance variables
-    private final IAppController controller;
+    private final AppController controller;
     private JLabel label;
     private JSpinner chooser;
     private StudentId studentId;
@@ -30,7 +30,7 @@ public class GradeBox extends JPanel {
      *
      * @param controller The controller.
      */
-    public GradeBox(IAppController controller) {
+    public GradeBox(AppController controller) {
         this.controller = controller;
 
         this.setupLabel();

@@ -11,7 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
-import controller.IAppController;
+import controller.AppController;
 
 /**
  * Phrases Section Class.
@@ -19,7 +19,7 @@ import controller.IAppController;
 public class PhrasesSection extends JPanel implements SearchBox.Listener {
 
     // Instance variables
-    private final IAppController controller;
+    private final AppController controller;
     private JTabbedPane tabbedPane;
     private SearchBox searchBox;
     private List<JScrollPane> phrasesPanelScrollPanes;
@@ -30,7 +30,7 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
      *
      * @param controller The controller.
      */
-    public PhrasesSection(IAppController controller) {
+    public PhrasesSection(AppController controller) {
         this.controller = controller;
         this.tabbedPane = new JTabbedPane();
         this.phrasesPanelScrollPanes = new ArrayList<>();

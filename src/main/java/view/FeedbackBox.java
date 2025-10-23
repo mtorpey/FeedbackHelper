@@ -21,7 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import controller.IAppController;
+import controller.AppController;
 
 /**
  * Feedback Box Class.
@@ -35,7 +35,7 @@ public class FeedbackBox extends JPanel {
     private static final String FINISH_SYMBOL = "✔";
 
     // Instance variables
-    private final IAppController controller;
+    private final AppController controller;
     private String heading;
     private JPanel headingPanel;
     private JTextField headingField;
@@ -50,7 +50,7 @@ public class FeedbackBox extends JPanel {
      * @param controller The controller.
      * @param heading    The heading the feedback box is for.
      */
-    public FeedbackBox(IAppController controller, String heading) {
+    public FeedbackBox(AppController controller, String heading) {
         // Store heading
         this.heading = heading;
         this.controller = controller;

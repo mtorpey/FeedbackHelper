@@ -26,7 +26,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import configuration.UserPreferences;
-import controller.IAppController;
+import controller.AppController;
 import model.Assignment;
 import model.FeedbackDocument;
 import model.Phrase;
@@ -41,7 +41,7 @@ public class FeedbackScreen implements PropertyChangeListener {
     private static Map<StudentId, Integer> scrollbarValues = new HashMap<>(); // TODO: is this the problem?
 
     // Instance variables
-    private final IAppController controller;
+    private final AppController controller;
     private JFrame feedbackScreen;
     private JPanel feedbackScreenPanel;
     private JSplitPane previewAndEditorSplitPane;
@@ -62,7 +62,7 @@ public class FeedbackScreen implements PropertyChangeListener {
      * @param controller The controller.
      * @param assignment The assignment.
      */
-    public FeedbackScreen(IAppController controller, Assignment assignment) {
+    public FeedbackScreen(AppController controller, Assignment assignment) {
         this.controller = controller;
         this.controller.registerWithModel(this);
         this.assignment = assignment;

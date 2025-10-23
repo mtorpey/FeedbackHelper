@@ -7,7 +7,7 @@ import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import controller.IAppController;
+import controller.AppController;
 
 /**
  * Phrases Panel Class.
@@ -15,7 +15,7 @@ import controller.IAppController;
 public class PhrasesPanel extends JPanel {
 
     // Instance variables
-    private final IAppController controller;
+    private final AppController controller;
     private PhraseType phraseType;
     private List<PhraseBox> phraseBoxes;
 
@@ -25,7 +25,7 @@ public class PhrasesPanel extends JPanel {
      * @param controller The controller.
      * @param phraseType The type of phrases to show on the panel.
      */
-    public PhrasesPanel(IAppController controller, PhraseType phraseType) {
+    public PhrasesPanel(AppController controller, PhraseType phraseType) {
         this.phraseType = phraseType;
         this.phraseBoxes = new ArrayList<PhraseBox>();
         this.controller = controller;

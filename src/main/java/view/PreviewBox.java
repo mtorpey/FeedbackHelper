@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
 
-import controller.IAppController;
+import controller.AppController;
 import model.Assignment;
 import model.StudentId;
 
@@ -18,7 +18,7 @@ import model.StudentId;
 public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
 
     // Instance variables
-    private final IAppController controller;
+    private final AppController controller;
     private StudentId heading;
     private String firstLine;
     private double grade;
@@ -35,7 +35,7 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
      * @param grade      The grade of the student.
      * @param firstLine  A unique line from the student's feedback document.
      */
-    public PreviewBox(IAppController controller, StudentId heading, double grade, String firstLine) {
+    public PreviewBox(AppController controller, StudentId heading, double grade, String firstLine) {
         // Store variables
         this.controller = controller;
         this.heading = heading;

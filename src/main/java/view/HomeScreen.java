@@ -14,7 +14,7 @@ import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import configuration.UserPreferences;
-import controller.IAppController;
+import controller.AppController;
 import model.Assignment;
 
 /**
@@ -23,7 +23,7 @@ import model.Assignment;
 public class HomeScreen extends JFrame {
 
     // Instance variables
-    private final IAppController controller;
+    private final AppController controller;
 
     // Styling
     private static final int SPACING = 15;
@@ -33,7 +33,7 @@ public class HomeScreen extends JFrame {
      *
      * @param controller The controller.
      */
-    public HomeScreen(IAppController controller) {
+    public HomeScreen(AppController controller) {
         // Setup as a JFrame
         super("Feedback Helper Tool");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

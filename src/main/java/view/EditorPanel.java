@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import controller.IAppController;
+import controller.AppController;
 import model.FeedbackDocument;
 
 /**
@@ -23,7 +23,7 @@ import model.FeedbackDocument;
 public class EditorPanel extends JPanel {
 
     // Instance variables
-    private final IAppController controller;
+    private final AppController controller;
     private String titleText;
     private JLabel titleLabel;
     private JPanel feedbackBoxesPanel;
@@ -39,7 +39,7 @@ public class EditorPanel extends JPanel {
      * @param titleText  The title text for the editor panel.
      * @param headings   The headings of the feedback boxes to create.
      */
-    public EditorPanel(IAppController controller, String titleText, List<String> headings) {
+    public EditorPanel(AppController controller, String titleText, List<String> headings) {
         // Set data variables
         this.titleText = titleText;
         this.controller = controller;

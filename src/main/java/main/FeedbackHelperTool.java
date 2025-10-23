@@ -1,11 +1,8 @@
 package main;
 
 import controller.AppController;
-import controller.IAppController;
 import model.AppModel;
-import model.IAppModel;
 import view.AppView;
-import view.IAppView;
 
 /**
  * Feedback Helper Tool Main Class.
@@ -27,9 +24,9 @@ public class FeedbackHelperTool {
      */
     public void start() {
         // Load everything up
-        IAppModel model = new AppModel();
-        IAppController controller = new AppController(model);
-        IAppView view = new AppView(controller);
+        AppModel model = new AppModel();
+        AppController controller = new AppController(model);
+        AppView view = new AppView(controller);
 
         // Start the view
         view.start();

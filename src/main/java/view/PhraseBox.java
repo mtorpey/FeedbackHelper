@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import controller.IAppController;
+import controller.AppController;
 
 /**
  * Phrase Box Class.
@@ -19,7 +19,7 @@ import controller.IAppController;
 public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
 
     // Instance variables
-    private final IAppController controller;
+    private final AppController controller;
     private String phrase;
     private int usageCount;
     private JTextArea phraseTextArea;
@@ -36,7 +36,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      * @param phrase     The phrase to display.
      * @param usageCount The usage count of the phrase.
      */
-    public PhraseBox(IAppController controller, String phrase, int usageCount) {
+    public PhraseBox(AppController controller, String phrase, int usageCount) {
         this.controller = controller;
         this.phrase = phrase;
         this.phraseTextArea = new JTextArea();

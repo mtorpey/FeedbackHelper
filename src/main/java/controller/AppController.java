@@ -14,10 +14,9 @@ import java.util.stream.Collectors;
 
 import configuration.UserPreferences;
 import database.GraphDatabaseManager;
-import database.IGraphDatabase;
 import model.Assignment;
 import model.FeedbackDocument;
-import model.IAppModel;
+import model.AppModel;
 import model.Phrase;
 import model.StudentId;
 import model.Utilities;
@@ -27,18 +26,18 @@ import visualisation.Visualisations;
 /**
  * App Controller Class.
  */
-public class AppController implements IAppController {
+public class AppController {
 
     // Instance variables
-    private final IAppModel appModel;
-    private final IGraphDatabase graphDatabase;
+    private final AppModel appModel;
+    private final GraphDatabaseManager graphDatabase;
 
     /**
      * Constructor.
      *
      * @param appModel - The model to interact with.
      */
-    public AppController(IAppModel appModel) {
+    public AppController(AppModel appModel) {
         this.appModel = appModel;
         this.graphDatabase = new GraphDatabaseManager();
     }
@@ -48,7 +47,6 @@ public class AppController implements IAppController {
      *
      * @param propertyChangeListener The listener object to register with the model.
      */
-    @Override
     public void registerWithModel(PropertyChangeListener propertyChangeListener) {
         appModel.subscribe(propertyChangeListener);
     }
@@ -64,7 +62,6 @@ public class AppController implements IAppController {
      * @param assignmentDirectory The directory location to save assignment related documents.
      * @return - The Assignment object that was created.
      */
-    @Override
     public Assignment createAssignment(
         String assignmentTitle,
         String headings,
@@ -95,7 +92,6 @@ public class AppController implements IAppController {
      * @param lineSpacing    The line spacing after each section.
      * @param lineMarker     The line marker for each new line.
      */
-    @Override
     public void setAssignmentPreferences(
         String headingStyle,
         String underlineStyle,
@@ -111,7 +107,6 @@ public class AppController implements IAppController {
      * @param fhtFile Path to the assignment's FHT file
      * @return The Assignment object for the assignment.
      */
-    @Override
     public Assignment loadAssignment(Path fhtFile) {
         // Load the assignment
         Assignment assignment = appModel.loadAssignment(fhtFile);
@@ -135,7 +130,6 @@ public class AppController implements IAppController {
      *
      * @param assignment The assignment to save.
      */
-    @Override
     public void saveAssignment(Assignment assignment) {
         appModel.saveAssignment(assignment);
     }
@@ -145,7 +139,6 @@ public class AppController implements IAppController {
      *
      * @return The line marker.
      */
-    @Override
     public String getLineMarker() {
         return appModel.getLineMarker();
     }
@@ -155,7 +148,6 @@ public class AppController implements IAppController {
      *
      * @return The heading style.
      */
-    @Override
     public String getHeadingStyle() {
         return appModel.getHeadingStyle();
     }
@@ -165,7 +157,6 @@ public class AppController implements IAppController {
      *
      * @return The heading underline style.
      */
-    @Override
     public String getUnderlineStyle() {
         return appModel.getUnderlineStyle();
     }
@@ -175,7 +166,6 @@ public class AppController implements IAppController {
      *
      * @return The number of line spaces.
      */
-    @Override
     public int getLineSpacing() {
         return appModel.getLineSpacing();
     }
@@ -206,7 +196,6 @@ public class AppController implements IAppController {
      *
      * @param studentId The ID of the feedback document to save.
      */
-    @Override
     public void saveFeedbackDocument(StudentId studentId) {
         appModel.notifySubscribers("saveDoc", studentId);
     }
@@ -219,7 +208,6 @@ public class AppController implements IAppController {
      * @param headingsAndData The feedback data to save.
      * @param grade           The grade to save.
      */
-    @Override
     public void saveFeedbackDocument(
         Assignment assignment,
         StudentId studentId,
@@ -245,7 +233,6 @@ public class AppController implements IAppController {
      *
      * @return The last document's ID.
      */
-    @Override
     public StudentId getLastDocumentInView() {
         return appModel.getLastDocumentInView();
     }
@@ -255,7 +242,6 @@ public class AppController implements IAppController {
      *
      * @return The current document's ID.
      */
-    @Override
     public StudentId getCurrentDocumentInView() {
         return appModel.getCurrentDocumentInView();
     }
@@ -265,7 +251,6 @@ public class AppController implements IAppController {
      *
      * @param studentId The current document's ID.
      */
-    @Override
     public void setCurrentDocumentInView(StudentId studentId) {
         appModel.setCurrentDocumentInView(studentId, false);
     }
@@ -276,7 +261,6 @@ public class AppController implements IAppController {
      * @param assignment The assignment the document belongs to.
      * @param studentId  The ID of the document to display.
      */
-    @Override
     public void displayNewDocument(Assignment assignment, StudentId studentId) {
         // Get the latest data for the requested document
         appModel.setCurrentDocumentInView(studentId, true);
@@ -289,7 +273,6 @@ public class AppController implements IAppController {
      * @param studentId  The student id of the document.
      * @return The first line of the document if it exists or a default message.
      */
-    @Override
     public String getFirstLineFromDocument(Assignment assignment, StudentId studentId) {
         // Set the default text
         String returnString = "<no preview available>";
@@ -321,7 +304,6 @@ public class AppController implements IAppController {
      *
      * @param currentHeadingBeingEdited The current heading being edited.
      */
-    @Override
     public void updateCurrentHeadingBeingEdited(String currentHeadingBeingEdited) {
         appModel.setCurrentHeadingBeingEdited(currentHeadingBeingEdited);
     }
@@ -331,7 +313,6 @@ public class AppController implements IAppController {
      *
      * @return The current heading being edited.
      */
-    @Override
     public String getCurrentHeadingBeingEdited() {
         return appModel.getCurrentHeadingBeingEdited();
     }
@@ -341,7 +322,6 @@ public class AppController implements IAppController {
      *
      * @return True if a new heading is being edited, false otherwise.
      */
-    @Override
     public boolean headingChanged() {
         return !appModel.getCurrentHeadingBeingEdited().equals(appModel.getPreviousHeadingBeingEdited());
     }
@@ -352,7 +332,6 @@ public class AppController implements IAppController {
      * @param previousHeading           The current feedback box heading being edited.
      * @param currentHeading            The new feedback box heading
      */
-    @Override
     public void checkHeading(String previousHeading, String newHeading) {
         newHeading = newHeading.replaceAll("\n", "").trim(); // Remove all new lines
 
@@ -366,7 +345,6 @@ public class AppController implements IAppController {
      * @param previousHeading           The current feedback box heading being edited.
      * @param currentHeading            The new feedback box heading
      */
-    @Override
     public void updateHeading(String previousHeading, String newHeading) {
         // Add new heading
         graphDatabase.addHeadingObject(newHeading);
@@ -388,7 +366,6 @@ public class AppController implements IAppController {
      *
      * @param assignment The assignment the feedback documents belong to.
      */
-    @Override
     public void exportFeedbackDocuments(Assignment assignment) {
         appModel.exportFeedbackDocuments(assignment);
     }
@@ -398,7 +375,6 @@ public class AppController implements IAppController {
      *
      * @param assignment The assignment the grade document belongs to.
      */
-    @Override
     public void exportGrades(Assignment assignment) {
         appModel.exportGrades(assignment);
     }
@@ -408,7 +384,6 @@ public class AppController implements IAppController {
      *
      * @param assignment The assignment grades to visualise.
      */
-    @Override
     public void visualiseGrades(Assignment assignment) {
         List<Integer> grades = appModel.getGrades(assignment);
         Visualisations.createBarChart(grades);
@@ -420,7 +395,6 @@ public class AppController implements IAppController {
      * @param assignment The assignment to summarise.
      * @return A map of headings and the 3 most used phrases for those headings.
      */
-    @Override
     public Map<String, List<String>> getSummary(Assignment assignment) {
         Map<String, List<String>> summary = new HashMap<String, List<String>>();
 
@@ -454,7 +428,6 @@ public class AppController implements IAppController {
      *
      * @param phrase The string representation of the phrase to be inserted.
      */
-    @Override
     public void insertPhraseIntoCurrentFeedbackBox(String phrase) {
         appModel.insertPhraseIntoCurrentFeedbackBox(phrase);
     }
@@ -464,7 +437,6 @@ public class AppController implements IAppController {
      *
      * @param heading The heading the phrases are for.
      */
-    @Override
     public void showPhrasesForHeading(String heading) {
         List<Phrase> currentPhraseSet = appModel.getCurrentPhraseSet(heading);
         if (currentPhraseSet != null) {
@@ -477,7 +449,6 @@ public class AppController implements IAppController {
      *
      * @param phrase The string representation of the phrase to be added.
      */
-    @Override
     public void addNewCustomPhraseFromView(String phrase) {
         // Filter out empty lines
         if (!phrase.trim().isEmpty() && !phrase.trim().equals(getLineMarker())) {
@@ -494,7 +465,6 @@ public class AppController implements IAppController {
      * @param previousBoxContents The last list of phrases for the feedback box.
      * @param currentBoxContents  The current list of phrases for the feedback box.
      */
-    @Override
     public void managePhraseLinks(String heading, List<String> previousBoxContents, List<String> currentBoxContents) {
         graphDatabase.managePhraseLinks(heading, previousBoxContents, currentBoxContents);
     }
@@ -506,7 +476,6 @@ public class AppController implements IAppController {
      * @param previousBoxContents The last list of phrases for the feedback box.
      * @param currentBoxContents  The current list of phrases for the feedback box.
      */
-    @Override
     public void updatePhrases(String heading, List<String> previousBoxContents, List<String> currentBoxContents) {
         // Store previous phrase set
         List<Phrase> previousPhrasesForHeading = graphDatabase.getPhrasesForHeading(heading);
@@ -543,7 +512,6 @@ public class AppController implements IAppController {
     /**
      * Ask the model to reset the phrases panel.
      */
-    @Override
     public void resetPhrasesPanel(PhraseType phrasePanel) {
         appModel.resetPhrasesPanel(phrasePanel);
     }
@@ -551,7 +519,6 @@ public class AppController implements IAppController {
     /**
      * Get the custom phrases and display them.
      */
-    @Override
     public void showCustomPhrases() {
         List<Phrase> customPhrases = graphDatabase.getCustomPhrases();
         customPhrases.forEach(appModel::addNewCustomPhraseToView);
@@ -562,7 +529,6 @@ public class AppController implements IAppController {
      *
      * @param currentPhrasePanelInView The phrase panel type.
      */
-    @Override
     public void setCurrentPhrasePanelInView(PhraseType currentPhrasePanelInView) {
         appModel.setCurrentPhrasePanelInView(currentPhrasePanelInView);
     }
@@ -572,7 +538,6 @@ public class AppController implements IAppController {
      *
      * @param errorMessage The error message to show.
      */
-    @Override
     public void error(String errorMessage) {
         appModel.notifySubscribers("error", errorMessage);
     }

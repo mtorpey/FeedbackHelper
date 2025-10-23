@@ -29,7 +29,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import controller.IAppController;
+import controller.AppController;
 import model.Assignment;
 import model.StudentId;
 
@@ -65,7 +65,7 @@ public class CreateAssignmentScreen extends JFrame {
     private static final int GRID_WIDTH = 3;
 
     // Instance variables
-    private final IAppController controller;
+    private final AppController controller;
     private JPanel configFormPanel;
     private JLabel studentListIndicator;
     private DocumentListener studentListListener;
@@ -84,7 +84,7 @@ public class CreateAssignmentScreen extends JFrame {
      *
      * @param controller The controller.
      */
-    public CreateAssignmentScreen(IAppController controller) {
+    public CreateAssignmentScreen(AppController controller) {
         // Setup as a JFrame
         super("Create assignment");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

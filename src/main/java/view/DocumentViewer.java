@@ -15,7 +15,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import controller.IAppController;
+import controller.AppController;
 
 /**
  * Document Viewer Class.
@@ -23,7 +23,7 @@ import controller.IAppController;
 public class DocumentViewer extends JFrame {
 
     // Instance variables
-    protected IAppController controller;
+    protected AppController controller;
     protected JPanel documentPanel;
     protected JTextArea textArea;
     protected JLabel titleLabel;
@@ -34,7 +34,7 @@ public class DocumentViewer extends JFrame {
      * @param controller The controller.
      * @param title      The document title.
      */
-    public DocumentViewer(IAppController controller, String title) {
+    public DocumentViewer(AppController controller, String title) {
         this.controller = controller;
 
         // Setup components

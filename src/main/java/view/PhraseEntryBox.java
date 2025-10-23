@@ -8,7 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import controller.IAppController;
+import controller.AppController;
 
 /**
  * Phrase Entry Box Class.
@@ -16,7 +16,7 @@ import controller.IAppController;
 public class PhraseEntryBox extends JPanel {
 
     // Instance variables
-    private final IAppController controller;
+    private final AppController controller;
     private JTextArea textArea;
     private JButton submitButton;
 
@@ -25,7 +25,7 @@ public class PhraseEntryBox extends JPanel {
      *
      * @param controller The controller.
      */
-    public PhraseEntryBox(IAppController controller) {
+    public PhraseEntryBox(AppController controller) {
         this.controller = controller;
 
         // Setup components
