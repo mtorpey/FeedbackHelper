@@ -28,12 +28,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.dizitart</groupId>
-            <artifactId>nitrite</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-core</artifactId>
             <version>0.38.3</version>

@@ -13,9 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import configuration.UserPreferences;
-import database.DocumentDatabaseManager;
 import database.GraphDatabaseManager;
-import database.IDocumentDatabase;
 import database.IGraphDatabase;
 import model.Assignment;
 import model.FeedbackDocument;
@@ -33,7 +31,6 @@ public class AppController implements IAppController {
 
     // Instance variables
     private final IAppModel appModel;
-    private final IDocumentDatabase documentDatabase;
     private final IGraphDatabase graphDatabase;
 
     /**
@@ -43,7 +40,6 @@ public class AppController implements IAppController {
      */
     public AppController(IAppModel appModel) {
         this.appModel = appModel;
-        this.documentDatabase = new DocumentDatabaseManager();
         this.graphDatabase = new GraphDatabaseManager();
     }
 
@@ -58,16 +54,6 @@ public class AppController implements IAppController {
     }
 
     /* ASSIGNMENT METHODS */
-
-    /**
-     * Create the feedback files for the assignment in the document database.
-     *
-     * @param assignment              The assignment.
-     */
-    @Override
-    public void createFeedbackDocuments(Assignment assignment) {
-        documentDatabase.createFeedbackDocuments(assignment);
-    }
 
     /**
      * Create an assignment in the model.
@@ -93,12 +79,6 @@ public class AppController implements IAppController {
             assignmentDirectory
         );
         assignment.saveAssignmentDetails();
-
-        // Create the assignment database
-        documentDatabase.createDocumentDatabase(assignment.getDirectory(), assignment.getFileSafeTitle());
-
-        // Create the feedback files for the assignment in the document database
-        documentDatabase.createFeedbackDocuments(assignment);
 
         // Create the graph database
         graphDatabase.createGraphDatabase(assignment.getDirectory(), assignment.getFileSafeTitle());
@@ -146,7 +126,7 @@ public class AppController implements IAppController {
         UserPreferences.setLastOpenedAssignment(fhtFile);
 
         // Load the feedback documents into the assignment
-        loadFeedbackDocuments(assignment);
+        loadPhrasesFromFile(assignment);
         return assignment;
     }
 
@@ -207,14 +187,9 @@ public class AppController implements IAppController {
      *
      * @param assignment The assignment to load the feedback documents for.
      */
-    private void loadFeedbackDocuments(Assignment assignment) {
+    private void loadPhrasesFromFile(Assignment assignment) {
         // Open the databases
-        documentDatabase.openDocumentDatabase(assignment.getDirectory(), assignment.getFileSafeTitle());
         graphDatabase.openGraphDatabase(assignment.getDirectory(), assignment.getFileSafeTitle());
-
-        // Get the feedback documents from the document database
-        List<FeedbackDocument> feedbackDocuments = documentDatabase.loadFeedbackDocumentsForAssignment(assignment);
-        assignment.addFeedbackDocuments(feedbackDocuments);
 
         // Get the phrases data for each heading from the graph database
         assignment
@@ -251,7 +226,6 @@ public class AppController implements IAppController {
         Map<String, String> headingsAndData,
         double grade
     ) {
-        documentDatabase.saveFeedbackDocument(assignment, studentId, headingsAndData, grade);
         FeedbackDocument feedbackDocumentForStudent = assignment.getFeedbackDocumentForStudent(studentId);
         assignment
             .getHeadings()
@@ -259,6 +233,11 @@ public class AppController implements IAppController {
                 feedbackDocumentForStudent.setDataForHeading(heading, headingsAndData.get(heading));
             });
         feedbackDocumentForStudent.setGrade(grade);
+        try {
+            assignment.saveAssignmentDetails();
+        } catch (IOException e) {
+            error(e.toString());
+        }
     }
 
     /**
@@ -300,7 +279,6 @@ public class AppController implements IAppController {
     @Override
     public void displayNewDocument(Assignment assignment, StudentId studentId) {
         // Get the latest data for the requested document
-        documentDatabase.updateFeedbackDocument(assignment, studentId);
         appModel.setCurrentDocumentInView(studentId, true);
     }
 
@@ -412,9 +390,6 @@ public class AppController implements IAppController {
      */
     @Override
     public void exportFeedbackDocuments(Assignment assignment) {
-        // Make sure feedback documents are updated
-        documentDatabase.loadFeedbackDocumentsForAssignment(assignment);
-        // Export them
         appModel.exportFeedbackDocuments(assignment);
     }
 
@@ -425,9 +400,6 @@ public class AppController implements IAppController {
      */
     @Override
     public void exportGrades(Assignment assignment) {
-        // Make sure feedback documents are updated
-        documentDatabase.loadFeedbackDocumentsForAssignment(assignment);
-        // Export them
         appModel.exportGrades(assignment);
     }
 
@@ -438,10 +410,6 @@ public class AppController implements IAppController {
      */
     @Override
     public void visualiseGrades(Assignment assignment) {
-        // Make sure feedback documents are updated
-        documentDatabase.loadFeedbackDocumentsForAssignment(assignment);
-
-        // Extract the grades and visualise them
         List<Integer> grades = appModel.getGrades(assignment);
         Visualisations.createBarChart(grades);
     }

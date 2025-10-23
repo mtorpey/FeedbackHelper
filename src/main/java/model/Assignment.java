@@ -104,6 +104,7 @@ public class Assignment implements Serializable {
             e.printStackTrace();
         }
 
+        System.out.println("Loaded assignment from " + fhtFile);
         return loadedAssignment;
     }
 
@@ -383,6 +384,7 @@ public class Assignment implements Serializable {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(Files.newOutputStream(fhtFile))
         ) {
             objectOutputStream.writeObject(this);
+            System.out.println("Saved to " + fhtFile);
         }
     }
 

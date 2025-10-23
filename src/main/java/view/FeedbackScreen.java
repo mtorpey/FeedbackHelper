@@ -286,9 +286,6 @@ public class FeedbackScreen implements PropertyChangeListener {
             FeedbackDocument feedbackDoc = new FeedbackDocument(assignment, studentId);
             assignment.setFeedbackDocument(studentId, feedbackDoc);
 
-            // Create the feedback files for the assignment in the document database
-            controller.createFeedbackDocuments(assignment);
-
             // Save the assignment to an FHT file
             controller.saveAssignment(assignment);
 
