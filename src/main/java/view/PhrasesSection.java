@@ -11,15 +11,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
-import controller.AppController;
-
 /**
  * Phrases Section Class.
  */
 public class PhrasesSection extends JPanel implements SearchBox.Listener {
 
     // Instance variables
-    private final AppController controller;
     private JTabbedPane tabbedPane;
     private SearchBox searchBox;
     private List<JScrollPane> phrasesPanelScrollPanes;
@@ -28,18 +25,18 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
     /**
      * Constructor.
      *
-     * @param controller The controller.
+     * No controller is passed as an argument, because it seems this object
+     * itself doesn't use it. This could be readded.
      */
-    public PhrasesSection(AppController controller) {
-        this.controller = controller;
+    public PhrasesSection() {
         this.tabbedPane = new JTabbedPane();
         this.phrasesPanelScrollPanes = new ArrayList<>();
         this.phrasesPanelsByType = new HashMap<PhraseType, PhrasesPanel>();
 
         // Set layout, pane and visibility
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        this.add(this.tabbedPane);
         this.setupSearchBox();
-        this.setupTabbedPane();
         this.setVisible(true);
     }
 
@@ -119,23 +116,6 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
     public void updatePhraseCounter(PhraseType phraseType, String phrase, int phraseCount) {
         this.phrasesPanelsByType.get(phraseType).updatePhraseCounter(phrase, phraseCount);
         this.searchBox.clear(); // new phrase added, so current search is over
-    }
-
-    /**
-     * Setup the tabbed pane of phrase panels.
-     */
-    public void setupTabbedPane() {
-        this.tabbedPane.addChangeListener(l -> {
-            if (this.tabbedPane.getSelectedIndex() >= 0) {
-                if (this.tabbedPane.getSelectedIndex() == 0) {
-                    this.controller.setCurrentPhrasePanelInView(PhraseType.CUSTOM);
-                } else {
-                    this.controller.setCurrentPhrasePanelInView(PhraseType.FREQUENTLY_USED);
-                }
-            }
-        });
-
-        this.add(this.tabbedPane);
     }
 
     /**

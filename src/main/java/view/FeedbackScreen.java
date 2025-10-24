@@ -146,7 +146,7 @@ public class FeedbackScreen implements PropertyChangeListener {
      * Setup the phrase panels and the phrases section.
      */
     private void setupPhrasesSection() {
-        this.phrasesSection = new PhrasesSection(this.controller);
+        this.phrasesSection = new PhrasesSection();
 
         // Create panels
         PhrasesPanel customPhrasesPanel = new PhrasesPanel(this.controller, PhraseType.CUSTOM);
@@ -158,7 +158,6 @@ public class FeedbackScreen implements PropertyChangeListener {
 
         // Start on frequently used pane
         this.phrasesSection.setHighlightedPane(1);
-        this.controller.setCurrentPhrasePanelInView(PhraseType.FREQUENTLY_USED);
     }
 
     /**

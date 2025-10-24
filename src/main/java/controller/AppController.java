@@ -526,15 +526,6 @@ public class AppController {
     }
 
     /**
-     * Set the phrase panel the user is currently viewing.
-     *
-     * @param currentPhrasePanelInView The phrase panel type.
-     */
-    public void setCurrentPhrasePanelInView(PhraseType currentPhrasePanelInView) {
-        appModel.setCurrentPhrasePanelInView(currentPhrasePanelInView);
-    }
-
-    /**
      * Show the user an error message.
      *
      * @param errorMessage The error message to show.

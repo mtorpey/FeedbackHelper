@@ -45,7 +45,6 @@ public class AppModel {
     private String previousHeadingBeingEdited;
     private Map<String, List<Phrase>> currentHeadingAndUsedPhrases;
     private Map<String, List<Phrase>> previousHeadingAndUsedPhrases;
-    private PhraseType currentPhrasePanelInView;
     private PropertyChangeSupport subscribers;
 
     /**
@@ -437,15 +436,5 @@ public class AppModel {
      */
     public void setPreviousHeadingPhraseSet(String heading, List<Phrase> phrases) {
         this.previousHeadingAndUsedPhrases.put(heading, phrases);
-    }
-
-    /**
-     * Set the phrase panel the user is currently viewing.
-     *
-     * @param currentPhrasePanelInView The phrase panel type.
-     */
-    public void setCurrentPhrasePanelInView(PhraseType currentPhrasePanelInView) {
-        this.currentPhrasePanelInView = currentPhrasePanelInView;
-        notifySubscribers(PHRASE_PANEL_CHANGE_MESSAGE, currentPhrasePanelInView);
     }
 }
