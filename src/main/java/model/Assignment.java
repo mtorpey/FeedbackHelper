@@ -12,10 +12,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -74,18 +76,29 @@ public class Assignment implements Serializable {
     private String assignmentTitle;
     private List<String> assignmentHeadings;
     private Map<StudentId, FeedbackDocument> feedbackDocuments;
+    private Map<String, List<String>> customPhrases;
     private String headingStyle;
     private String underlineStyle;
     private int lineSpacing;
     private String lineMarker;
+    
     private transient Path directory;
+    private transient Map<String, List<Phrase>> phraseCounts;
+    private transient AppModel model;
 
     /**
      * Constructor.
      */
     public Assignment() {
-        this.assignmentHeadings = new ArrayList<String>();
-        feedbackDocuments = new HashMap<StudentId, FeedbackDocument>();
+        System.out.println("Making assignment");
+        this.assignmentHeadings = new ArrayList<>();
+        feedbackDocuments = new HashMap<>();
+        customPhrases = new HashMap<>();
+        phraseCounts = new HashMap<>();
+    }
+
+    public void setModel(AppModel model) {
+        this.model = model;
     }
 
     /**
@@ -95,12 +108,18 @@ public class Assignment implements Serializable {
      * @return The Assignment object stored in the file.
      */
     public static Assignment loadAssignment(Path fhtFile) {
+        // Deserialise from file
         Assignment loadedAssignment = null;
         try (ObjectInputStream objectInputStream = new ObjectInputStream(Files.newInputStream(fhtFile))) {
             loadedAssignment = (Assignment) objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
+            // TODO: handle errors better
             e.printStackTrace();
         }
+
+        // Set transient fields
+        loadedAssignment.directory = fhtFile.getParent().toAbsolutePath();
+        loadedAssignment.computePhraseCounts();
 
         System.out.println("Loaded assignment from " + fhtFile);
         return loadedAssignment;
@@ -205,9 +224,6 @@ public class Assignment implements Serializable {
         return directory.toAbsolutePath();
     }
 
-    /**
-     * Set the assignment directory path.
-     */
     public void setDirectory(Path directory) {
         this.directory = directory;
     }
@@ -263,6 +279,7 @@ public class Assignment implements Serializable {
             .map(String::trim)
             .filter(not(String::isEmpty))
             .collect(Collectors.toList());
+        computePhraseCounts();
     }
 
     /**
@@ -290,7 +307,7 @@ public class Assignment implements Serializable {
             studentIds = findStudentIdsFromFile(studentListFile);
         } catch (IOException | NullPointerException e) {
             System.out.println("Failed to read file");
-            System.out.println("Searching for submissions in " + assignmentDirectory + " ...");
+            System.out.println("Searching for submissions in '" + assignmentDirectory + "'...");
             try {
                 studentIds = findStudentIdsFromDirectory(assignmentDirectory);
             } catch (NullPointerException e2) {
@@ -349,7 +366,7 @@ public class Assignment implements Serializable {
     }
 
     /**
-     * Get a list of the feedback documents.
+     * Get a list of the feedback documents, sorted by student ID.
      *
      * @return A list of the feedback documents.
      */
@@ -410,5 +427,151 @@ public class Assignment implements Serializable {
      */
     public FeedbackDocument getFeedbackDocumentForStudent(StudentId studentId) {
         return feedbackDocuments.get(studentId);
+    }
+
+    /**
+     * Update the model with the feedback in the given sections for a particular student.
+     *
+     * @param headingsAndData The feedback sections to be updated, which might not be all of them.
+     */
+    public void updateFeedback(StudentId studentId, Map<String, String> headingsAndData) {
+        FeedbackDocument document = getFeedbackDocumentForStudent(studentId);
+        for (String heading : headingsAndData.keySet()) {
+            // Set the new text for this section
+            String oldContents = document.getSectionContents(heading);
+            String newContents = headingsAndData.get(heading);
+            document.setDataForHeading(heading, newContents);
+
+            // Handle phrase counts
+            updatePhrasesForHeading(heading, oldContents, newContents);
+        }
+        
+        // Update custom panel
+        model.resetCustomPhrasesPanel();
+    }
+
+    public void updateGrade(StudentId studentId, double grade) {
+        getFeedbackDocumentForStudent(studentId).setGrade(grade);
+    }
+
+    private void updatePhrasesForHeading(String heading, String oldContents, String newContents) {
+        List<String> oldPhrases = splitIntoPhrases(oldContents);
+        List<String> newPhrases = splitIntoPhrases(newContents);
+
+        // Handle phrases that were deleted
+        List<String> removals = Utilities.getRemovalsFromList(oldPhrases, newPhrases);  // TODO: make Sets?
+        for (Phrase phrase : getPhrasesForHeading(heading)) {
+            if (removals.contains(phrase.getPhraseAsString())) {
+                phrase.decrementUsageCount();
+                model.updatePhraseCounterInView(heading, phrase);
+            }
+        }
+        removeZeroUsePhrases(heading);
+
+        // Handle existing phrases that were added
+        List<String> additions = Utilities.getAdditionsToList(oldPhrases, newPhrases);
+        for (Phrase phrase : getPhrasesForHeading(heading)) {
+            int pos = additions.indexOf(phrase.getPhraseAsString());
+            if (pos != -1) {
+                phrase.incrementUsageCount();
+                model.updatePhraseCounterInView(heading, phrase);
+                additions.remove(pos);
+            }
+        }
+
+        // Add any phrases that haven't been used before
+        additions.stream().forEach(phrase -> addPhrase(heading, phrase));
+    }
+
+    private void addPhrase(String heading, String phrase) {
+        Phrase newPhrase = new Phrase(phrase);
+        phraseCounts.get(heading).add(newPhrase);
+        model.addNewPhraseToView(heading, newPhrase);
+    }
+
+    private void removeZeroUsePhrases(String heading) {
+        List<Phrase> filtered = getPhrasesForHeading(heading)
+            .stream()
+            .filter(Phrase::isUnused)
+            .collect(Collectors.toList());
+        for (Phrase phrase : filtered) {
+            removePhrase(heading, phrase);
+        }
+    }
+
+    private void removePhrase(String heading, Phrase phrase) {
+        phraseCounts.get(heading).remove(phrase);
+        model.removePhraseFromView(heading, phrase);
+    }
+
+    private List<String> splitIntoPhrases(String contents) {
+        return Arrays.stream(contents.split("\n"))
+            .map(String::trim)
+            .filter(line -> line.startsWith(lineMarker))
+            .map(line -> line.replaceFirst(lineMarker, ""))
+            .collect(Collectors.toList());
+    }
+
+    public void addCustomPhrase(String heading, String phrase) {
+        customPhrases.get(heading).add(phrase);
+        model.addNewCustomPhraseToView(heading, phrase);
+    }
+
+    public List<String> getCustomPhrases(String heading) {
+        return customPhrases.get(heading);
+    }
+
+    public void editHeading(String previousHeading, String newHeading) throws IllegalArgumentException {
+        // Check the heading is not blank
+        if (newHeading.isBlank()) {
+            throw new IllegalArgumentException("New heading cannot be blank.");
+        }
+
+        // Check that the new heading is not the same as any old ones
+        for (String heading : assignmentHeadings) {
+            if (heading.equals(newHeading)) {
+                throw new IllegalArgumentException("The heading " + heading + " already exists.");
+            }
+        }
+
+        // Modify the appropriate heading
+        int headingPosition = assignmentHeadings.indexOf(previousHeading);
+        assignmentHeadings.set(headingPosition, newHeading);
+
+        // Update the keys in the feedback documents
+        getFeedbackDocuments().forEach(doc -> doc.editHeading(previousHeading, newHeading));
+
+        // Update the keys in the custom phrases
+        customPhrases.put(newHeading, customPhrases.get(previousHeading));
+        customPhrases.remove(previousHeading);
+    }
+
+    private List<Phrase> getPhrasesForHeading(String heading) {
+        System.out.println(this);
+        System.out.println(this.assignmentHeadings);
+        System.out.println(phraseCounts);
+        return phraseCounts.get(heading);
+    }
+
+    private void computePhraseCounts() {
+        System.out.println("Computing phrase counts, with headings " + getHeadings());
+        phraseCounts = new HashMap<>();
+        getHeadings().forEach(
+            heading ->
+            phraseCounts.put(
+                    heading,
+                    getFeedbackDocuments()
+                            .stream()
+                            .map(doc -> doc.getSectionContents(heading))
+                            .map(this::splitIntoPhrases)
+                            .flatMap(List::stream)
+                            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                            .entrySet()
+                            .stream()
+                            .map(e -> new Phrase(e.getKey(), e.getValue()))
+                            .sorted(Comparator.reverseOrder())
+                            .collect(Collectors.toList())
+            )
+        );
     }
 }

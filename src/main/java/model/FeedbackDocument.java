@@ -103,6 +103,16 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
         return assignment.getHeadings();
     }
 
+    /**
+     * Changes one of the headings.
+     *
+     * This doesn't do any checks, which should be performed in Assignment::editHeading.
+     */
+    public void editHeading(String previousHeading, String newHeading) {
+        sectionContents.put(newHeading, sectionContents.get(previousHeading));
+        sectionContents.remove(previousHeading);
+    }
+
     /** Export feedback to a text document in the given directory. */
     public void export(Path directory) throws IOException {
         Path outFile = directory.resolve(getStudentId() + ".txt");

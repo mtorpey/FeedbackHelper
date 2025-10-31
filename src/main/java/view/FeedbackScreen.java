@@ -250,7 +250,6 @@ public class FeedbackScreen implements PropertyChangeListener {
         JMenuItem addStudentOption = new JMenuItem("Add new student");
         JMenuItem exportDocsOption = new JMenuItem("Export grades and feedback documents");
         JMenuItem visGradesOption = new JMenuItem("Visualise grades");
-        JMenuItem summaryOption = new JMenuItem("Create summary");
 
         // Create the theme preferences menu
         JMenu preferencesMenu = createPreferencesMenu();
@@ -344,13 +343,6 @@ public class FeedbackScreen implements PropertyChangeListener {
             JOptionPane.showMessageDialog(this.feedbackScreen, "Generating visualisation of assignment grades...");
         });
 
-        // Visualise grades option
-        summaryOption.addActionListener(l -> {
-            Map<String, List<String>> summary = this.controller.getSummary(this.assignment);
-            DocumentViewer documentViewer = new DocumentViewer(this.controller, "Summary of All Feedback Documents");
-            documentViewer.displayData(summary, this.assignment.getHeadings());
-        });
-
         // Show the 'about' dialog window
         aboutOption.addActionListener(l -> {
             AboutDialog aboutDialog = new AboutDialog(this.feedbackScreen);
@@ -362,7 +354,6 @@ public class FeedbackScreen implements PropertyChangeListener {
         fileMenu.add(addStudentOption);
         fileMenu.add(exportDocsOption);
         fileMenu.add(visGradesOption);
-        fileMenu.add(summaryOption);
 
         helpMenu.add(aboutOption);
 
@@ -424,7 +415,7 @@ public class FeedbackScreen implements PropertyChangeListener {
             case "saveDoc":
                 performDocumentSave(event);
                 break;
-            case "changeHeading":
+            case "editHeading":
                 performHeadingChange(event);
                 break;
             case "insertPhrase":
@@ -448,6 +439,9 @@ public class FeedbackScreen implements PropertyChangeListener {
             case "phrasePanelChange":
                 performPhrasePanelChange(event);
                 break;
+            case "resetFeedbackBoxes":
+                performResetFeedbackBoxes(event);
+                break;
             case "error":
                 displayError(event);
                 break;
@@ -456,6 +450,11 @@ public class FeedbackScreen implements PropertyChangeListener {
                 System.out.println(event.getNewValue());
                 break;
         }
+    }
+
+    private void performResetFeedbackBoxes(PropertyChangeEvent event) throws ClassCastException {
+        List<String> headings = (List<String>) event.getNewValue();
+        this.editorPanel.resetFeedbackBoxes(headings);
     }
 
     /**
@@ -471,6 +470,8 @@ public class FeedbackScreen implements PropertyChangeListener {
     /**
      * Perform a phrase panel change.
      *
+     * Inserting the actual phrases is done separately by performAddNewPhrase.
+     *
      * @param event The event notification from the model.
      */
     private void performPhrasePanelChange(PropertyChangeEvent event) {
@@ -479,7 +480,7 @@ public class FeedbackScreen implements PropertyChangeListener {
             // Show custom phrases
             if (panelInView == PhraseType.CUSTOM) {
                 this.phrasesSection.resetPhrasesPanel(PhraseType.CUSTOM);
-                this.controller.showCustomPhrases();
+                this.controller.showCustomPhrases(controller.getCurrentHeadingBeingEdited());
                 this.phraseEntryBox.enablePhraseEntryBox();
             } else {
                 this.phraseEntryBox.disablePhraseEntryBox();
@@ -552,66 +553,7 @@ public class FeedbackScreen implements PropertyChangeListener {
      * @param event The event notification from the model.
      */
     private void performHeadingChange(PropertyChangeEvent event) {
-        String previousHeading = (String) event.getOldValue();
-        String currentHeading = (String) event.getNewValue();
-
-        // Change assignment heading
-        List<String> assignmentHeadings = this.assignment.getHeadings();
-
-        // Check that the new heading is not blank
-        if (currentHeading.isBlank()) {
-            JOptionPane.showMessageDialog(this.feedbackScreen, "The heading is blank.");
-            this.editorPanel.resetFeedbackBoxes(assignmentHeadings);
-            return;
-        }
-
-        // Check that the new heading is not the same as any old ones
-        for (String heading : assignmentHeadings) {
-            if (heading.equals(currentHeading)) {
-                JOptionPane.showMessageDialog(
-                    this.feedbackScreen,
-                    "The heading " + currentHeading + " already exists."
-                );
-                this.editorPanel.resetFeedbackBoxes(assignmentHeadings);
-                return;
-            }
-        }
-
-        // Update phrases
-        this.controller.updateHeading(previousHeading, currentHeading);
-
-        // Set new assignment headings
-        int headingPosition = assignmentHeadings.indexOf(previousHeading);
-        assignmentHeadings.set(headingPosition, currentHeading);
-        this.assignment.setAssignmentHeadings(String.join("\n", assignmentHeadings));
-
-        // Reconcile any assignment headings
-        this.editorPanel.resetFeedbackBoxes(assignmentHeadings);
-
-        // Change the heading for each student
-        List<FeedbackDocument> feedbackDocuments = this.assignment.getFeedbackDocuments();
-        feedbackDocuments.forEach(feedbackDocument -> {
-            // Change the data to the new key
-            String data = feedbackDocument.getSectionContents(previousHeading);
-            feedbackDocument.setDataForHeading(currentHeading, data);
-
-            Map<String, String> headingsAndData = new HashMap<String, String>();
-            this.assignment.getHeadings().forEach(heading -> {
-                headingsAndData.put(heading, feedbackDocument.getSectionContents(heading));
-            });
-
-            StudentId studentId = feedbackDocument.getStudentId();
-            double grade = feedbackDocument.getGrade();
-            this.controller.saveFeedbackDocument(this.assignment, studentId, headingsAndData, grade);
-            this.previewPanel.updatePreviewBox(
-                studentId,
-                this.controller.getFirstLineFromDocument(this.assignment, studentId),
-                grade
-            );
-        });
-
-        // Save the assignment to an FHT file
-        controller.saveAssignment(assignment);
+        // Do nothing! This should all be handled by resetFeedbackBoxes
     }
 
     /**

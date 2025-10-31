@@ -163,7 +163,7 @@ public class FeedbackBox extends JPanel {
                     // Change heading
                     setHeading(newHeading);
                     // Save new heading
-                    controller.checkHeading(currentHeading, newHeading);
+                    controller.editHeading(currentHeading, newHeading);
                 }
             } else {
                 edit.accept(true);
@@ -199,10 +199,7 @@ public class FeedbackBox extends JPanel {
                 @Override
                 public void keyReleased(KeyEvent e) {
                     if (e.getKeyCode() == ENTER_KEY) {
-                        captureState();
-                        controller.updatePhrases(heading, previousBoxContents, currentBoxContents);
-                        controller.managePhraseLinks(heading, previousBoxContents, currentBoxContents);
-                        controller.saveFeedbackDocument(controller.getCurrentDocumentInView());
+                        updateFeedback();
                         insertLineMarkerForNewLine();
                     }
                 }
@@ -240,6 +237,15 @@ public class FeedbackBox extends JPanel {
         );
     }
 
+    private void updateFeedback() {
+        controller.updateFeedback(
+            controller.getCurrentDocumentInView(),
+            this.heading,
+            this.getTextArea().getText()
+        );
+        controller.saveFeedbackDocument(controller.getCurrentDocumentInView());
+    }
+
     /**
      * Get the text area.
      *
@@ -247,22 +253,6 @@ public class FeedbackBox extends JPanel {
      */
     public JTextArea getTextArea() {
         return this.textArea;
-    }
-
-    /**
-     * Capture the state of the feedback box and update the old and new box content lists.
-     */
-    private void captureState() {
-        // Clear previous contents and store most recent contents
-        this.previousBoxContents = new ArrayList<>(this.currentBoxContents);
-
-        // Store the realtime contents (and remove line marker for storage)
-        this.currentBoxContents = Arrays.asList(this.textArea.getText().split(NEWLINE));
-        this.currentBoxContents = this.currentBoxContents.stream()
-            .map(String::trim)
-            .filter(line -> line.startsWith(this.controller.getLineMarker()))
-            .map(line -> line.replaceFirst(this.controller.getLineMarker(), ""))
-            .collect(Collectors.toList());
     }
 
     /**
@@ -301,9 +291,7 @@ public class FeedbackBox extends JPanel {
         this.textArea.insert(phrase + NEWLINE, caretPos);
 
         // Save new state
-        captureState();
-        this.controller.updatePhrases(this.heading, this.previousBoxContents, this.currentBoxContents);
-        this.controller.managePhraseLinks(this.heading, this.previousBoxContents, this.currentBoxContents);
+        updateFeedback();
         insertLineMarkerForNewLine();
     }
 

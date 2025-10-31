@@ -9,15 +9,22 @@ public class Phrase implements Comparable<Phrase> {
 
     // Instance variables
     private final String phraseAsString;
-    private int usageCount;
+    private long usageCount;
 
     /**
      * Constructor.
      *
-     * @param phraseAsString - The phrase as a string value.
+     * @param phraseAsString The phrase as a string value.
+     * @param usageCount The number of uses of this phrase.
      */
-    public Phrase(String phraseAsString) {
+    public Phrase(String phraseAsString, long usageCount) {
         this.phraseAsString = phraseAsString;
+        this.usageCount = usageCount;
+    }
+
+    /** Constructor with default usage count value of 1. */
+    public Phrase(String phraseAsString) {
+        this(phraseAsString, 1);
     }
 
     /**
@@ -34,8 +41,13 @@ public class Phrase implements Comparable<Phrase> {
      *
      * @return The usage count of the phrase.
      */
-    public int getUsageCount() {
+    public long getUsageCount() {
         return this.usageCount;
+    }
+
+    /** Whether this phrase is unused, i.e. has a usage count of 0. */
+    public boolean isUnused() {
+        return usageCount == 0;
     }
 
     /**
@@ -100,10 +112,17 @@ public class Phrase implements Comparable<Phrase> {
     /**
      * Define how to compare phrases when sorting them using Collections.
      *
-     * @return The difference of the usageCounts.
+     * @return Ordered based on usage count, then alphabetical
      */
     @Override
     public int compareTo(Phrase o) {
-        return o.getUsageCount() - this.getUsageCount();
+        long diff = o.getUsageCount() - this.getUsageCount();
+        if (diff < 0) {
+            return -1;
+        } else if (diff == 0) {
+            return o.getPhraseAsString().compareTo(this.getPhraseAsString());
+        } else {
+            return 1;
+        }
     }
 }

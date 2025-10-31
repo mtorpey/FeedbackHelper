@@ -68,7 +68,7 @@ public class PhraseEntryBox extends JPanel {
 
         this.submitButton.addActionListener(l -> {
             String phrase = this.textArea.getText();
-            this.controller.addNewCustomPhraseFromView(phrase);
+            this.controller.addNewCustomPhraseFromView(controller.getCurrentHeadingBeingEdited(), phrase);
             this.textArea.setText("");
         });
     }

@@ -79,7 +79,7 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
      * @param phraseCount     The phrase usage count.
      * @param phrasePanelType The type of the panel to add the phrase to.
      */
-    public void addPhraseToPanel(String phrase, int phraseCount, PhraseType phrasePanelType) {
+    public void addPhraseToPanel(String phrase, long phraseCount, PhraseType phrasePanelType) {
         this.phrasesPanelsByType.get(phrasePanelType).addPhrase(phrase, phraseCount);
         for (JScrollPane scrollPane : this.phrasesPanelScrollPanes) {
             SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
@@ -113,7 +113,7 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
      * @param phrase      The phrase to update.
      * @param phraseCount The new usage count value.
      */
-    public void updatePhraseCounter(PhraseType phraseType, String phrase, int phraseCount) {
+    public void updatePhraseCounter(PhraseType phraseType, String phrase, long phraseCount) {
         this.phrasesPanelsByType.get(phraseType).updatePhraseCounter(phrase, phraseCount);
         this.searchBox.clear(); // new phrase added, so current search is over
     }

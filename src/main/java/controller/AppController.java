@@ -3,22 +3,18 @@ package controller;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import configuration.UserPreferences;
-import database.GraphDatabaseManager;
 import model.AppModel;
 import model.Assignment;
 import model.FeedbackDocument;
 import model.Phrase;
 import model.StudentId;
-import model.Utilities;
 import view.PhraseType;
 import visualisation.Visualisations;
 
@@ -29,7 +25,6 @@ public class AppController {
 
     // Instance variables
     private final AppModel appModel;
-    private final GraphDatabaseManager graphDatabase;
 
     /**
      * Constructor.
@@ -38,7 +33,6 @@ public class AppController {
      */
     public AppController(AppModel appModel) {
         this.appModel = appModel;
-        this.graphDatabase = new GraphDatabaseManager();
     }
 
     /**
@@ -53,7 +47,7 @@ public class AppController {
     /* ASSIGNMENT METHODS */
 
     /**
-     * Create an assignment in the model.
+     * Create a new assignment in the model.
      *
      * @param assignmentTitle         The title of the assignment.
      * @param headings                The headings of the feedback document.
@@ -75,10 +69,6 @@ public class AppController {
             assignmentDirectory
         );
         assignment.saveAssignmentDetails();
-
-        // Create the graph database
-        graphDatabase.createGraphDatabase(assignment.getDirectory(), assignment.getFileSafeTitle());
-        graphDatabase.setUpGraphDatabaseForAssignment(assignment.getHeadings());
 
         return assignment;
     }
@@ -110,17 +100,9 @@ public class AppController {
         // Load the assignment
         Assignment assignment = appModel.loadAssignment(fhtFile);
 
-        // Get the file at the path
-        Path currentDirectory = fhtFile.getParent().toAbsolutePath();
-
-        // The assignment may have moved since being saved, so its directory is not serialised
-        assignment.setDirectory(currentDirectory);
-
         // Since this was successful, remember it as the default for next load
         UserPreferences.setLastOpenedAssignment(fhtFile);
 
-        // Load the feedback documents into the assignment
-        loadPhrasesFromFile(assignment);
         return assignment;
     }
 
@@ -171,23 +153,9 @@ public class AppController {
 
     /* FEEDBACK DOCUMENT METHODS */
 
-    /**
-     * Load the feedback documents for an assignment.
-     *
-     * @param assignment The assignment to load the feedback documents for.
-     */
-    private void loadPhrasesFromFile(Assignment assignment) {
-        // Open the databases
-        graphDatabase.openGraphDatabase(assignment.getDirectory(), assignment.getFileSafeTitle());
-
-        // Get the phrases data for each heading from the graph database
-        assignment
-            .getHeadings()
-            .forEach(heading -> {
-                List<Phrase> phrasesForHeading = graphDatabase.getPhrasesForHeading(heading);
-                appModel.setPreviousHeadingPhraseSet(heading, phrasesForHeading);
-                appModel.setCurrentHeadingPhraseSet(heading, phrasesForHeading);
-            });
+    public void updateFeedback(StudentId studentId, String heading, String contents) {
+        Map<String, String> headingsAndData = Map.of(heading, contents);
+        appModel.updateFeedback(studentId, headingsAndData);
     }
 
     /**
@@ -213,13 +181,8 @@ public class AppController {
         Map<String, String> headingsAndData,
         double grade
     ) {
-        FeedbackDocument feedbackDocumentForStudent = assignment.getFeedbackDocumentForStudent(studentId);
-        assignment
-            .getHeadings()
-            .forEach(heading -> {
-                feedbackDocumentForStudent.setDataForHeading(heading, headingsAndData.get(heading));
-            });
-        feedbackDocumentForStudent.setGrade(grade);
+        assignment.updateFeedback(studentId, headingsAndData);
+        assignment.updateGrade(studentId, grade);
         try {
             assignment.saveAssignmentDetails();
         } catch (IOException e) {
@@ -333,31 +296,16 @@ public class AppController {
      * @param previousHeading           The current feedback box heading being edited.
      * @param currentHeading            The new feedback box heading
      */
-    public void checkHeading(String previousHeading, String newHeading) {
+    public void editHeading(String previousHeading, String newHeading) {
         newHeading = newHeading.replaceAll("\n", "").trim(); // Remove all new lines
 
-        // Change to the new heading
-        appModel.notifySubscribers("changeHeading", previousHeading, newHeading);
-    }
-
-    /**
-     * Change the current feedback box heading.
-     *
-     * @param previousHeading           The current feedback box heading being edited.
-     * @param currentHeading            The new feedback box heading
-     */
-    public void updateHeading(String previousHeading, String newHeading) {
-        // Add new heading
-        graphDatabase.addHeadingObject(newHeading);
-
-        // Move phrases from old heading
-        List<Phrase> currentPhrases = graphDatabase.getPhrasesForHeading(previousHeading);
-        currentPhrases.forEach(phraseToAdd -> {
-            graphDatabase.updatePhrase(newHeading, phraseToAdd);
-        });
-
-        // Remove the old heading
-        graphDatabase.removeHeadingObject(previousHeading);
+        // Try to edit the heading
+        try {
+            appModel.editHeading(previousHeading, newHeading);
+        } catch (IllegalArgumentException e) {
+            error(e.toString());
+        }
+        appModel.resetFeedbackBoxes();
     }
 
     /* USER EXPORTS AND OPERATIONS */
@@ -390,38 +338,6 @@ public class AppController {
         Visualisations.createBarChart(grades);
     }
 
-    /**
-     * Get a summary of all the feedback documents.
-     *
-     * @param assignment The assignment to summarise.
-     * @return A map of headings and the 3 most used phrases for those headings.
-     */
-    public Map<String, List<String>> getSummary(Assignment assignment) {
-        Map<String, List<String>> summary = new HashMap<String, List<String>>();
-
-        // Get the 3 most used phrases for a given heading
-        assignment
-            .getHeadings()
-            .forEach(heading -> {
-                summary.put(heading, new ArrayList<>());
-
-                // Get the phrases
-                List<Phrase> phrasesForHeading = graphDatabase.getPhrasesForHeading(heading);
-                Collections.sort(phrasesForHeading);
-
-                // Only store phrases if there are 3 or more
-                if (phrasesForHeading.size() >= 3) {
-                    List<String> phrases = new ArrayList<String>();
-                    for (int i = 0; i < 3; i++) {
-                        phrases.add(phrasesForHeading.get(i).getPhraseAsString());
-                    }
-                    summary.put(heading, phrases);
-                }
-            });
-
-        return summary;
-    }
-
     /* PHRASE MANAGEMENT METHODS */
 
     /**
@@ -441,8 +357,17 @@ public class AppController {
     public void showPhrasesForHeading(String heading) {
         List<Phrase> currentPhraseSet = appModel.getCurrentPhraseSet(heading);
         if (currentPhraseSet != null) {
-            currentPhraseSet.forEach(appModel::addNewPhraseToView);
+            currentPhraseSet.forEach(phrase -> appModel.addNewPhraseToView(heading, phrase));
         }
+    }
+
+    /**
+     * Show all the custom phrases for a given heading.
+     *
+     * @param heading The heading the phrases are for.
+     */
+    public void showCustomPhrases(String heading) {
+        appModel.showCustomPhrases(heading);
     }
 
     /**
@@ -450,64 +375,11 @@ public class AppController {
      *
      * @param phrase The string representation of the phrase to be added.
      */
-    public void addNewCustomPhraseFromView(String phrase) {
+    public void addNewCustomPhraseFromView(String heading, String phrase) {
         // Filter out empty lines
         if (!phrase.trim().isEmpty() && !phrase.trim().equals(getLineMarker())) {
-            Phrase phrase1 = new Phrase(phrase);
-            graphDatabase.addPhraseToCustomNode(phrase1);
-            appModel.addNewCustomPhraseToView(phrase1);
+            appModel.addNewCustomPhrase(heading, phrase);
         }
-    }
-
-    /**
-     * Manage the links between phrases.
-     *
-     * @param heading             The current feedback box heading being edited.
-     * @param previousBoxContents The last list of phrases for the feedback box.
-     * @param currentBoxContents  The current list of phrases for the feedback box.
-     */
-    public void managePhraseLinks(String heading, List<String> previousBoxContents, List<String> currentBoxContents) {
-        graphDatabase.managePhraseLinks(heading, previousBoxContents, currentBoxContents);
-    }
-
-    /**
-     * Update the phrases stored in the graph database.
-     *
-     * @param heading             The current feedback box heading being edited.
-     * @param previousBoxContents The last list of phrases for the feedback box.
-     * @param currentBoxContents  The current list of phrases for the feedback box.
-     */
-    public void updatePhrases(String heading, List<String> previousBoxContents, List<String> currentBoxContents) {
-        // Store previous phrase set
-        List<Phrase> previousPhrasesForHeading = graphDatabase.getPhrasesForHeading(heading);
-        appModel.setPreviousHeadingPhraseSet(heading, previousPhrasesForHeading);
-
-        // Update the database with the new phrases
-        graphDatabase.updatePhrasesForHeading(heading, previousBoxContents, currentBoxContents);
-        List<Phrase> currentPhrasesForHeading = graphDatabase.getPhrasesForHeading(heading);
-        appModel.setCurrentHeadingPhraseSet(heading, currentPhrasesForHeading);
-
-        // Find what's changed and send those changes to GUI
-        List<Phrase> removalsFromList = Utilities.getRemovalsFromList(
-            previousPhrasesForHeading,
-            currentPhrasesForHeading
-        );
-        List<Phrase> additionsToList = Utilities.getAdditionsToList(
-            previousPhrasesForHeading,
-            currentPhrasesForHeading
-        );
-
-        // Find what's stayed same and update the usage counts
-        List<Phrase> stayedSameList = Utilities.getIntersection(previousPhrasesForHeading, currentPhrasesForHeading);
-
-        // Perform updates
-        removalsFromList.forEach(appModel::removePhraseFromView);
-        additionsToList.forEach(appModel::addNewPhraseToView);
-        stayedSameList.forEach(appModel::updatePhraseCounterInView); // takes some time
-
-        // Update custom panel
-        resetPhrasesPanel(PhraseType.CUSTOM);
-        showCustomPhrases(); // takes a long time on startup for big sets
     }
 
     /**
@@ -515,14 +387,6 @@ public class AppController {
      */
     public void resetPhrasesPanel(PhraseType phrasePanel) {
         appModel.resetPhrasesPanel(phrasePanel);
-    }
-
-    /**
-     * Get the custom phrases and display them.
-     */
-    public void showCustomPhrases() {
-        List<Phrase> customPhrases = graphDatabase.getCustomPhrases();
-        customPhrases.forEach(appModel::addNewCustomPhraseToView);
     }
 
     /**

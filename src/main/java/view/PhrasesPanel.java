@@ -50,7 +50,7 @@ public class PhrasesPanel extends JPanel {
      * @param phrase      The phrase to add.
      * @param phraseCount The usage count of the phrase.
      */
-    public void addPhrase(String phrase, int phraseCount) {
+    public void addPhrase(String phrase, long phraseCount) {
         PhraseBox phraseBox = new PhraseBox(this.controller, phrase, phraseCount);
         this.phraseBoxes.add(phraseBox);
         this.add(phraseBox);
@@ -80,14 +80,14 @@ public class PhrasesPanel extends JPanel {
     /**
      * Update the phrase counter of a phrase.
      *
-     * @param phrase        The phrase to update.
-     * @param phraseCounter The new usage count value.
+     * @param phrase The phrase to update.
+     * @param phraseCount The new usage count value.
      */
-    public void updatePhraseCounter(String phrase, int phraseCounter) {
+    public void updatePhraseCounter(String phrase, long phraseCount) {
         // Find the phrase to update
         for (PhraseBox phraseBox : phraseBoxes) {
             if (phraseBox.getPhrase().equals(phrase)) {
-                phraseBox.setUsageCount(phraseCounter);
+                phraseBox.setUsageCount(phraseCount);
             }
         }
 

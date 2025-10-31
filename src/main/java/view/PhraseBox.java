@@ -21,7 +21,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
     // Instance variables
     private final AppController controller;
     private String phrase;
-    private int usageCount;
+    private long usageCount;
     private JTextArea phraseTextArea;
     private JButton insertButton;
     private JLabel usageCountLabel;
@@ -36,7 +36,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      * @param phrase     The phrase to display.
      * @param usageCount The usage count of the phrase.
      */
-    public PhraseBox(AppController controller, String phrase, int usageCount) {
+    public PhraseBox(AppController controller, String phrase, long usageCount) {
         this.controller = controller;
         this.phrase = phrase;
         this.phraseTextArea = new JTextArea();
@@ -117,7 +117,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      *
      * @return The usage count of the phrase.
      */
-    public int getUsageCount() {
+    public long getUsageCount() {
         return this.usageCount;
     }
 
@@ -126,7 +126,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      *
      * @param usageCount The usage count of the phrase.
      */
-    public void setUsageCount(int usageCount) {
+    public void setUsageCount(long usageCount) {
         this.usageCount = usageCount;
         this.usageCountLabel.setText(String.valueOf(usageCount));
 
@@ -158,6 +158,6 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      */
     @Override
     public int compareTo(PhraseBox o) {
-        return o.getUsageCount() - this.getUsageCount();
+        return this.getPhrase().compareTo(o.getPhrase());
     }
 }

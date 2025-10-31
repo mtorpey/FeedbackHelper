@@ -36,6 +36,7 @@ public class AppModel {
     private final String UPDATE_PHRASE_COUNTER_MESSAGE = "updatePhraseCounter";
     private final String DELETE_PHRASE_MESSAGE = "deletePhrase";
     private final String RESET_PHRASES_PANEL_MESSAGE = "resetPhrasesPanel";
+    private final String RESET_FEEDBACK_BOXES_MESSAGE = "resetFeedbackBoxes";
 
     // Instance variables
     private Assignment assignment;
@@ -135,6 +136,7 @@ public class AppModel {
         // Once an assignment is created, notify the observers
         notifySubscribers(ASSIGNMENT_MESSAGE, CREATED_MESSAGE);
         this.assignment = assignment;
+        assignment.setModel(this);
         return this.assignment;
     }
 
@@ -166,6 +168,7 @@ public class AppModel {
      */
     public Assignment loadAssignment(Path fhtFile) {
         this.assignment = Assignment.loadAssignment(fhtFile);
+        this.assignment.setModel(this);
         return this.assignment;
     }
 
@@ -284,6 +287,13 @@ public class AppModel {
         return this.previousHeadingBeingEdited;
     }
 
+    /** Change one of the headings to a new string. */
+    public void editHeading(String previousHeading, String newHeading) throws IllegalArgumentException {
+        this.assignment.editHeading(previousHeading, newHeading);
+        notifySubscribers("editHeading", previousHeading, newHeading);
+        saveAssignment(this.assignment);
+    }
+
     /* USER EXPORTS AND OPERATIONS */
 
     /**
@@ -343,7 +353,6 @@ public class AppModel {
             .getFeedbackDocuments()
             .forEach(feedbackDocument -> {
                 // Round the grade to the nearest 0.5
-                // Rounding code adapted from: https://stackoverflow.com/questions/23449662/java-round-to-nearest-5
                 double grade = feedbackDocument.getGrade();
                 grade = Math.round(grade * 2) / 2.0;
                 int currentCount = gradeAndNumber.get(grade);
@@ -352,6 +361,10 @@ public class AppModel {
 
         // Return order list of grades
         return new ArrayList<>(gradeAndNumber.values());
+    }
+
+    public void updateFeedback(StudentId studentId, Map<String, String> headingsAndData) {
+        assignment.updateFeedback(studentId, headingsAndData);
     }
 
     /* PHRASE MANAGEMENT METHODS */
@@ -366,12 +379,23 @@ public class AppModel {
     }
 
     /**
-     * Add new phrase.
+     * Add new phrase to the view.
      *
+     * @param heading The heading this phrase is under, currently ignored.
      * @param phrase The phrase to add.
      */
-    public void addNewPhraseToView(Phrase phrase) {
+    public void addNewPhraseToView(String heading, Phrase phrase) {
         notifySubscribers(NEW_PHRASE_MESSAGE, phrase);
+    }
+
+    /**
+     * Add new custom phrase to the view.
+     *
+     * @param heading The heading this phrase is under, currently ignored.
+     * @param phrase The phrase to add.
+     */
+    public void addNewCustomPhraseToView(String heading, String phrase) {
+        notifySubscribers(NEW_CUSTOM_PHRASE_MESSAGE, phrase);
     }
 
     /**
@@ -379,33 +403,50 @@ public class AppModel {
      *
      * @param phrase The custom phrase to add.
      */
-    public void addNewCustomPhraseToView(Phrase phrase) {
-        notifySubscribers(NEW_CUSTOM_PHRASE_MESSAGE, phrase);
+    public void addNewCustomPhrase(String heading, String phrase) {
+        assignment.addCustomPhrase(heading, phrase);
+    }
+
+    /** Show all the custom phrases for this heading in the view. */
+    public void showCustomPhrases(String heading) {
+        assignment.getCustomPhrases(heading).forEach(phrase -> addNewCustomPhraseToView(heading, phrase));
     }
 
     /**
      * Update the counter on a phrase.
      *
+     * @param heading The heading this phrase is under, currently ignored.
      * @param phrase The phrase to update.
      */
-    public void updatePhraseCounterInView(Phrase phrase) {
+    public void updatePhraseCounterInView(String heading, Phrase phrase) {
         notifySubscribers(UPDATE_PHRASE_COUNTER_MESSAGE, phrase);
     }
 
     /**
      * Remove a phrase.
      *
+     * @param heading The heading this phrase is under, currently ignored.
      * @param phrase The phrase to remove.
      */
-    public void removePhraseFromView(Phrase phrase) {
+    public void removePhraseFromView(String heading, Phrase phrase) {
         notifySubscribers(DELETE_PHRASE_MESSAGE, phrase);
     }
 
+    /** Reset the custom phrases panel. */
+    public void resetCustomPhrasesPanel() {
+        resetPhrasesPanel(PhraseType.CUSTOM);
+    }
+    
     /**
      * Reset the phrases panel.
      */
     public void resetPhrasesPanel(PhraseType phraseType) {
         notifySubscribers(RESET_PHRASES_PANEL_MESSAGE, phraseType);
+    }
+
+    /** Reset the feedback boxes (after an attempted heading update). */
+    public void resetFeedbackBoxes() {
+        notifySubscribers(RESET_FEEDBACK_BOXES_MESSAGE, this.assignment.getHeadings());
     }
 
     /**
