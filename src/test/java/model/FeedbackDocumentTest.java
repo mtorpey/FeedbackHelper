@@ -9,7 +9,7 @@ public class FeedbackDocumentTest extends TestCase {
 
     public void setUp() {
         assignment = new Assignment();
-        assignment.setAssignmentTitle("Test");
+        assignment.setTitle("Test");
         assignment.setAssignmentHeadings("Heading 1 \n Heading 2 \n Heading 3 \n");
         feedbackDocument = new FeedbackDocument(assignment, "1");
         feedbackDocument.setGrade(20);

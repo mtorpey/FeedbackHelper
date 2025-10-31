@@ -65,7 +65,6 @@ public class FeedbackScreen implements PropertyChangeListener {
     public FeedbackScreen(AppController controller, Assignment assignment) {
         this.controller = controller;
         this.controller.registerWithModel(this);
-        this.assignment = assignment;
 
         // Setup components
         setupFeedbackScreen();
@@ -185,7 +184,7 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Create editor panel with popup menu
         this.editorPanel = new EditorPanel(
             this.controller,
-            this.assignment.getAssignmentTitle(),
+            this.assignment.getTitle(),
             this.assignment.getHeadings()
         );
         this.editingPopupMenu = new EditingPopupMenu();
@@ -193,7 +192,7 @@ public class FeedbackScreen implements PropertyChangeListener {
 
         // Set the document data if it exists
         this.editorPanel.setData(
-            this.assignment.getFeedbackDocumentForStudent(this.controller.getCurrentDocumentInView())
+            this.assignment.getFeedbackDocument(this.controller.getCurrentDocumentInView())
         );
 
         // Make the panel scrollable
@@ -582,7 +581,7 @@ public class FeedbackScreen implements PropertyChangeListener {
      */
     private void performDocumentViewChange(PropertyChangeEvent event) {
         StudentId newDocId = (StudentId) event.getNewValue();
-        this.editorPanel.setData(this.assignment.getFeedbackDocumentForStudent(newDocId));
+        this.editorPanel.setData(this.assignment.getFeedbackDocument(newDocId));
 
         // Update the preview boxes
         if (this.controller.getLastDocumentInView() != null) {

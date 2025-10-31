@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -28,60 +27,17 @@ public class Assignment implements Serializable {
 
     private static final long serialVersionUID = 1200109309800080100L;
 
-    // Heading styles map
-    private static final List<String> headingStyles = Collections.unmodifiableList(
-        new ArrayList<String>() {
-            {
-                add("#");
-                add("##");
-            }
-        }
-    );
-
-    // Heading underline style map
-    private final List<String> underlineStyles = Collections.unmodifiableList(
-        new ArrayList<String>() {
-            {
-                add("-");
-                add("=");
-            }
-        }
-    );
-
-    // Line spacing map
-    private final List<Integer> lineSpacings = Collections.unmodifiableList(
-        new ArrayList<Integer>() {
-            {
-                add(1);
-                add(2);
-                add(3);
-            }
-        }
-    );
-
-    // Line marker map
-    private final List<String> lineMarkers = Collections.unmodifiableList(
-        new ArrayList<String>() {
-            {
-                add("-");
-                add("->");
-                add("=>");
-                add("*");
-                add("+");
-            }
-        }
-    );
-
-    // Instance variables
-    private String assignmentTitle;
-    private List<String> assignmentHeadings;
+    // Instance variables (saved to disk)
+    private String title;
+    private List<String> headings;
     private Map<StudentId, FeedbackDocument> feedbackDocuments;
     private Map<String, List<String>> customPhrases;
     private String headingStyle;
     private String underlineStyle;
     private int lineSpacing;
     private String lineMarker;
-    
+
+    // Transient variables (not saved to disk)
     private transient Path directory;
     private transient Map<String, List<Phrase>> phraseCounts;
     private transient AppModel model;
@@ -91,7 +47,7 @@ public class Assignment implements Serializable {
      */
     public Assignment() {
         System.out.println("Making assignment");
-        this.assignmentHeadings = new ArrayList<>();
+        this.headings = new ArrayList<>();
         feedbackDocuments = new HashMap<>();
         customPhrases = new HashMap<>();
         phraseCounts = new HashMap<>();
@@ -107,7 +63,7 @@ public class Assignment implements Serializable {
      * @param fhtFile The location of the FHT file.
      * @return The Assignment object stored in the file.
      */
-    public static Assignment loadAssignment(Path fhtFile) {
+    public static Assignment load(Path fhtFile) {
         // Deserialise from file
         Assignment loadedAssignment = null;
         try (ObjectInputStream objectInputStream = new ObjectInputStream(Files.newInputStream(fhtFile))) {
@@ -140,8 +96,8 @@ public class Assignment implements Serializable {
      * @param headingStyle The heading style.
      */
     public void setHeadingStyle(String headingStyle) {
-        // Check if the heading style is allowed, if its not use a default
-        if (headingStyles.contains(headingStyle)) {
+        // Check if the heading style is allowed, if not use a default
+        if (headingStyle.length() > 0) {
             this.headingStyle = headingStyle.trim() + " ";
         } else {
             this.headingStyle = "";
@@ -163,8 +119,8 @@ public class Assignment implements Serializable {
      * @param underlineStyle The heading underline style.
      */
     public void setUnderlineStyle(String underlineStyle) {
-        // Check if the underline style is allowed, if its not use a default
-        if (underlineStyles.contains(underlineStyle)) {
+        // Check if the underline style is allowed, if not use a default
+        if (underlineStyle.length() <= 1) {
             this.underlineStyle = underlineStyle;
         } else {
             this.underlineStyle = "";
@@ -186,11 +142,10 @@ public class Assignment implements Serializable {
      * @param lineSpacing The number of line spaces.
      */
     public void setLineSpacing(int lineSpacing) {
-        // Check if the line spacing style is allowed, if its not use a default
-        if (lineSpacings.contains(lineSpacing)) {
+        if (lineSpacing >= 0) {
             this.lineSpacing = lineSpacing;
         } else {
-            this.lineSpacing = 1;
+            this.lineSpacing = 0;
         }
     }
 
@@ -205,34 +160,21 @@ public class Assignment implements Serializable {
      * Set the line marker to use for denoting new lines.
      */
     public void setLineMarker(String lineMarker) {
-        if (lineMarkers.contains(lineMarker)) {
+        if (lineMarker.length() > 0) {
             this.lineMarker = lineMarker.trim() + " ";
         } else {
             this.lineMarker = "- ";
         }
     }
 
-    /**
-     * Get an absolute path to the assignment directory.
-     *
-     * Note: this is transient (not saved when we serialize) and should always
-     * be set in AppController.loadAssignment immediately after loading from
-     * disk. This allows for the assignment to be moved on disk while the
-     * program is closed.
-     */
+    /** Get an absolute path to the assignment directory. */
     public Path getDirectory() {
         return directory.toAbsolutePath();
     }
 
+    /** Set the assignment directory, where files will be saved and exported. */
     public void setDirectory(Path directory) {
         this.directory = directory;
-    }
-
-    /**
-     * Get the database collection name used for the assignment's documents.
-     */
-    public String getDatabaseCollectionName() {
-        return getFileSafeTitle() + "-feedback-docs";
     }
 
     /**
@@ -242,21 +184,23 @@ public class Assignment implements Serializable {
      * @param feedbackDocument The feedback document for the student.
      */
     public void setFeedbackDocument(StudentId studentId, FeedbackDocument feedbackDocument) {
+        // TODO: remove
         this.feedbackDocuments.put(studentId, feedbackDocument);
     }
 
     /**
      * Get the assignment title.
      */
-    public String getAssignmentTitle() {
-        return this.assignmentTitle;
+    public String getTitle() {
+        // TODO: remove
+        return this.title;
     }
 
     /**
      * Set the assignment title.
      */
-    public void setAssignmentTitle(String assignmentTitle) {
-        this.assignmentTitle = assignmentTitle;
+    public void setTitle(String assignmentTitle) {
+        this.title = assignmentTitle;
     }
 
     /**
@@ -265,7 +209,8 @@ public class Assignment implements Serializable {
      * @return A list of the headings to be used in the feedback documents.
      */
     public List<String> getHeadings() {
-        return this.assignmentHeadings;
+        // TODO: remove/privatise
+        return this.headings;
     }
 
     /**
@@ -275,7 +220,7 @@ public class Assignment implements Serializable {
      * be used in the feedback documents, separated by newline characters
      */
     public void setAssignmentHeadings(String assignmentHeadings) {
-        this.assignmentHeadings = Arrays.stream(assignmentHeadings.split("\n"))
+        this.headings = Arrays.stream(assignmentHeadings.split("\n"))
             .map(String::trim)
             .filter(not(String::isEmpty))
             .collect(Collectors.toList());
@@ -371,6 +316,7 @@ public class Assignment implements Serializable {
      * @return A list of the feedback documents.
      */
     public List<FeedbackDocument> getFeedbackDocuments() {
+        // TODO: privatise
         return this.feedbackDocuments.values()
             .stream()
             .sorted() // FeedbackDocument implements compareTo using studentId
@@ -378,20 +324,9 @@ public class Assignment implements Serializable {
     }
 
     /**
-     * Set the feedback documents.
-     *
-     * @param feedbackDocuments The list of feedback documents to set in the student id feedback document map.
-     */
-    public void addFeedbackDocuments(List<FeedbackDocument> feedbackDocuments) {
-        for (FeedbackDocument document : feedbackDocuments) {
-            this.feedbackDocuments.put(document.getStudentId(), document);
-        }
-    }
-
-    /**
      * Save assignment details into an FHT file.
      */
-    public void saveAssignmentDetails() throws IOException {
+    public void save() throws IOException {
         String fileName = getFileSafeTitle() + ".fht";
         Path fhtFile = directory.resolve(fileName);
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(Files.newOutputStream(fhtFile))) {
@@ -404,6 +339,7 @@ public class Assignment implements Serializable {
      * Create a directory where exported feedback should be placed, and return its path.
      */
     public Path createFeedbackOutputDirectory() throws IOException {
+        // TODO: privatise
         Path outputDirectory = getDirectory().resolve(getFileSafeTitle() + "-feedback");
         if (!Files.exists(outputDirectory)) {
             Files.createDirectories(outputDirectory);
@@ -414,9 +350,9 @@ public class Assignment implements Serializable {
     /**
      * Get the name of this assignment, normalised for use in filenames.
      */
-    public String getFileSafeTitle() {
+    private String getFileSafeTitle() {
         String rejected = "[^-a-zA-Z_0-9!#$%&\\+=\\^\\{\\}~]+";
-        return assignmentTitle.trim().replaceAll(rejected, "-");
+        return title.trim().replaceAll(rejected, "-");
     }
 
     /**
@@ -425,7 +361,8 @@ public class Assignment implements Serializable {
      * @param studentId The student ID to get the feedback document for.
      * @return The feedback document for the given student ID.
      */
-    public FeedbackDocument getFeedbackDocumentForStudent(StudentId studentId) {
+    public FeedbackDocument getFeedbackDocument(StudentId studentId) {
+        // TODO: remove/privatise
         return feedbackDocuments.get(studentId);
     }
 
@@ -435,7 +372,7 @@ public class Assignment implements Serializable {
      * @param headingsAndData The feedback sections to be updated, which might not be all of them.
      */
     public void updateFeedback(StudentId studentId, Map<String, String> headingsAndData) {
-        FeedbackDocument document = getFeedbackDocumentForStudent(studentId);
+        FeedbackDocument document = getFeedbackDocument(studentId);
         for (String heading : headingsAndData.keySet()) {
             // Set the new text for this section
             String oldContents = document.getSectionContents(heading);
@@ -450,10 +387,45 @@ public class Assignment implements Serializable {
         model.resetCustomPhrasesPanel();
     }
 
+    /** Update the grade in the model for the given student. */
     public void updateGrade(StudentId studentId, double grade) {
-        getFeedbackDocumentForStudent(studentId).setGrade(grade);
+        getFeedbackDocument(studentId).setGrade(grade);
     }
 
+    /**
+     * Change the name of a section, i.e. a heading.
+     *
+     * @param previousHeading A heading that currently exists in the assignment
+     * @param newHeading The new name for that heading
+     */
+    public void editHeading(String previousHeading, String newHeading) throws IllegalArgumentException {
+        // Check the heading is not blank
+        if (newHeading.isBlank()) {
+            throw new IllegalArgumentException("New heading cannot be blank.");
+        }
+
+        // Check that the new heading is not the same as any old ones
+        for (String heading : headings) {
+            if (heading.equals(newHeading)) {
+                throw new IllegalArgumentException("The heading " + heading + " already exists.");
+            }
+        }
+
+        // Modify the appropriate heading
+        int headingPosition = headings.indexOf(previousHeading);
+        headings.set(headingPosition, newHeading);
+
+        // Update the keys in the feedback documents
+        getFeedbackDocuments().forEach(doc -> doc.editHeading(previousHeading, newHeading));
+
+        // Update the keys in the custom phrases
+        customPhrases.put(newHeading, customPhrases.get(previousHeading));
+        customPhrases.remove(previousHeading);
+    }
+
+    /*
+     * PHRASE HANDLING
+     */
     private void updatePhrasesForHeading(String heading, String oldContents, String newContents) {
         List<String> oldPhrases = splitIntoPhrases(oldContents);
         List<String> newPhrases = splitIntoPhrases(newContents);
@@ -521,34 +493,9 @@ public class Assignment implements Serializable {
         return customPhrases.get(heading);
     }
 
-    public void editHeading(String previousHeading, String newHeading) throws IllegalArgumentException {
-        // Check the heading is not blank
-        if (newHeading.isBlank()) {
-            throw new IllegalArgumentException("New heading cannot be blank.");
-        }
-
-        // Check that the new heading is not the same as any old ones
-        for (String heading : assignmentHeadings) {
-            if (heading.equals(newHeading)) {
-                throw new IllegalArgumentException("The heading " + heading + " already exists.");
-            }
-        }
-
-        // Modify the appropriate heading
-        int headingPosition = assignmentHeadings.indexOf(previousHeading);
-        assignmentHeadings.set(headingPosition, newHeading);
-
-        // Update the keys in the feedback documents
-        getFeedbackDocuments().forEach(doc -> doc.editHeading(previousHeading, newHeading));
-
-        // Update the keys in the custom phrases
-        customPhrases.put(newHeading, customPhrases.get(previousHeading));
-        customPhrases.remove(previousHeading);
-    }
-
     private List<Phrase> getPhrasesForHeading(String heading) {
         System.out.println(this);
-        System.out.println(this.assignmentHeadings);
+        System.out.println(this.headings);
         System.out.println(phraseCounts);
         return phraseCounts.get(heading);
     }

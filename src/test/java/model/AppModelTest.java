@@ -58,7 +58,7 @@ public class AppModelTest extends TestCase {
             Path.of("Empty file 2"),
             Path.of("Test-Directory")
         );
-        assertEquals("Test-2", createdAssignment.getAssignmentTitle());
+        assertEquals("Test-2", createdAssignment.getTitle());
         assertEquals(3, createdAssignment.getHeadings().size());
         assertEquals("Test-Directory", createdAssignment.getDirectory());
 

@@ -68,7 +68,7 @@ public class AppController {
             studentListFile,
             assignmentDirectory
         );
-        assignment.saveAssignmentDetails();
+        assignment.save();
 
         return assignment;
     }
@@ -184,7 +184,7 @@ public class AppController {
         assignment.updateFeedback(studentId, headingsAndData);
         assignment.updateGrade(studentId, grade);
         try {
-            assignment.saveAssignmentDetails();
+            assignment.save();
         } catch (IOException e) {
             error(e.toString());
         }
@@ -240,7 +240,7 @@ public class AppController {
         String returnString = "<no preview available>";
 
         // Get the student's feedback document
-        FeedbackDocument feedbackDocumentForStudent = assignment.getFeedbackDocumentForStudent(studentId);
+        FeedbackDocument feedbackDocumentForStudent = assignment.getFeedbackDocument(studentId);
 
         // Find the first line of the document
         for (String heading : assignment.getHeadings()) {

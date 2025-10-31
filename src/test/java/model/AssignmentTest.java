@@ -11,7 +11,7 @@ public class AssignmentTest extends TestCase {
 
     public void setUp() throws Exception {
         assignment = new Assignment();
-        assignment.setAssignmentTitle("Test");
+        assignment.setTitle("Test");
         assignment.setAssignmentHeadings("Heading 1 \n Heading 2 \n Heading 3");
         assignment.setDirectory("Sample Directory Path");
         assignment.setHeadingStyle("#");
@@ -92,16 +92,16 @@ public class AssignmentTest extends TestCase {
     public void testSetAndGetFeedbackDocument() {
         FeedbackDocument feedbackDocument = new FeedbackDocument(assignment, "1");
         assignment.setFeedbackDocument("1", feedbackDocument);
-        assertEquals(assignment.getFeedbackDocumentForStudent("1"), feedbackDocument);
+        assertEquals(assignment.getFeedbackDocument("1"), feedbackDocument);
     }
 
     public void testGetAssignmentTitle() {
-        assertEquals("Test", assignment.getAssignmentTitle());
+        assertEquals("Test", assignment.getTitle());
     }
 
     public void testSetAssignmentTitle() {
-        assignment.setAssignmentTitle("New Title");
-        assertEquals("New Title", assignment.getAssignmentTitle());
+        assignment.setTitle("New Title");
+        assertEquals("New Title", assignment.getTitle());
     }
 
     public void testGetAssignmentHeadings() {

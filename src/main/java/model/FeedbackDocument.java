@@ -149,22 +149,11 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
     }
 
     /**
-     * String representation of the FeedbackDocument Object.
-     *
-     * @return The string representation of the object.
+     * Simple string indication of the FeedbackDocument.
      */
     @Override
     public String toString() {
-        return (
-            "FeedbackDocument{" +
-            "assignment=" +
-            assignment.getFileSafeTitle() +
-            ", studentId=" +
-            studentId +
-            ", text=" +
-            sectionContents +
-            '}'
-        );
+        return "FeedbackDocument{" + studentId + '}';
     }
 
     /** Comparable by student id. */

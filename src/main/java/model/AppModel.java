@@ -118,7 +118,7 @@ public class AppModel {
     ) throws NotDirectoryException, IOException {
         // create assignment object
         Assignment assignment = new Assignment();
-        assignment.setAssignmentTitle(assignmentTitle);
+        assignment.setTitle(assignmentTitle);
         assignment.setAssignmentHeadings(assignmentHeadings);
         assignment.setStudentIds(studentListFile, assignmentDirectory);
         assignment.setDirectory(assignmentDirectory);
@@ -167,7 +167,7 @@ public class AppModel {
      * @return The Assignment object for the assignment.
      */
     public Assignment loadAssignment(Path fhtFile) {
-        this.assignment = Assignment.loadAssignment(fhtFile);
+        this.assignment = Assignment.load(fhtFile);
         this.assignment.setModel(this);
         return this.assignment;
     }
@@ -182,7 +182,7 @@ public class AppModel {
      */
     public void saveAssignment(Assignment assignment) {
         try {
-            assignment.saveAssignmentDetails();
+            assignment.save();
         } catch (IOException e) {
             notifySubscribers(ERROR_MESSAGE, "Error saving assignment: " + e.getMessage());
         }
