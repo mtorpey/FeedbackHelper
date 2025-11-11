@@ -37,8 +37,8 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
 
         // Set layout, pane and visibility
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        this.add(this.tabbedPane);
         this.setupSearchBox();
+        this.add(this.tabbedPane);
         this.setVisible(true);
     }
 
