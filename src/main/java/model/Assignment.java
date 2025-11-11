@@ -19,8 +19,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -45,7 +48,7 @@ public class Assignment implements Serializable {
 
     // Transient variables (not saved to disk)
     private transient Path directory;
-    private transient Map<String, List<Phrase>> phraseCounts;
+    private transient Map<String, SortedSet<Phrase>> phraseCounts;
     private transient List<AssignmentListener> listeners;
 
     /**
@@ -373,11 +376,11 @@ public class Assignment implements Serializable {
     // PHRASE HANDLING
     //
     private void updatePhrasesForHeading(String heading, String oldContents, String newContents) {
-        List<String> oldPhrases = splitIntoPhrases(oldContents);
-        List<String> newPhrases = splitIntoPhrases(newContents);
+        Set<String> oldPhrases = splitIntoPhrases(oldContents);
+        Set<String> newPhrases = splitIntoPhrases(newContents);
 
         // Handle phrases that were deleted
-        List<String> removals = Utilities.getRemovalsFromList(oldPhrases, newPhrases); // TODO: make Sets?
+        Set<String> removals = Utilities.getRemovalsFromSet(oldPhrases, newPhrases);
         for (Phrase phrase : getPhrasesForHeading(heading)) {
             if (removals.contains(phrase.getPhraseAsString())) {
                 phrase.decrementUsageCount();
@@ -387,18 +390,18 @@ public class Assignment implements Serializable {
         removeZeroUsePhrases(heading);
 
         // Handle existing phrases that were added
-        List<String> additions = Utilities.getAdditionsToList(oldPhrases, newPhrases);
+        Set<String> additions = Utilities.getAdditionsToSet(oldPhrases, newPhrases);
         for (Phrase phrase : getPhrasesForHeading(heading)) {
-            int pos = additions.indexOf(phrase.getPhraseAsString());
-            if (pos != -1) {
+            String text = phrase.getPhraseAsString();
+            if (additions.contains(text)) {
                 phrase.incrementUsageCount();
                 notifyListeners(l -> l.handlePhraseCounterUpdated(heading, phrase));
-                additions.remove(pos);
+                additions.remove(text);
             }
         }
 
         // Add any phrases that haven't been used before
-        additions.stream().forEach(phrase -> addPhrase(heading, phrase));
+        additions.forEach(phrase -> addPhrase(heading, phrase));
     }
 
     private void addPhrase(String heading, String phrase) {
@@ -422,13 +425,13 @@ public class Assignment implements Serializable {
         notifyListeners(l -> l.handlePhraseDeleted(heading, phrase));
     }
 
-    private List<String> splitIntoPhrases(String contents) {
+    private Set<String> splitIntoPhrases(String contents) {
         String lineMarker = feedbackStyle.lineMarker();
         return Arrays.stream(contents.split("\n"))
             .map(String::trim)
             .filter(line -> line.startsWith(lineMarker))
             .map(line -> line.replaceFirst(lineMarker, ""))
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
     }
 
     /** Add a custom phrase for the given heading. */
@@ -456,13 +459,12 @@ public class Assignment implements Serializable {
                     .stream()
                     .map(doc -> doc.getSectionContents(heading))
                     .map(this::splitIntoPhrases)
-                    .flatMap(List::stream)
+                    .flatMap(Set::stream)
                     .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                     .entrySet()
                     .stream()
                     .map(e -> new Phrase(e.getKey(), e.getValue()))
-                    .sorted(Comparator.reverseOrder())
-                    .collect(Collectors.toList())
+                    .collect(Collectors.toCollection(TreeSet<Phrase>::new))
             )
         );
         reportInfo("Computed phrase counts.");
@@ -488,7 +490,7 @@ public class Assignment implements Serializable {
     }
 
     //
-    // PUBLIG GETTERS
+    // PUBLIC GETTERS
     //
     // These should be all the view needs for querying the assignment
     //
@@ -542,7 +544,15 @@ public class Assignment implements Serializable {
     }
 
     /** Get all used phrases for a heading, with their usage counts. */
-    public List<Phrase> getPhrasesForHeading(String heading) {
+    public SortedSet<Phrase> getPhrasesForHeading(String heading) {
+        /*
+        try {
+            throw new RuntimeException("oh");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        */
+        System.out.println("get phrases for " + heading);
         return phraseCounts.get(heading);
     }
 }

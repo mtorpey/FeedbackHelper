@@ -2,6 +2,7 @@ package view;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -92,7 +93,7 @@ public class PhrasesPanel extends JPanel {
 
         // Sort the list
         this.removeAll();
-        Collections.sort(this.phraseBoxes);
+        Collections.sort(this.phraseBoxes, Comparator.reverseOrder());
         this.phraseBoxes.forEach(this::add);
         this.update();
     }

@@ -1,7 +1,8 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Utilities Class.
@@ -9,47 +10,47 @@ import java.util.List;
 public class Utilities {
 
     /**
-     * Get a list of additions when comparing an old list to a new list.
+     * Get a set of additions when comparing an old set to a new set.
      *
-     * @param oldList The old list.
-     * @param newList The new list.
-     * @param <T>     The type of the data in the lists.
-     * @return The additions to the old list.
+     * @param oldSet The old set.
+     * @param newSet The new set.
+     * @param <T> The type of the data in the sets.
+     * @return The additions to the old set.
      */
-    public static <T> List<T> getAdditionsToList(List<T> oldList, List<T> newList) {
-        List<T> oldListCopy = new ArrayList<>(oldList);
-        List<T> newListCopy = new ArrayList<>(newList);
-        newListCopy.removeAll(oldListCopy);
-        return newListCopy;
+    public static <T> Set<T> getAdditionsToSet(Collection<T> oldSet, Collection<T> newSet) {
+        Set<T> oldSetCopy = new HashSet<>(oldSet);
+        Set<T> newSetCopy = new HashSet<>(newSet);
+        newSetCopy.removeAll(oldSetCopy);
+        return newSetCopy;
     }
 
     /**
-     * Get a list of removals when comparing an old list to a new list.
+     * Get a set of removals when comparing an old set to a new set.
      *
-     * @param oldList The old list.
-     * @param newList The new list.
-     * @param <T>     The type of the data in the lists.
-     * @return The removals from the old list.
+     * @param oldSet The old set.
+     * @param newSet The new set.
+     * @param <T> The type of the data in the sets.
+     * @return The removals from the old set.
      */
-    public static <T> List<T> getRemovalsFromList(List<T> oldList, List<T> newList) {
-        List<T> oldListCopy = new ArrayList<>(oldList);
-        List<T> newListCopy = new ArrayList<>(newList);
-        oldListCopy.removeAll(newListCopy);
-        return oldListCopy;
+    public static <T> Set<T> getRemovalsFromSet(Collection<T> oldSet, Collection<T> newSet) {
+        Set<T> oldSetCopy = new HashSet<>(oldSet);
+        Set<T> newSetCopy = new HashSet<>(newSet);
+        oldSetCopy.removeAll(newSetCopy);
+        return oldSetCopy;
     }
 
     /**
-     * Get a list of everything that is the same between an old list and a new list.
+     * Get a set of everything that is the same between an old set and a new set.
      *
-     * @param oldList The old list.
-     * @param newList The new list.
-     * @param <T>     The type of the data in the lists.
-     * @return The list of everything that stayed the same.
+     * @param oldSet The old set.
+     * @param newSet The new set.
+     * @param <T> The type of the data in the sets.
+     * @return The set of everything that stayed the same.
      */
-    public static <T> List<T> getIntersection(List<T> oldList, List<T> newList) {
-        List<T> oldListCopy = new ArrayList<>(oldList);
-        List<T> newListCopy = new ArrayList<>(newList);
-        newListCopy.retainAll(oldListCopy);
-        return newListCopy;
+    public static <T> Set<T> getIntersection(Collection<T> oldSet, Collection<T> newSet) {
+        Set<T> oldSetCopy = new HashSet<>(oldSet);
+        Set<T> newSetCopy = new HashSet<>(newSet);
+        newSetCopy.retainAll(oldSetCopy);
+        return newSetCopy;
     }
 }

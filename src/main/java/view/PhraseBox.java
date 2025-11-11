@@ -152,6 +152,12 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      */
     @Override
     public int compareTo(PhraseBox o) {
-        return this.getPhrase().compareTo(o.getPhrase());
+        if (usageCount < o.usageCount) {
+            return -1;
+        } else if (usageCount == o.usageCount) {
+            return getPhrase().compareTo(o.getPhrase());
+        } else {
+            return 1;
+        }
     }
 }
