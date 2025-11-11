@@ -75,7 +75,7 @@ public class FeedbackScreen implements AssignmentListener {
         // Setup components
         setupFeedbackScreen();
         setupFeedbackScreenPanel();
-        setupPreviewPanelScrollPane();
+        setupPreviewPanel();
         setupEditorPanel();
         setupPhrasesSection();
         setupPreviewAndEditorSplitPane();
@@ -163,19 +163,15 @@ public class FeedbackScreen implements AssignmentListener {
     }
 
     /**
-     * Setup the preview panel scroll pane, and setup a preview panel inside it.
-     */
-    private void setupPreviewPanelScrollPane() {
-        this.previewPanelScrollPane = new JScrollPane();
-        setupPreviewPanel();
-    }
-
-    /**
      * Setup the preview panel and put it in the scroll pane, replacing any old panel that was there.
      */
     private void setupPreviewPanel() {
-        // Remove any previous panels (in case this is a reset)
-        previewPanelScrollPane.removeAll();
+        previewPanelScrollPane = new JScrollPane();
+
+        // Re-add in case this is a reset
+        if (previewAndEditorSplitPane != null) {
+            previewAndEditorSplitPane.setLeftComponent(previewPanelScrollPane);
+        }
 
         // Create preview boxes
         List<PreviewBox> previewBoxes = new ArrayList<PreviewBox>();
