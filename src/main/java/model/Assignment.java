@@ -129,6 +129,8 @@ public class Assignment implements Serializable {
     /**
      * Set a list of the headings to be used in the feedback documents.
      *
+     * Only to be called on construction of the assignment.
+     *
      * @param assignmentHeadings A string containing a list of the headings to
      * be used in the feedback documents, separated by newline characters
      */
@@ -137,6 +139,7 @@ public class Assignment implements Serializable {
             .map(String::trim)
             .filter(not(String::isEmpty))
             .collect(Collectors.toList());
+        headings.forEach(heading -> customPhrases.put(heading, new ArrayList<>()));
         computePhraseCounts();
     }
 
