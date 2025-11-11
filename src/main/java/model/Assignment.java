@@ -96,8 +96,8 @@ public class Assignment implements Serializable {
 
         // Set transient fields
         assignment.directory = fhtFile.getParent().toAbsolutePath();
-        assignment.computePhraseCounts();
         assignment.listeners = new ArrayList<>();
+        assignment.computePhraseCounts();
 
         System.out.println("Loaded assignment from " + fhtFile);
         return assignment;
