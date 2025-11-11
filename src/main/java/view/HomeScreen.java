@@ -155,6 +155,7 @@ public class HomeScreen extends JFrame {
                         "Problem loading assignment",
                         JOptionPane.ERROR_MESSAGE
                     );
+                    exception.printStackTrace();
                 }
             }
         });

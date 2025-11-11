@@ -239,9 +239,9 @@ public class Assignment implements Serializable {
         Path fhtFile = directory.resolve(fileName);
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(Files.newOutputStream(fhtFile))) {
             objectOutputStream.writeObject(this);
-            reportInfo("Saved to " + fhtFile + ".");
+            reportInfo("Saved to " + fhtFile);
         } catch (IOException e) {
-            reportError("Error saving assignment", e);
+            reportError("Error saving assignment.", e);
         }
     }
 
@@ -255,9 +255,9 @@ public class Assignment implements Serializable {
         try {
             exportFeedback();
             exportGrades();
-            reportInfo("Exported feedback and grades to " + createFeedbackOutputDirectory() + ".");
+            reportInfo("Exported feedback and grades to " + createFeedbackOutputDirectory());
         } catch (IOException e) {
-            reportError("Error exporting feedback and grades", e);
+            reportError("Error exporting feedback and grades.", e);
         }
     }
 
