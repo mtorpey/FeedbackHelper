@@ -87,7 +87,7 @@ public class AppModelTest extends TestCase {
         }
         assignment.addFeedbackDocuments(feedbackDocuments);
 
-        List<Integer> grades = model.getGrades(assignment);
+        List<Integer> grades = model.getGradesList(assignment);
 
         // Expect 41 grades number of people who achieved the
         // grades from 0.0 to 20.0 in 0.5 increments
@@ -130,7 +130,7 @@ public class AppModelTest extends TestCase {
     }
 
     public void testSetAssignmentPreferences() {
-        model.setAssignmentPreferences("##", "=", 3, "=>");
+        model.setFeedbackStyle("##", "=", 3, "=>");
         assertEquals("## ", model.getHeadingStyle());
         assertEquals("=", model.getUnderlineStyle());
         assertEquals(3, model.getLineSpacing());

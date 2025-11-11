@@ -47,14 +47,9 @@ public class GradeBox extends JPanel {
     }
 
     private void setupChooser() {
-        this.chooser = new JSpinner(new SpinnerNumberModel(MINIMUM, MINIMUM, MAXIMUM, STEP));
-
-        this.chooser.addChangeListener(e -> saveGrade());
-        this.add(this.chooser);
-    }
-
-    private void saveGrade() {
-        this.controller.saveFeedbackDocument(this.studentId);
+        chooser = new JSpinner(new SpinnerNumberModel(MINIMUM, MINIMUM, MAXIMUM, STEP));
+        chooser.addChangeListener(e -> controller.updateGrade(studentId, getGrade()));
+        add(this.chooser);
     }
 
     /**

@@ -3,13 +3,12 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.function.Consumer;
 
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
 
-import controller.AppController;
-import model.Assignment;
 import model.StudentId;
 
 /**
@@ -18,27 +17,26 @@ import model.StudentId;
 public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
 
     // Instance variables
-    private final AppController controller;
-    private StudentId heading;
+    private Consumer<StudentId> onSelect;
+    private StudentId studentId;
     private String firstLine;
     private double grade;
     private JTextArea textPane;
     private Border unselectedBorder;
     private Border selectedBorder;
-    private Assignment assignment;
 
     /**
      * Constructor.
      *
-     * @param controller The controller.
-     * @param heading    The heading of the preview box (a student ID)
-     * @param grade      The grade of the student.
-     * @param firstLine  A unique line from the student's feedback document.
+     * @param studentId The heading of the preview box (a student ID)
+     * @param grade The grade of the student.
+     * @param firstLine A unique line from the student's feedback document.
+     * @param onSelect Callback for when this box is selected by the user.
      */
-    public PreviewBox(AppController controller, StudentId heading, double grade, String firstLine) {
+    public PreviewBox(StudentId studentId, double grade, String firstLine, Consumer<StudentId> onSelect) {
         // Store variables
-        this.controller = controller;
-        this.heading = heading;
+        this.onSelect = onSelect;
+        this.studentId = studentId;
         this.firstLine = firstLine;
         this.grade = grade;
 
@@ -63,15 +61,6 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
     }
 
     /**
-     * Set the assignment.
-     *
-     * @param assignment The assignment.
-     */
-    public void setAssignment(Assignment assignment) {
-        this.assignment = assignment;
-    }
-
-    /**
      * Setup the text area.
      */
     private void setupTextArea() {
@@ -87,13 +76,13 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
             new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    controller.displayNewDocument(assignment, heading);
+                    onSelect.accept(studentId);
                 }
             }
         );
 
         // Set the contents of the preview box
-        this.textPane.setText(this.heading + "\n\n" + this.firstLine + "\n\n" + "Grade: " + this.grade);
+        this.textPane.setText(this.studentId + "\n\n" + this.firstLine + "\n\n" + "Grade: " + this.grade);
         this.add(this.textPane, BorderLayout.CENTER);
     }
 
@@ -102,8 +91,8 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
      *
      * @return The heading of the preview box.
      */
-    public StudentId getHeading() {
-        return this.heading;
+    public StudentId getStudentId() {
+        return this.studentId;
     }
 
     /**
@@ -149,7 +138,7 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
      */
     private void updatePreviewBox() {
         this.textPane.setText("");
-        this.textPane.setText(this.heading + "\n\n" + this.firstLine + "\n\n" + "Grade: " + this.grade);
+        this.textPane.setText(this.studentId + "\n\n" + this.firstLine + "\n\n" + "Grade: " + this.grade);
         this.textPane.repaint();
         this.textPane.revalidate();
     }
@@ -161,6 +150,6 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
      */
     @Override
     public int compareTo(PreviewBox other) {
-        return getHeading().compareTo(other.getHeading());
+        return getStudentId().compareTo(other.getStudentId());
     }
 }

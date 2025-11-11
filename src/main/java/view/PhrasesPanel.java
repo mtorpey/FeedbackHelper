@@ -3,11 +3,10 @@ package view;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-
-import controller.AppController;
 
 /**
  * Phrases Panel Class.
@@ -15,20 +14,20 @@ import controller.AppController;
 public class PhrasesPanel extends JPanel {
 
     // Instance variables
-    private final AppController controller;
+    private Consumer<String> onInsertPhrase;
     private PhraseType phraseType;
     private List<PhraseBox> phraseBoxes;
 
     /**
      * Constructor.
      *
-     * @param controller The controller.
      * @param phraseType The type of phrases to show on the panel.
+     * @param onInsertPhrase Callback for when the user wishes to insert a phrase.
      */
-    public PhrasesPanel(AppController controller, PhraseType phraseType) {
+    public PhrasesPanel(PhraseType phraseType, Consumer<String> onInsertPhrase) {
         this.phraseType = phraseType;
         this.phraseBoxes = new ArrayList<PhraseBox>();
-        this.controller = controller;
+        this.onInsertPhrase = onInsertPhrase;
 
         // Set layout and visbility
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -51,10 +50,10 @@ public class PhrasesPanel extends JPanel {
      * @param phraseCount The usage count of the phrase.
      */
     public void addPhrase(String phrase, long phraseCount) {
-        PhraseBox phraseBox = new PhraseBox(this.controller, phrase, phraseCount);
+        PhraseBox phraseBox = new PhraseBox(phrase, phraseCount, onInsertPhrase);
         this.phraseBoxes.add(phraseBox);
         this.add(phraseBox);
-        this.updatePhrasePanel();
+        this.update();
     }
 
     /**
@@ -74,7 +73,7 @@ public class PhrasesPanel extends JPanel {
         // Remove the component and then remove it from the list
         this.remove(this.phraseBoxes.get(toRemove));
         this.phraseBoxes.remove(toRemove);
-        this.updatePhrasePanel();
+        this.update();
     }
 
     /**
@@ -95,22 +94,22 @@ public class PhrasesPanel extends JPanel {
         this.removeAll();
         Collections.sort(this.phraseBoxes);
         this.phraseBoxes.forEach(this::add);
-        this.updatePhrasePanel();
+        this.update();
     }
 
     /**
      * Clear the panel.
      */
-    public void clearPanel() {
+    public void clear() {
         this.removeAll();
         this.phraseBoxes.clear();
-        this.updatePhrasePanel();
+        this.update();
     }
 
     /**
      * Refresh the panel.
      */
-    private void updatePhrasePanel() {
+    private void update() {
         this.revalidate();
         this.repaint();
     }

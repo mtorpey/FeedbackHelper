@@ -85,32 +85,27 @@ public class DocumentViewer extends JFrame {
         this.textArea.setEditable(false);
     }
 
+    /**
+     * Display the data in the text area.
+     *
+     * This doesn't format it particularly well, but it's good enough for a quick summary.
+     */
     public void displayData(Map<String, List<String>> data, List<String> dataHeadings) {
         dataHeadings.forEach(heading -> {
             // Heading
-            this.textArea.append(this.controller.getHeadingStyle() + heading + "\n");
-
-            // Underline heading if required
-            String underlineStyle = this.controller.getUnderlineStyle();
-            if (!underlineStyle.isEmpty()) {
-                for (int i = 0; i < this.controller.getHeadingStyle().length() + heading.length(); i++) {
-                    this.textArea.append(underlineStyle);
-                }
-            }
+            this.textArea.append(heading + "\n");
             this.textArea.append("\n");
 
             // Section data
             data
                 .get(heading)
                 .forEach(line -> {
-                    this.textArea.append(this.controller.getLineMarker() + line);
+                    this.textArea.append("- " + line);
                     this.textArea.append("\n");
                 });
 
             // End section spacing
-            for (int i = 0; i < this.controller.getLineSpacing(); i++) {
-                this.textArea.append("\n");
-            }
+            this.textArea.append("\n");
             this.textArea.append("\n");
         });
     }

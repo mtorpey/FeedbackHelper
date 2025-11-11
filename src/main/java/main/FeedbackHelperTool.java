@@ -1,7 +1,6 @@
 package main;
 
 import controller.AppController;
-import model.AppModel;
 import view.AppView;
 
 /**
@@ -23,9 +22,9 @@ public class FeedbackHelperTool {
      * Start the program.
      */
     public void start() {
-        // Load everything up
-        AppModel model = new AppModel();
-        AppController controller = new AppController(model);
+        // Create controller and view.
+        // The Assignment (model) is created by the controller later
+        AppController controller = new AppController();
         AppView view = new AppView(controller);
 
         // Start the view

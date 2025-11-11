@@ -1,0 +1,17 @@
+FeedbackScreen
+  JFrame feedbackScreen
+    JMenuBar
+      JMenu*
+        JMenuItem*
+    JPanel feedbackScreenPanel
+      JSplitPane previewAndEditorSplitPane
+        JScrollPane previewPanelScrollPane
+          PreviewPanel
+            PreviewBox*
+        JScrollPane editorPanelScrollPane
+          EditorPanel
+            EditingPopupMenu
+      JSplitPane phrasesAndPhraseEntrySplitPane
+        PhrasesSection
+          PhrasesPanel*
+        PhraseEntryBox

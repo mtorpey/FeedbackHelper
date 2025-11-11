@@ -100,6 +100,8 @@ public class AboutDialog extends JDialog {
         setResizable(false);
         pack(); // Adjust dialog size to fit components
         setLocationRelativeTo(parent); // Center the dialog onscreen
+
+        setVisible(true);
     }
 
     /**

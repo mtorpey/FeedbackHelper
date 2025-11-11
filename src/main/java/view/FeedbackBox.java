@@ -7,11 +7,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -34,30 +31,39 @@ public class FeedbackBox extends JPanel {
     private static final String EDIT_SYMBOL = "✎";
     private static final String FINISH_SYMBOL = "✔";
 
-    // Instance variables
-    private final AppController controller;
-    private String heading;
+    // Swing instances
     private JPanel headingPanel;
     private JTextField headingField;
     private JButton headingButton;
     private JTextArea textArea;
-    private List<String> currentBoxContents;
-    private List<String> previousBoxContents;
+
+    // Data instances
+    private AppController controller;
+    private String heading;
+    private String lineMarker;
+    private Consumer<String> onSwitchSection;
+    private BiConsumer<String, String> onUpdateText;
 
     /**
      * Constructor.
      *
-     * @param controller The controller.
-     * @param heading    The heading the feedback box is for.
+     * @param heading The heading the feedback box is for.
+     * @param onSwitchSection Callback to be invoked when user selects a new section
+     * @param onUpdateText Callback to be invoked when the text is updated by the user
      */
-    public FeedbackBox(AppController controller, String heading) {
+    public FeedbackBox(
+        AppController controller,
+        String heading,
+        String lineMarker,
+        Consumer<String> onSwitchSection,
+        BiConsumer<String, String> onUpdateText
+    ) {
         // Store heading
-        this.heading = heading;
         this.controller = controller;
-
-        // Create lists to store old and new box contents
-        this.currentBoxContents = new ArrayList<String>();
-        this.previousBoxContents = new ArrayList<String>();
+        this.heading = heading;
+        this.lineMarker = lineMarker;
+        this.onSwitchSection = onSwitchSection;
+        this.onUpdateText = onUpdateText;
 
         // Setup components
         setupPanel();
@@ -211,17 +217,11 @@ public class FeedbackBox extends JPanel {
             new FocusListener() {
                 @Override
                 public void focusGained(FocusEvent e) {
-                    // Notify model what is in focus
-                    controller.updateCurrentHeadingBeingEdited(heading);
-
-                    // If heading being edited has changed, show all the phrases for that heading
-                    if (controller.headingChanged()) {
-                        controller.resetPhrasesPanel(PhraseType.FREQUENTLY_USED);
-                        controller.showPhrasesForHeading(heading);
-                    }
+                    // Callback that we switch sections
+                    onSwitchSection.accept(heading);
 
                     // Set the caret colour (in some themes it might be hard to see)
-                    textArea.setCaretColor(textArea.getForeground());
+                    textArea.setCaretColor(textArea.getForeground()); // TODO: bad idea?
 
                     // Check if we need to insert a new line
                     if (textArea.getText().isEmpty()) {
@@ -231,28 +231,29 @@ public class FeedbackBox extends JPanel {
 
                 @Override
                 public void focusLost(FocusEvent e) {
-                    controller.saveFeedbackDocument(controller.getCurrentDocumentInView());
+                    updateFeedback();
                 }
             }
         );
     }
 
+    /** Send the current feedback to the model. */
     private void updateFeedback() {
-        controller.updateFeedback(
-            controller.getCurrentDocumentInView(),
-            this.heading,
-            this.getTextArea().getText()
-        );
-        controller.saveFeedbackDocument(controller.getCurrentDocumentInView());
+        onUpdateText.accept(heading, textArea.getText());
+    }
+
+    /** Get the text from inside this box. */
+    public String getContents() {
+        return textArea.getText();
     }
 
     /**
-     * Get the text area.
+     * Get the text area inside this component.
      *
-     * @return The text area.
+     * Note: it would be better if we could conceal this internal object.
      */
     public JTextArea getTextArea() {
-        return this.textArea;
+        return textArea;
     }
 
     /**
@@ -260,15 +261,8 @@ public class FeedbackBox extends JPanel {
      *
      * @param data The data to display in the text area.
      */
-    public void setTextAreaText(String data) {
-        // Store the realtime contents (and remove line marker for storage)
-        this.currentBoxContents = Arrays.asList(data.split(NEWLINE));
-        this.currentBoxContents = this.currentBoxContents.stream()
-            .map(String::trim)
-            .filter(line -> line.startsWith(this.controller.getLineMarker()))
-            .map(line -> line.replace(this.controller.getLineMarker(), ""))
-            .collect(Collectors.toList());
-        this.textArea.setText(data);
+    public void setContents(String data) {
+        textArea.setText(data);
     }
 
     /**
@@ -300,6 +294,6 @@ public class FeedbackBox extends JPanel {
      */
     private void insertLineMarkerForNewLine() {
         int caretPos = this.textArea.getCaretPosition();
-        this.textArea.insert(this.controller.getLineMarker(), caretPos);
+        this.textArea.insert(lineMarker, caretPos);
     }
 }

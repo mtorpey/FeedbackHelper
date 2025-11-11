@@ -4,10 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,20 +25,27 @@ import javax.swing.UnsupportedLookAndFeelException;
 import configuration.UserPreferences;
 import controller.AppController;
 import model.Assignment;
-import model.FeedbackDocument;
+import model.AssignmentListener;
 import model.Phrase;
 import model.StudentId;
 
 /**
- * Feedback Screen Class.
+ * Main window for an assignment in progress, containing all components.
  */
-public class FeedbackScreen implements PropertyChangeListener {
+public class FeedbackScreen implements AssignmentListener {
 
     //Remember Scrolling, not ideal because reset at restart, but quick fix that helps a lot
     private static Map<StudentId, Integer> scrollbarValues = new HashMap<>(); // TODO: is this the problem?
 
-    // Instance variables
+    // References to model and controller
+    private final Assignment assignment;
     private final AppController controller;
+
+    // Part of model currently selected for viewing
+    private StudentId currentStudent;
+    private String currentHeading;
+
+    // Swing components
     private JFrame feedbackScreen;
     private JPanel feedbackScreenPanel;
     private JSplitPane previewAndEditorSplitPane;
@@ -54,7 +58,6 @@ public class FeedbackScreen implements PropertyChangeListener {
     private PhrasesSection phrasesSection;
     private PhraseEntryBox phraseEntryBox;
     private GridBagConstraints gridBagConstraints;
-    private Assignment assignment;
 
     /**
      * Constructor.
@@ -62,14 +65,17 @@ public class FeedbackScreen implements PropertyChangeListener {
      * @param controller The controller.
      * @param assignment The assignment.
      */
-    public FeedbackScreen(AppController controller, Assignment assignment) {
+    public FeedbackScreen(AppController controller) {
+        // Remember the controller, for writing changes to the model.
         this.controller = controller;
-        this.controller.registerWithModel(this);
+
+        // Subscribe to model for changes, and store a reference to it for querying.
+        this.assignment = controller.registerWithModel(this);
 
         // Setup components
         setupFeedbackScreen();
         setupFeedbackScreenPanel();
-        setupPreviewPanel();
+        setupPreviewPanelScrollPane();
         setupEditorPanel();
         setupPhrasesSection();
         setupPreviewAndEditorSplitPane();
@@ -81,26 +87,6 @@ public class FeedbackScreen implements PropertyChangeListener {
         // Add the main panel to the screen and set visibility
         this.feedbackScreen.add(this.feedbackScreenPanel, BorderLayout.CENTER);
         this.feedbackScreen.setVisible(true);
-    }
-
-    /**
-     * Position the phrases split pane with the gridbag constraints.
-     */
-    private void positionPhrasesSplitPane() {
-        this.gridBagConstraints.fill = GridBagConstraints.BOTH;
-        this.gridBagConstraints.gridx = 2;
-        this.gridBagConstraints.gridy = 0;
-        this.feedbackScreenPanel.add(this.phrasesAndPhraseEntrySplitPane, this.gridBagConstraints);
-    }
-
-    /**
-     * Position the editor split pane with the gridbag constraints.
-     */
-    private void positionEditorSplitPane() {
-        this.gridBagConstraints.fill = GridBagConstraints.BOTH;
-        this.gridBagConstraints.gridx = 0;
-        this.gridBagConstraints.gridy = 0;
-        this.feedbackScreenPanel.add(this.previewAndEditorSplitPane, this.gridBagConstraints);
     }
 
     /**
@@ -127,7 +113,8 @@ public class FeedbackScreen implements PropertyChangeListener {
      * Setup the phrases section and phrase entry box.
      */
     private void setupPhrasesAndPhraseEntrySplitPane() {
-        this.phraseEntryBox = new PhraseEntryBox(this.controller);
+        // Submitting a custom phrase adds it via the controller
+        this.phraseEntryBox = new PhraseEntryBox(text -> controller.addCustomPhrase(currentHeading, text));
         this.phraseEntryBox.disablePhraseEntryBox();
         this.phrasesAndPhraseEntrySplitPane = new JSplitPane(
             JSplitPane.VERTICAL_SPLIT,
@@ -148,8 +135,8 @@ public class FeedbackScreen implements PropertyChangeListener {
         this.phrasesSection = new PhrasesSection();
 
         // Create panels
-        PhrasesPanel customPhrasesPanel = new PhrasesPanel(this.controller, PhraseType.CUSTOM);
-        PhrasesPanel frequentlyUsedPhrasesPanel = new PhrasesPanel(this.controller, PhraseType.FREQUENTLY_USED);
+        PhrasesPanel customPhrasesPanel = new PhrasesPanel(PhraseType.CUSTOM, this::insertPhrase);
+        PhrasesPanel frequentlyUsedPhrasesPanel = new PhrasesPanel(PhraseType.FREQUENTLY_USED, this::insertPhrase);
 
         // Add panels
         this.phrasesSection.addPhrasesPanel(customPhrasesPanel);
@@ -176,55 +163,31 @@ public class FeedbackScreen implements PropertyChangeListener {
     }
 
     /**
-     * Setup the editor panel.
+     * Setup the preview panel scroll pane, and setup a preview panel inside it.
      */
-    private void setupEditorPanel() {
-        this.editorPanelScrollPane = new JScrollPane();
-
-        // Create editor panel with popup menu
-        this.editorPanel = new EditorPanel(
-            this.controller,
-            this.assignment.getTitle(),
-            this.assignment.getHeadings()
-        );
-        this.editingPopupMenu = new EditingPopupMenu();
-        this.editorPanel.registerPopupMenu(this.editingPopupMenu);
-
-        // Set the document data if it exists
-        this.editorPanel.setData(
-            this.assignment.getFeedbackDocument(this.controller.getCurrentDocumentInView())
-        );
-
-        // Make the panel scrollable
-        this.editorPanelScrollPane.add(this.editorPanel);
-        this.editorPanelScrollPane.getViewport().setView(this.editorPanel);
-        this.editorPanelScrollPane.getVerticalScrollBar().setUnitIncrement(AppView.SCROLL_SPEED);
-
-        SwingUtilities.invokeLater(() -> this.editorPanelScrollPane.getVerticalScrollBar().setValue(0));
+    private void setupPreviewPanelScrollPane() {
+        this.previewPanelScrollPane = new JScrollPane();
+        setupPreviewPanel();
     }
 
     /**
-     * Setup the preview panel.
+     * Setup the preview panel and put it in the scroll pane, replacing any old panel that was there.
      */
     private void setupPreviewPanel() {
-        this.previewPanelScrollPane = new JScrollPane();
+        // Remove any previous panels (in case this is a reset)
+        previewPanelScrollPane.removeAll();
 
         // Create preview boxes
         List<PreviewBox> previewBoxes = new ArrayList<PreviewBox>();
-        this.assignment.getFeedbackDocuments().forEach(feedbackDocument -> {
+        this.assignment.getStudentIds().forEach(studentId -> {
             PreviewBox previewBox = new PreviewBox(
-                this.controller,
-                feedbackDocument.getStudentId(),
-                feedbackDocument.getGrade(),
-                this.controller.getFirstLineFromDocument(this.assignment, feedbackDocument.getStudentId())
+                studentId,
+                assignment.getGrade(studentId),
+                this.controller.getFirstLineFromDocument(studentId), // TODO: remove
+                this::switchStudent
             );
-            previewBox.setAssignment(this.assignment);
             previewBoxes.add(previewBox);
         });
-
-        // Order the preview boxes by the id if possible
-        Collections.sort(previewBoxes);
-        this.controller.setCurrentDocumentInView(previewBoxes.get(0).getHeading());
 
         // Make the preview panel scrollable
         this.previewPanel = new PreviewPanel(previewBoxes);
@@ -234,6 +197,52 @@ public class FeedbackScreen implements PropertyChangeListener {
 
         // Set scroll position to top
         SwingUtilities.invokeLater(() -> this.previewPanelScrollPane.getVerticalScrollBar().setValue(0));
+
+        // Start with the first one open if this is first time setup (they should be sorted)
+        if (currentStudent == null) {
+            currentStudent = previewBoxes.get(0).getStudentId();
+        }
+    }
+
+    /**
+     * Setup the editor panel.
+     *
+     * Should be called after setupPreviewPanel, which sets currentStudent
+     */
+    private void setupEditorPanel() {
+        editorPanelScrollPane = new JScrollPane();
+
+        // Create editor panel with popup menu
+        editorPanel = new EditorPanel(
+            controller,
+            assignment.getTitle(),
+            assignment.getHeadings(),
+            assignment.getLineMarker(),
+            this::switchSection,
+            this::updateFeedbackSection
+        );
+        this.editingPopupMenu = new EditingPopupMenu();
+        this.editorPanel.registerPopupMenu(this.editingPopupMenu);
+
+        // Set the document data
+        loadEditorPanelData();
+
+        // Make the panel scrollable
+        this.editorPanelScrollPane.add(this.editorPanel);
+        this.editorPanelScrollPane.getViewport().setView(this.editorPanel);
+        this.editorPanelScrollPane.getVerticalScrollBar().setUnitIncrement(AppView.SCROLL_SPEED);
+
+        // TODO: does this really need an invokeLater?
+        SwingUtilities.invokeLater(() -> this.editorPanelScrollPane.getVerticalScrollBar().setValue(0));
+    }
+
+    /** Update the editor panel with the ID, feedback and grade for the current student in the model. */
+    private void loadEditorPanelData() {
+        editorPanel.setStudentId(currentStudent);
+        for (String heading : assignment.getHeadings()) {
+            editorPanel.setSectionContents(heading, assignment.getSectionContents(currentStudent, heading));
+        }
+        editorPanel.setGrade(assignment.getGrade(currentStudent));
     }
 
     /**
@@ -258,102 +267,25 @@ public class FeedbackScreen implements PropertyChangeListener {
         JMenuItem aboutOption = new JMenuItem("About");
 
         // Save option
-        saveOption.addActionListener(l -> {
-            JOptionPane.showMessageDialog(
-                this.feedbackScreen,
-                "Saving document for student: " + this.controller.getCurrentDocumentInView()
-            );
-            this.controller.saveFeedbackDocument(controller.getCurrentDocumentInView());
-        });
+        saveOption.addActionListener(e -> saveAssignmentForCurrentStudent());
 
         // Add student option
-        addStudentOption.addActionListener(l -> {
-            String input = JOptionPane.showInputDialog(this.feedbackScreen, "Enter the new student id");
-
-            // Get the new student id and check it
-            StudentId studentId;
-            try {
-                studentId = new StudentId(input);
-            } catch (IllegalArgumentException e) {
-                JOptionPane.showMessageDialog(this.feedbackScreen, e.getMessage());
-                return;
-            }
-
-            // Create the new feedback document
-            FeedbackDocument feedbackDoc = new FeedbackDocument(assignment, studentId);
-            assignment.setFeedbackDocument(studentId, feedbackDoc);
-
-            // Save the assignment to an FHT file
-            controller.saveAssignment(assignment);
-
-            // Create preview boxes
-            List<PreviewBox> previewBoxes = new ArrayList<PreviewBox>();
-            assignment
-                .getFeedbackDocuments()
-                .forEach(feedbackDocument -> {
-                    PreviewBox previewBox = new PreviewBox(
-                        controller,
-                        feedbackDocument.getStudentId(),
-                        feedbackDocument.getGrade(),
-                        this.controller.getFirstLineFromDocument(this.assignment, feedbackDocument.getStudentId())
-                    );
-                    previewBox.setAssignment(this.assignment);
-                    previewBoxes.add(previewBox);
-                });
-
-            // Order the preview boxes by the id if possible
-            Collections.sort(previewBoxes);
-
-            // Remove the previous panel
-            this.previewPanelScrollPane.remove(this.previewPanel);
-
-            // Make the preview panel scrollable
-            this.previewPanel = new PreviewPanel(previewBoxes);
-            this.previewPanelScrollPane.add(this.previewPanel);
-            this.previewPanelScrollPane.getViewport().setView(this.previewPanel);
-
-            for (PreviewBox pb : previewBoxes) {
-                this.previewPanel.unhighlightPreviewBox(pb.getHeading());
-            }
-            // Select the new student
-            controller.displayNewDocument(assignment, studentId);
-
-            // Confirm completion
-            JOptionPane.showMessageDialog(this.feedbackScreen, "Added document for student: " + studentId);
-        });
+        addStudentOption.addActionListener(e -> addNewStudent());
 
         // Export grades and documents option
-        exportDocsOption.addActionListener(l -> {
-            // Export feedback documents
-            this.controller.exportFeedbackDocuments(this.assignment);
-            // Export grades
-            this.controller.exportGrades(this.assignment);
-            JOptionPane.showMessageDialog(
-                this.feedbackScreen,
-                "Exporting assignment grades and feedback documents... \n" +
-                    "Please check the directory: " +
-                    this.assignment.getDirectory()
-            );
-        });
+        exportDocsOption.addActionListener(e -> controller.exportFeedbackAndGrades());
 
         // Visualise grades option
-        visGradesOption.addActionListener(l -> {
-            this.controller.visualiseGrades(this.assignment);
-            JOptionPane.showMessageDialog(this.feedbackScreen, "Generating visualisation of assignment grades...");
-        });
+        visGradesOption.addActionListener(e -> controller.visualiseGrades());
 
         // Show the 'about' dialog window
-        aboutOption.addActionListener(l -> {
-            AboutDialog aboutDialog = new AboutDialog(this.feedbackScreen);
-            aboutDialog.setVisible(true);
-        });
+        aboutOption.addActionListener(l -> new AboutDialog(feedbackScreen));
 
-        // Add all options to menu
+        // Add all options to menus
         fileMenu.add(saveOption);
         fileMenu.add(addStudentOption);
         fileMenu.add(exportDocsOption);
         fileMenu.add(visGradesOption);
-
         helpMenu.add(aboutOption);
 
         // Add the menu bar to the screen
@@ -361,6 +293,26 @@ public class FeedbackScreen implements PropertyChangeListener {
         menuBar.add(preferencesMenu);
         menuBar.add(helpMenu);
         this.feedbackScreen.add(menuBar, BorderLayout.PAGE_START);
+    }
+
+    /**
+     * Position the phrases split pane with the gridbag constraints.
+     */
+    private void positionPhrasesSplitPane() {
+        this.gridBagConstraints.fill = GridBagConstraints.BOTH;
+        this.gridBagConstraints.gridx = 2;
+        this.gridBagConstraints.gridy = 0;
+        this.feedbackScreenPanel.add(this.phrasesAndPhraseEntrySplitPane, this.gridBagConstraints);
+    }
+
+    /**
+     * Position the editor split pane with the gridbag constraints.
+     */
+    private void positionEditorSplitPane() {
+        this.gridBagConstraints.fill = GridBagConstraints.BOTH;
+        this.gridBagConstraints.gridx = 0;
+        this.gridBagConstraints.gridy = 0;
+        this.feedbackScreenPanel.add(this.previewAndEditorSplitPane, this.gridBagConstraints);
     }
 
     private JMenu createPreferencesMenu() {
@@ -384,217 +336,166 @@ public class FeedbackScreen implements PropertyChangeListener {
             | IllegalAccessException
             | UnsupportedLookAndFeelException e
         ) {
-            e.printStackTrace();
+            handleError("Error setting theme", e);
         }
         SwingUtilities.updateComponentTreeUI(feedbackScreen);
     }
 
-    /**
-     * Listen for change messages from the model and perform appropriate
-     * action to the GUI to reflect the changes in the model.
-     *
-     * @param event The incoming message from the model.
-     */
-    @Override
-    public void propertyChange(PropertyChangeEvent event) {
-        // Perform action based on the incoming message
-        switch (event.getPropertyName()) {
-            case "docViewChange":
-                scrollbarValues.put(
-                    controller.getLastDocumentInView(),
-                    this.editorPanelScrollPane.getVerticalScrollBar().getValue()
-                );
-                performDocumentViewChange(event);
-                SwingUtilities.invokeLater(() ->
-                    this.editorPanelScrollPane.getVerticalScrollBar().setValue(
-                        scrollbarValues.getOrDefault(event.getNewValue(), 0)
-                    )
-                );
-                break;
-            case "saveDoc":
-                performDocumentSave(event);
-                break;
-            case "editHeading":
-                performHeadingChange(event);
-                break;
-            case "insertPhrase":
-                performInsertPhrase(event);
-                break;
-            case "newPhrase":
-                performAddNewPhrase(event, PhraseType.FREQUENTLY_USED);
-                break;
-            case "deletePhrase":
-                performDeletePhrase(event);
-                break;
-            case "updatePhraseCounter":
-                performUpdatePhrase(event);
-                break;
-            case "resetPhrasesPanel":
-                performResetPanel(event);
-                break;
-            case "newCustomPhrase":
-                performAddNewPhrase(event, PhraseType.CUSTOM);
-                break;
-            case "phrasePanelChange":
-                performPhrasePanelChange(event);
-                break;
-            case "resetFeedbackBoxes":
-                performResetFeedbackBoxes(event);
-                break;
-            case "error":
-                displayError(event);
-                break;
-            default:
-                System.out.println("Received unknown message!");
-                System.out.println(event.getNewValue());
-                break;
-        }
+    private void saveAssignmentForCurrentStudent() {
+        Map<String, String> sections = editorPanel.getSections();
+        double grade = editorPanel.getGrade();
+        controller.updateFeedbackAndGrade(currentStudent, sections, grade); // This saves to disk.
+        this.previewPanel.updatePreviewBox(currentStudent, controller.getFirstLineFromDocument(currentStudent), grade);
     }
 
-    private void performResetFeedbackBoxes(PropertyChangeEvent event) throws ClassCastException {
-        List<String> headings = (List<String>) event.getNewValue();
-        this.editorPanel.resetFeedbackBoxes(headings);
-    }
-
-    /**
-     * Display an error message.
-     *
-     * @param event The event notification from the model.
-     */
-    private void displayError(PropertyChangeEvent event) {
-        String errorMessage = (String) event.getNewValue();
-        JOptionPane.showMessageDialog(this.feedbackScreen, errorMessage, "Error!", JOptionPane.ERROR_MESSAGE);
-    }
-
-    /**
-     * Perform a phrase panel change.
-     *
-     * Inserting the actual phrases is done separately by performAddNewPhrase.
-     *
-     * @param event The event notification from the model.
-     */
-    private void performPhrasePanelChange(PropertyChangeEvent event) {
-        if (this.phraseEntryBox != null) {
-            PhraseType panelInView = (PhraseType) event.getNewValue();
-            // Show custom phrases
-            if (panelInView == PhraseType.CUSTOM) {
-                this.phrasesSection.resetPhrasesPanel(PhraseType.CUSTOM);
-                this.controller.showCustomPhrases(controller.getCurrentHeadingBeingEdited());
-                this.phraseEntryBox.enablePhraseEntryBox();
-            } else {
-                this.phraseEntryBox.disablePhraseEntryBox();
-            }
+    private void addNewStudent() {
+        String input = JOptionPane.showInputDialog(this.feedbackScreen, "Enter the new student id");
+        try {
+            controller.addNewStudent(input);
+        } catch (IllegalArgumentException e) {
+            handleError("Invalid student ID '" + input + "'.", e);
         }
     }
 
     /**
-     * Reset the panels.
-     */
-    private void performResetPanel(PropertyChangeEvent event) {
-        PhraseType phrasePanel = (PhraseType) event.getNewValue();
-        this.phrasesSection.resetPhrasesPanel(phrasePanel);
-    }
-
-    /**
-     * Perform an update to an existing phrase.
+     * Change the student currently selected in the view.
      *
-     * @param event The event notification from the model.
+     * @param studentId The ID of the student we are now viewing.
      */
-    private void performUpdatePhrase(PropertyChangeEvent event) {
-        Phrase phraseToUpdate = (Phrase) event.getNewValue();
-        this.phrasesSection.updatePhraseCounter(
-            PhraseType.FREQUENTLY_USED,
-            phraseToUpdate.getPhraseAsString(),
-            phraseToUpdate.getUsageCount()
+    private void switchStudent(StudentId studentId) {
+        // Wrap up from last student
+        scrollbarValues.put(currentStudent, editorPanelScrollPane.getVerticalScrollBar().getValue());
+        saveAssignmentForCurrentStudent();
+        previewPanel.updatePreviewBox(
+            currentStudent,
+            controller.getFirstLineFromDocument(currentStudent),
+            assignment.getGrade(currentStudent)
         );
-        this.phrasesSection.updatePhraseCounter(
-            PhraseType.CUSTOM,
-            phraseToUpdate.getPhraseAsString(),
-            phraseToUpdate.getUsageCount()
-        );
-    }
+        previewPanel.unhighlightPreviewBox(currentStudent);
 
-    /**
-     * Delete a phrase from the frequently used panel.
-     *
-     * @param event The event notification from the model.
-     */
-    private void performDeletePhrase(PropertyChangeEvent event) {
-        Phrase phraseToDelete = (Phrase) event.getNewValue();
-        this.phrasesSection.removePhraseFromPanel(phraseToDelete.getPhraseAsString(), PhraseType.FREQUENTLY_USED);
-    }
+        // Switch to new student
+        currentStudent = studentId;
+        loadEditorPanelData();
+        previewPanel.highlightPreviewBox(studentId);
 
-    /**
-     * Add a phrase to the given panel.
-     *
-     * @param event      The event notification from the model.
-     * @param phraseType The panel to add the phrase to.
-     */
-    private void performAddNewPhrase(PropertyChangeEvent event, PhraseType phraseType) {
-        Phrase newPhrase = (Phrase) event.getNewValue();
-        this.phrasesSection.addPhraseToPanel(newPhrase.getPhraseAsString(), newPhrase.getUsageCount(), phraseType);
-    }
-
-    /**
-     * Insert a phrase into the feedback box being currently edited.
-     *
-     * @param event The event notification from the model.
-     */
-    private void performInsertPhrase(PropertyChangeEvent event) {
-        String phrase = (String) event.getNewValue();
-        String heading = this.controller.getCurrentHeadingBeingEdited();
-        this.editorPanel.insertPhraseIntoFeedbackBox(phrase, heading);
-    }
-
-    /**
-     * Change a heading for all documents.
-     *
-     * @param event The event notification from the model.
-     */
-    private void performHeadingChange(PropertyChangeEvent event) {
-        // Do nothing! This should all be handled by resetFeedbackBoxes
-    }
-
-    /**
-     * Save a document.
-     *
-     * @param event The event notification from the model.
-     */
-    private void performDocumentSave(PropertyChangeEvent event) {
-        StudentId studentId = (StudentId) event.getNewValue();
-        Map<String, String> headingsAndData = this.editorPanel.saveDataAsMap();
-        double grade = this.editorPanel.getGrade();
-        if (grade >= 0) {
-            this.controller.saveFeedbackDocument(this.assignment, studentId, headingsAndData, grade);
-            this.previewPanel.updatePreviewBox(
-                studentId,
-                this.controller.getFirstLineFromDocument(this.assignment, studentId),
-                grade
-            );
-        }
-    }
-
-    /**
-     * Change the document in the current view.
-     *
-     * @param event The event notification from the model.
-     */
-    private void performDocumentViewChange(PropertyChangeEvent event) {
-        StudentId newDocId = (StudentId) event.getNewValue();
-        this.editorPanel.setData(this.assignment.getFeedbackDocument(newDocId));
-
-        // Update the preview boxes
-        if (this.controller.getLastDocumentInView() != null) {
-            this.previewPanel.updatePreviewBoxLine(
-                this.controller.getLastDocumentInView(),
-                this.controller.getFirstLineFromDocument(this.assignment, this.controller.getLastDocumentInView())
-            );
-            this.previewPanel.unhighlightPreviewBox(this.controller.getLastDocumentInView());
-        }
-        this.previewPanel.highlightPreviewBox(newDocId);
+        // Force scroll bar
+        editorPanelScrollPane.getVerticalScrollBar().setValue(scrollbarValues.getOrDefault(studentId, 0));
 
         // Refresh UI
         this.previewPanel.repaint();
         this.previewPanel.revalidate();
+    }
+
+    /**
+     * Change the heading currently selected in the view.
+     *
+     * @param heading The heading of the section we have selected.
+     */
+    private void switchSection(String heading) {
+        // Save work so far
+        saveAssignmentForCurrentStudent();
+
+        // Change to the new heading
+        currentHeading = heading;
+
+        // Old checking code, might be obselete
+        if (this.phraseEntryBox == null) {
+            handleError("No phrase entry box found!", new Exception("This should never happen."));
+        }
+
+        // Clear phrases
+        phrasesSection.resetPhrasesPanels();
+
+        // Add new phrases
+        assignment.getPhrasesForHeading(currentHeading).forEach(phrase -> handlePhraseAdded(heading, phrase));
+        assignment.getCustomPhrases(currentHeading).forEach(phrase -> handleCustomPhraseAdded(heading, phrase));
+
+        // TODO: handle phrase entry box
+        //this.phraseEntryBox.enablePhraseEntryBox();
+        //this.phraseEntryBox.disablePhraseEntryBox();
+    }
+
+    private void updateFeedbackSection(String heading, String text) {
+        controller.updateFeedbackSection(currentStudent, heading, text);
+    }
+
+    private void insertPhrase(String phrase) {
+        editorPanel.insertPhraseIntoFeedbackBox(currentHeading, phrase);
+    }
+
+    //
+    // HANDLING MODEL UPDATES
+    //
+    @Override
+    public void handleHeadingsUpdated(List<String> headings) {
+        SwingUtilities.invokeLater(() -> editorPanel.updateHeadings(headings));
+    }
+
+    @Override
+    public void handleNewStudent(StudentId studentId) {
+        SwingUtilities.invokeLater(() -> {
+            setupPreviewPanel();
+            // for (PreviewBox pb : previewBoxes) {
+            //     this.previewPanel.unhighlightPreviewBox(pb.getHeading());
+            // }
+            switchStudent(studentId);
+        });
+    }
+
+    @Override
+    public void handlePhraseAdded(String heading, Phrase phrase) {
+        SwingUtilities.invokeLater(() -> {
+            if (currentHeading == heading) {
+                phrasesSection.addPhraseToPanel(phrase);
+            } else {
+                handleError("Phrase added for another section", new Exception("This should never happen."));
+            }
+        });
+    }
+
+    @Override
+    public void handlePhraseDeleted(String heading, Phrase phrase) {
+        SwingUtilities.invokeLater(() -> {
+            if (currentHeading == heading) {
+                phrasesSection.removePhraseFromPanel(phrase);
+            } else {
+                handleError("Phrase deleted for another section", new Exception("This should never happen."));
+            }
+        });
+    }
+
+    @Override
+    public void handlePhraseCounterUpdated(String heading, Phrase phrase) {
+        SwingUtilities.invokeLater(() -> {
+            if (currentHeading == heading) {
+                phrasesSection.updatePhraseCounter(phrase);
+            } else {
+                handleError("Phrase updated for another section", new Exception("This should never happen."));
+            }
+        });
+    }
+
+    @Override
+    public void handleCustomPhraseAdded(String heading, Phrase phrase) {
+        SwingUtilities.invokeLater(() -> {
+            if (currentHeading == heading) {
+                phrasesSection.addCustomPhraseToPanel(phrase);
+            } else {
+                handleError("Custom phrase added for another section", new Exception("This should never happen."));
+            }
+        });
+    }
+
+    @Override
+    public void handleInfo(String message) {
+        // TODO: display in bottom bar?
+    }
+
+    @Override
+    public void handleError(String description, Exception exception) {
+        String message = description + ": " + exception.toString();
+        SwingUtilities.invokeLater(() ->
+            JOptionPane.showMessageDialog(this.feedbackScreen, message, "Error!", JOptionPane.ERROR_MESSAGE)
+        );
     }
 }

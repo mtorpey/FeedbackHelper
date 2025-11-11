@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Feedback Document Class.
@@ -14,10 +15,13 @@ import java.util.List;
 public class FeedbackDocument implements Serializable, Comparable<FeedbackDocument> {
 
     // Instance variables
-    private Assignment assignment;
     private StudentId studentId;
-    private HashMap<String, String> sectionContents;
     private double grade;
+
+    // headings should be the keys of sectionContents.
+    // This way is easier than using a SequencedMap.
+    private List<String> headings;
+    private Map<String, String> sectionContents;
 
     /**
      * Constructor.
@@ -25,23 +29,19 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      * @param assignment The assignment the feedback document belongs to.
      * @param studentId  The student ID the feedback document is for.
      */
-    public FeedbackDocument(Assignment assignment, StudentId studentId) {
-        this.assignment = assignment;
+    public FeedbackDocument(StudentId studentId, List<String> headings) {
         this.studentId = studentId;
-        this.sectionContents = new HashMap<String, String>();
+        this.headings = headings;
 
-        // Set the heading data to empty
-        this.assignment.getHeadings().forEach(heading -> {
-            sectionContents.put(heading, "");
-        });
+        // Setup the sections
+        this.sectionContents = new HashMap<String, String>();
+        headings.forEach(heading -> sectionContents.put(heading, ""));
 
         this.grade = 0.0;
     }
 
     /**
      * Get the grade.
-     *
-     * @return The grade.
      */
     public double getGrade() {
         return this.grade;
@@ -49,8 +49,6 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
 
     /**
      * Set the grade.
-     *
-     * @param grade The grade to set.
      */
     public void setGrade(double grade) {
         this.grade = grade;
@@ -60,29 +58,19 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      * Set the data for a given heading.
      *
      * @param heading The heading to set the data for.
-     * @param data    The data associated with the heading.
+     * @param contents The data associated with the heading.
      */
-    public void setDataForHeading(String heading, String data) {
-        this.sectionContents.put(heading, data);
+    public void setSectionContents(String heading, String contents) {
+        this.sectionContents.put(heading, contents);
     }
 
     /**
      * Get the data for a given heading.
      *
      * @param heading The heading to get the data for.
-     * @return The data for the given heading.
      */
     public String getSectionContents(String heading) {
         return this.sectionContents.get(heading);
-    }
-
-    /**
-     * Get the assignment the feedback document belongs to.
-     *
-     * @return The Assignment object the feedback document belongs to.
-     */
-    public Assignment getAssignment() {
-        return assignment;
     }
 
     /**
@@ -100,7 +88,7 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      * @return a list of headings used in the feedback document.
      */
     public List<String> getHeadings() {
-        return assignment.getHeadings();
+        return headings;
     }
 
     /**
@@ -109,30 +97,31 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      * This doesn't do any checks, which should be performed in Assignment::editHeading.
      */
     public void editHeading(String previousHeading, String newHeading) {
+        headings.set(headings.indexOf(previousHeading), newHeading);
         sectionContents.put(newHeading, sectionContents.get(previousHeading));
         sectionContents.remove(previousHeading);
     }
 
     /** Export feedback to a text document in the given directory. */
-    public void export(Path directory) throws IOException {
+    public void export(Path directory, FeedbackStyle style) throws IOException {
         Path outFile = directory.resolve(getStudentId() + ".txt");
 
         try (BufferedWriter writer = Files.newBufferedWriter(outFile)) {
             for (String heading : getHeadings()) {
                 // Heading
-                String fullHeading = assignment.getHeadingStyle() + heading;
+                String fullHeading = style.headingStyle() + heading;
                 writer.write(fullHeading);
                 writer.newLine();
 
                 // Underline heading (may be blank)
-                String underlineStyle = assignment.getUnderlineStyle();
+                String underlineStyle = style.underlineStyle();
                 writer.write(underlineStyle.repeat(fullHeading.length()));
 
                 // Data
                 writer.newLine();
                 String contents = getSectionContents(heading);
                 String[] lines = contents.split("\n");
-                String lineMarker = assignment.getLineMarker();
+                String lineMarker = style.lineMarker();
                 for (String line : lines) {
                     if (!line.trim().equals(lineMarker)) {
                         writer.write(line);
@@ -141,19 +130,11 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
                 }
 
                 // End section spacing
-                for (int i = 0; i < assignment.getLineSpacing(); i++) {
+                for (int i = 0; i < style.lineSpacing(); i++) {
                     writer.newLine();
                 }
             }
         }
-    }
-
-    /**
-     * Simple string indication of the FeedbackDocument.
-     */
-    @Override
-    public String toString() {
-        return "FeedbackDocument{" + studentId + '}';
     }
 
     /** Comparable by student id. */

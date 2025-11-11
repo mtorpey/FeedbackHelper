@@ -11,6 +11,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
+import model.Phrase;
+
 /**
  * Phrases Section Class.
  */
@@ -59,28 +61,37 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
         this.phrasesPanelScrollPanes.add(phrasesPanelScrollPane);
         this.phrasesPanelsByType.put(phrasesPanel.getPhraseType(), phrasesPanel);
         this.tabbedPane.addTab(phrasesPanel.getPhraseType().getPhraseTypeAsString(), phrasesPanelScrollPane);
-        this.updatePhrasesSection();
+        this.update();
     }
 
     /**
-     * Reset a phrases panel.
-     *
-     * @param phraseType The type of the panel to reset.
+     * Reset both phrases panels.
      */
-    public void resetPhrasesPanel(PhraseType phraseType) {
-        this.phrasesPanelsByType.get(phraseType).clearPanel();
-        this.updatePhrasesSection();
+    public void resetPhrasesPanels() {
+        phrasesPanelsByType.values().forEach(PhrasesPanel::clear);
+        update();
     }
 
     /**
-     * Add a phrase to a panel.
+     * Add a frequently used phrase to the appropriate panel.
      *
-     * @param phrase          The phrase to add.
-     * @param phraseCount     The phrase usage count.
-     * @param phrasePanelType The type of the panel to add the phrase to.
+     * @param phrase The phrase to add.
      */
-    public void addPhraseToPanel(String phrase, long phraseCount, PhraseType phrasePanelType) {
-        this.phrasesPanelsByType.get(phrasePanelType).addPhrase(phrase, phraseCount);
+    public void addPhraseToPanel(Phrase phrase) {
+        addPhraseToPanelForType(phrase, PhraseType.FREQUENTLY_USED);
+    }
+
+    /**
+     * Add a custom phrase to the appropriate panel.
+     *
+     * @param phrase The phrase to add.
+     */
+    public void addCustomPhraseToPanel(Phrase phrase) {
+        addPhraseToPanelForType(phrase, PhraseType.CUSTOM);
+    }
+
+    private void addPhraseToPanelForType(Phrase phrase, PhraseType type) {
+        this.phrasesPanelsByType.get(type).addPhrase(phrase.getPhraseAsString(), phrase.getUsageCount());
         for (JScrollPane scrollPane : this.phrasesPanelScrollPanes) {
             SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
             scrollPane.getVerticalScrollBar().setValue(0);
@@ -89,19 +100,18 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
     }
 
     /**
-     * Remove a phrase from a given panel.
+     * Remove a frequently used phrase from the appropriate panel.
      *
-     * @param phrase          The phrase to remove.
-     * @param phrasePanelType The type of the panel the phrase is currently shown on.
+     * @param phrase The phrase to remove.
      */
-    public void removePhraseFromPanel(String phrase, PhraseType phrasePanelType) {
-        this.phrasesPanelsByType.get(phrasePanelType).removePhrase(phrase);
+    public void removePhraseFromPanel(Phrase phrase) {
+        this.phrasesPanelsByType.get(PhraseType.FREQUENTLY_USED).removePhrase(phrase.getPhraseAsString());
     }
 
     /**
      * Refresh the panels.
      */
-    private void updatePhrasesSection() {
+    private void update() {
         this.revalidate();
         this.repaint();
     }
@@ -113,9 +123,11 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
      * @param phrase      The phrase to update.
      * @param phraseCount The new usage count value.
      */
-    public void updatePhraseCounter(PhraseType phraseType, String phrase, long phraseCount) {
-        this.phrasesPanelsByType.get(phraseType).updatePhraseCounter(phrase, phraseCount);
-        this.searchBox.clear(); // new phrase added, so current search is over
+    public void updatePhraseCounter(Phrase phrase) {
+        phrasesPanelsByType
+            .values()
+            .forEach(panel -> panel.updatePhraseCounter(phrase.getPhraseAsString(), phrase.getUsageCount()));
+        this.searchBox.clear(); // phrase inserted, so current search is over
     }
 
     /**

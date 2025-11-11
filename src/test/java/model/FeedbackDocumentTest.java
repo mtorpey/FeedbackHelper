@@ -10,12 +10,12 @@ public class FeedbackDocumentTest extends TestCase {
     public void setUp() {
         assignment = new Assignment();
         assignment.setTitle("Test");
-        assignment.setAssignmentHeadings("Heading 1 \n Heading 2 \n Heading 3 \n");
+        assignment.setHeadings("Heading 1 \n Heading 2 \n Heading 3 \n");
         feedbackDocument = new FeedbackDocument(assignment, "1");
         feedbackDocument.setGrade(20);
-        feedbackDocument.setDataForHeading("Heading 1", "Data-1");
-        feedbackDocument.setDataForHeading("Heading 2", "Data-2");
-        feedbackDocument.setDataForHeading("Heading 3", "Data-3");
+        feedbackDocument.setSectionContents("Heading 1", "Data-1");
+        feedbackDocument.setSectionContents("Heading 2", "Data-2");
+        feedbackDocument.setSectionContents("Heading 3", "Data-3");
     }
 
     public void testGetGrade() {

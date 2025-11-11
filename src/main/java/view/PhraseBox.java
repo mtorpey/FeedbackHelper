@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.net.URL;
+import java.util.function.Consumer;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -11,15 +12,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import controller.AppController;
-
 /**
  * Phrase Box Class.
  */
 public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
 
     // Instance variables
-    private final AppController controller;
     private String phrase;
     private long usageCount;
     private JTextArea phraseTextArea;
@@ -32,12 +30,11 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
     /**
      * Constructor.
      *
-     * @param controller The controller.
      * @param phrase     The phrase to display.
      * @param usageCount The usage count of the phrase.
+     * @param onInsertPhrase Callback for when the user wishes to insert a phrase.
      */
-    public PhraseBox(AppController controller, String phrase, long usageCount) {
-        this.controller = controller;
+    public PhraseBox(String phrase, long usageCount, Consumer<String> onInsertPhrase) {
         this.phrase = phrase;
         this.phraseTextArea = new JTextArea();
         this.usageCount = usageCount;
@@ -46,7 +43,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
 
         this.setLayout(new BorderLayout());
 
-        setupInsertButton();
+        setupInsertButton(onInsertPhrase);
         setupPhraseTextArea();
         setupUsageCountLabel();
 
@@ -69,11 +66,8 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
     /**
      * Setup the insert button.
      */
-    private void setupInsertButton() {
-        this.insertButton.addActionListener(l -> {
-            this.controller.insertPhraseIntoCurrentFeedbackBox(this.phrase);
-            this.controller.saveFeedbackDocument(this.controller.getCurrentDocumentInView());
-        });
+    private void setupInsertButton(Consumer<String> onInsertPhrase) {
+        this.insertButton.addActionListener(l -> onInsertPhrase.accept(phrase));
         this.add(this.insertButton, BorderLayout.LINE_START);
     }
 

@@ -9,13 +9,13 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import configuration.UserPreferences;
 import controller.AppController;
-import model.Assignment;
 
 /**
  * Welcome screen showing initial options.
@@ -126,7 +126,7 @@ public class HomeScreen extends JFrame {
      */
     private void createLoadButton(JPanel parent) {
         JButton loadButton = new JButton("Load Assignment");
-        loadButton.addActionListener(e -> {
+        loadButton.addActionListener(event -> {
             // Show a file chooser
             Path lastPath = UserPreferences.getLastOpenedAssignmentPath();
             JFileChooser fileChooser = new JFileChooser(lastPath.toString());
@@ -142,13 +142,20 @@ public class HomeScreen extends JFrame {
             Path assignmentFilePath = null;
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 assignmentFilePath = fileChooser.getSelectedFile().toPath();
-                dispose();
-            }
 
-            // Ensure selected file is valid and show feedback screen
-            if (assignmentFilePath != null) {
-                Assignment assignment = this.controller.loadAssignment(assignmentFilePath);
-                new FeedbackScreen(this.controller, assignment);
+                // Try to load the assignment
+                try {
+                    controller.loadAssignment(assignmentFilePath);
+                    new FeedbackScreen(controller);
+                    dispose();
+                } catch (Exception exception) {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        exception.toString(),
+                        "Problem loading assignment",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                }
             }
         });
         parent.add(loadButton);

@@ -12,7 +12,7 @@ public class AssignmentTest extends TestCase {
     public void setUp() throws Exception {
         assignment = new Assignment();
         assignment.setTitle("Test");
-        assignment.setAssignmentHeadings("Heading 1 \n Heading 2 \n Heading 3");
+        assignment.setHeadings("Heading 1 \n Heading 2 \n Heading 3");
         assignment.setDirectory("Sample Directory Path");
         assignment.setHeadingStyle("#");
         assignment.setUnderlineStyle("-");
@@ -110,7 +110,7 @@ public class AssignmentTest extends TestCase {
     }
 
     public void testSetAssignmentHeadings() {
-        assignment.setAssignmentHeadings("1\n 2\n 3\n 4\n 5\n");
+        assignment.setHeadings("1\n 2\n 3\n 4\n 5\n");
         List<String> assignmentHeadings = assignment.getHeadings();
         assertEquals(5, assignmentHeadings.size());
     }

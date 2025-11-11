@@ -2,13 +2,12 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Image;
+import java.util.function.Consumer;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-
-import controller.AppController;
 
 /**
  * Phrase Entry Box Class.
@@ -16,17 +15,17 @@ import controller.AppController;
 public class PhraseEntryBox extends JPanel {
 
     // Instance variables
-    private final AppController controller;
+    private final Consumer<String> onSubmit;
     private JTextArea textArea;
     private JButton submitButton;
 
     /**
      * Constructor.
      *
-     * @param controller The controller.
+     * @param onSubmit Callback for submitting a new phrase.
      */
-    public PhraseEntryBox(AppController controller) {
-        this.controller = controller;
+    public PhraseEntryBox(Consumer<String> onSubmit) {
+        this.onSubmit = onSubmit;
 
         // Setup components
         this.setLayout(new BorderLayout());
@@ -67,9 +66,8 @@ public class PhraseEntryBox extends JPanel {
         this.add(this.submitButton, BorderLayout.LINE_END);
 
         this.submitButton.addActionListener(l -> {
-            String phrase = this.textArea.getText();
-            this.controller.addNewCustomPhraseFromView(controller.getCurrentHeadingBeingEdited(), phrase);
-            this.textArea.setText("");
+            onSubmit.accept(textArea.getText());
+            textArea.setText("");
         });
     }
 

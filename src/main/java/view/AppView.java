@@ -10,7 +10,7 @@ import configuration.UserPreferences;
 import controller.AppController;
 
 /**
- * App View Class.
+ * Class for doing some basic setup of the view, and holding some global variables.
  */
 public class AppView {
 

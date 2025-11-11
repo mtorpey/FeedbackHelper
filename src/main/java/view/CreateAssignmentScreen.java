@@ -380,25 +380,20 @@ public class CreateAssignmentScreen extends JFrame {
 
         // Create the assignment
         try {
-            Assignment assignment = this.controller.createAssignment(
-                assignmentTitle,
-                assignmentHeadings,
-                studentListFile,
-                assignmentDirectory
-            );
-            this.controller.setAssignmentPreferences(
+            controller.createAssignment(assignmentTitle, assignmentHeadings, studentListFile, assignmentDirectory);
+            controller.setFeedbackStyle(
                 HEADING_STYLES.get(headingStyle),
                 UNDERLINE_STYLES.get(headingUnderlineStyle),
                 lineSpacing,
                 lineMarker
             );
-            this.controller.saveAssignment(assignment);
+            controller.saveAssignment();
+
+            // Create the feedback screen
+            new FeedbackScreen(controller);
 
             // Delete this screen
             dispose();
-
-            // Create the feedback screen
-            new FeedbackScreen(this.controller, assignment);
         } catch (IOException exception) {
             JOptionPane.showMessageDialog(
                 this,

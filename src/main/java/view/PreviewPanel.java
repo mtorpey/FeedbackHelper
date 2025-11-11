@@ -28,7 +28,7 @@ public class PreviewPanel extends JPanel {
         this.previewBoxes = previewBoxes;
         this.headingAndPreviewBoxMap = new HashMap<>();
         previewBoxes.forEach(previewBox -> {
-            this.headingAndPreviewBoxMap.put(previewBox.getHeading(), previewBox);
+            this.headingAndPreviewBoxMap.put(previewBox.getStudentId(), previewBox);
         });
 
         // Set layout top to bottom
