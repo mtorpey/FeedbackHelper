@@ -97,7 +97,7 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      * This doesn't do any checks, which should be performed in Assignment::editHeading.
      */
     public void editHeading(String previousHeading, String newHeading) {
-        headings.set(headings.indexOf(previousHeading), newHeading);
+        // Note: headings should be a reference to an external list, so should be up to date already
         sectionContents.put(newHeading, sectionContents.get(previousHeading));
         sectionContents.remove(previousHeading);
     }

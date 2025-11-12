@@ -363,6 +363,9 @@ public class Assignment implements Serializable {
         customPhrases.put(newHeading, customPhrases.get(previousHeading));
         customPhrases.remove(previousHeading);
 
+        // Get the phrases up to date
+        computePhraseCounts();
+
         // Broadcast the change
         notifyListeners(l -> l.handleHeadingsUpdated(headings));
 

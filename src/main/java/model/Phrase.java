@@ -82,7 +82,7 @@ public class Phrase implements Comparable<Phrase> {
      */
     @Override
     public String toString() {
-        return "[" + usageCount + "]" + phraseAsString;
+        return usageCount + ":" + phraseAsString;
     }
 
     /**
