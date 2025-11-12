@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -94,7 +96,14 @@ public class FeedbackScreen implements AssignmentListener {
      */
     private void setupFeedbackScreen() {
         this.feedbackScreen = new JFrame("Feedback Composition");
-        this.feedbackScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.feedbackScreen.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                    System.out.println("Closing");
+                    saveAssignmentForCurrentStudent();
+                    // TODO: handle thread
+                    System.exit(0);
+                }
+        });
         this.feedbackScreen.setSize(1200, 800);
         this.feedbackScreen.setLayout(new BorderLayout());
     }
