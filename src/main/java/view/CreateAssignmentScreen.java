@@ -173,7 +173,7 @@ public class CreateAssignmentScreen extends JFrame {
      */
     private void setupAssignmentHeadingsControls() {
         addLabelToConfigForm("Assignment headings:");
-        assignmentHeadingsTextArea = new JTextArea(7, 30);
+        assignmentHeadingsTextArea = new JTextArea("Code\nReport\nOverall", 7, 30);
         JScrollPane scrollPane = new JScrollPane(assignmentHeadingsTextArea);
         scrollPane.setMinimumSize(new Dimension(0, 100)); // stop this collapsing
         addToConfigForm(scrollPane, 2);
