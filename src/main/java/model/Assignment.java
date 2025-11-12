@@ -14,16 +14,14 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -48,7 +46,7 @@ public class Assignment implements Serializable {
 
     // Transient variables (not saved to disk)
     private transient Path directory;
-    private transient Map<String, SortedSet<Phrase>> phraseCounts;
+    private transient Map<String, List<Phrase>> phraseCounts;
     private transient List<AssignmentListener> listeners;
 
     /**
@@ -402,6 +400,9 @@ public class Assignment implements Serializable {
 
         // Add any phrases that haven't been used before
         additions.forEach(phrase -> addPhrase(heading, phrase));
+
+        // Re-sort, since some counts may have changed
+        phrasesForHeading.sort(null);
     }
 
     private void addPhrase(String heading, String phrase) {
@@ -464,7 +465,8 @@ public class Assignment implements Serializable {
                     .entrySet()
                     .stream()
                     .map(e -> new Phrase(e.getKey(), e.getValue()))
-                    .collect(Collectors.toCollection(TreeSet<Phrase>::new))
+                    .sorted()
+                    .collect(Collectors.toCollection(LinkedList::new))
             )
         );
         reportInfo("Computed phrase counts.");
@@ -543,8 +545,8 @@ public class Assignment implements Serializable {
             .toList();
     }
 
-    /** Get all used phrases for a heading, with their usage counts. */
-    public SortedSet<Phrase> getPhrasesForHeading(String heading) {
+    /** Get all used phrases for a heading, with their usage counts, in order. */
+    public List<Phrase> getPhrasesForHeading(String heading) {
         /*
         try {
             throw new RuntimeException("oh");

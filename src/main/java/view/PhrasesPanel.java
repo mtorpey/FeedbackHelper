@@ -1,13 +1,14 @@
 package view;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+
+import model.Phrase;
 
 /**
  * Phrases Panel Class.
@@ -27,7 +28,7 @@ public class PhrasesPanel extends JPanel {
      */
     public PhrasesPanel(PhraseType phraseType, Consumer<String> onInsertPhrase) {
         this.phraseType = phraseType;
-        this.phraseBoxes = new ArrayList<PhraseBox>();
+        this.phraseBoxes = new LinkedList<PhraseBox>();
         this.onInsertPhrase = onInsertPhrase;
 
         // Set layout and visbility
@@ -50,10 +51,17 @@ public class PhrasesPanel extends JPanel {
      * @param phrase      The phrase to add.
      * @param phraseCount The usage count of the phrase.
      */
-    public void addPhrase(String phrase, long phraseCount) {
-        PhraseBox phraseBox = new PhraseBox(phrase, phraseCount, onInsertPhrase);
-        this.phraseBoxes.add(phraseBox);
-        this.add(phraseBox);
+    public void addPhrase(Phrase phrase) {
+        // Create the new box
+        PhraseBox phraseBox = new PhraseBox(phrase, onInsertPhrase);
+
+        // Insert it in the correct place in the list
+        phraseBoxes.add(phraseBox);
+        phraseBoxes.sort(null);
+
+        // Add it in the correct place in the panel
+        int pos = phraseBoxes.indexOf(phraseBox);
+        this.add(phraseBox, pos);
         this.update();
     }
 
@@ -66,7 +74,7 @@ public class PhrasesPanel extends JPanel {
         // Find the index of the phrase box
         int toRemove = 0;
         for (int i = 0; i < this.phraseBoxes.size(); i++) {
-            if (this.phraseBoxes.get(i).getPhrase().equals(phrase)) {
+            if (this.phraseBoxes.get(i).getPhraseText().equals(phrase)) {
                 toRemove = i;
             }
         }
@@ -86,14 +94,14 @@ public class PhrasesPanel extends JPanel {
     public void updatePhraseCounter(String phrase, long phraseCount) {
         // Find the phrase to update
         for (PhraseBox phraseBox : phraseBoxes) {
-            if (phraseBox.getPhrase().equals(phrase)) {
+            if (phraseBox.getPhraseText().equals(phrase)) {
                 phraseBox.setUsageCount(phraseCount);
             }
         }
 
         // Sort the list
         this.removeAll();
-        Collections.sort(this.phraseBoxes, Comparator.reverseOrder());
+        Collections.sort(this.phraseBoxes);
         this.phraseBoxes.forEach(this::add);
         this.update();
     }

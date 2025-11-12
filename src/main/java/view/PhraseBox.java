@@ -12,14 +12,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import model.Phrase;
+
 /**
  * Phrase Box Class.
  */
 public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
 
     // Instance variables
-    private String phrase;
-    private long usageCount;
+    private Phrase phrase;
     private JTextArea phraseTextArea;
     private JButton insertButton;
     private JLabel usageCountLabel;
@@ -34,10 +35,9 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      * @param usageCount The usage count of the phrase.
      * @param onInsertPhrase Callback for when the user wishes to insert a phrase.
      */
-    public PhraseBox(String phrase, long usageCount, Consumer<String> onInsertPhrase) {
+    public PhraseBox(Phrase phrase, Consumer<String> onInsertPhrase) {
         this.phrase = phrase;
         this.phraseTextArea = new JTextArea();
-        this.usageCount = usageCount;
 
         this.insertButton = new JButton(insertIcon);
 
@@ -67,7 +67,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      * Setup the insert button.
      */
     private void setupInsertButton(Consumer<String> onInsertPhrase) {
-        this.insertButton.addActionListener(l -> onInsertPhrase.accept(phrase));
+        this.insertButton.addActionListener(l -> onInsertPhrase.accept(phrase.getPhraseAsString()));
         this.add(this.insertButton, BorderLayout.LINE_START);
     }
 
@@ -75,7 +75,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      * Setup the usage count label.
      */
     private void setupUsageCountLabel() {
-        this.usageCountLabel = new JLabel(String.valueOf(this.usageCount));
+        this.usageCountLabel = new JLabel(String.valueOf(phrase.getUsageCount()));
         this.add(this.usageCountLabel, BorderLayout.BEFORE_FIRST_LINE);
     }
 
@@ -87,7 +87,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
         this.phraseTextArea.setRows(5);
         this.phraseTextArea.setColumns(10);
         this.phraseTextArea.setBorder(BorderCreator.createEmptyBorderLeavingBottom(BorderCreator.PADDING_10_PIXELS));
-        this.phraseTextArea.setText(this.phrase);
+        this.phraseTextArea.setText(phrase.getPhraseAsString());
         this.phraseTextArea.setLineWrap(true);
         this.phraseTextArea.setWrapStyleWord(true);
         this.phraseTextArea.setEditable(false);
@@ -102,8 +102,8 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      *
      * @return The phrase in the box.
      */
-    public String getPhrase() {
-        return this.phrase;
+    public String getPhraseText() {
+        return phrase.getPhraseAsString();
     }
 
     /**
@@ -112,7 +112,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      * @return The usage count of the phrase.
      */
     public long getUsageCount() {
-        return this.usageCount;
+        return phrase.getUsageCount();
     }
 
     /**
@@ -121,7 +121,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      * @param usageCount The usage count of the phrase.
      */
     public void setUsageCount(long usageCount) {
-        this.usageCount = usageCount;
+        this.phrase.setUsageCount(usageCount);
         this.usageCountLabel.setText(String.valueOf(usageCount));
 
         // Refresh the UI
@@ -139,7 +139,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      * @param query The search query to check.
      */
     public void setVisibleBySearchQuery(String query) {
-        String contents = this.getPhrase().toLowerCase();
+        String contents = this.getPhraseText().toLowerCase();
         query = query.toLowerCase();
         this.setVisible(contents.contains(query));
     }
@@ -152,12 +152,6 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      */
     @Override
     public int compareTo(PhraseBox o) {
-        if (usageCount < o.usageCount) {
-            return -1;
-        } else if (usageCount == o.usageCount) {
-            return getPhrase().compareTo(o.getPhrase());
-        } else {
-            return 1;
-        }
+        return this.phrase.compareTo(o.phrase);
     }
 }

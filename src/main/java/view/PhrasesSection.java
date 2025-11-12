@@ -91,7 +91,7 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
     }
 
     private void addPhraseToPanelForType(Phrase phrase, PhraseType type) {
-        this.phrasesPanelsByType.get(type).addPhrase(phrase.getPhraseAsString(), phrase.getUsageCount());
+        this.phrasesPanelsByType.get(type).addPhrase(phrase);
         for (JScrollPane scrollPane : this.phrasesPanelScrollPanes) {
             SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
             scrollPane.getVerticalScrollBar().setValue(0);

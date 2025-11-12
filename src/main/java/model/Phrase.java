@@ -55,7 +55,7 @@ public class Phrase implements Comparable<Phrase> {
      *
      * @param usageCount The usage count of the phrase.
      */
-    public void setUsageCount(int usageCount) {
+    public void setUsageCount(long usageCount) {
         this.usageCount = usageCount;
     }
 
@@ -112,17 +112,17 @@ public class Phrase implements Comparable<Phrase> {
     /**
      * Define how to compare phrases when sorting them using Collections.
      *
-     * @return Ordered based on usage count, then alphabetical
+     * @return Ordered based on usage count (highest first), then alphabetical
      */
     @Override
     public int compareTo(Phrase o) {
         long diff = o.getUsageCount() - this.getUsageCount();
-        if (diff < 0) {
-            return -1;
-        } else if (diff == 0) {
-            return o.getPhraseAsString().compareTo(this.getPhraseAsString());
-        } else {
+        if (diff > 0) {
             return 1;
+        } else if (diff == 0) {
+            return this.getPhraseAsString().compareTo(o.getPhraseAsString());
+        } else {
+            return -1;
         }
     }
 }
