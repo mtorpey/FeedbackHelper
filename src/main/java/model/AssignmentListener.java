@@ -24,6 +24,8 @@ public interface AssignmentListener {
 
     void handleNewStudent(StudentId studentId);
 
+    void handleGradeUpdate(StudentId studentId, double grade);
+
     // NEW_PHRASE_MESSAGE = "newPhrase";
     void handlePhraseAdded(String heading, Phrase phrase);
 

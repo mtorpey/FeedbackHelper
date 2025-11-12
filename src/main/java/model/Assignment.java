@@ -317,6 +317,7 @@ public class Assignment implements Serializable {
     /** Update the grade in the model for the given student. */
     public void updateGrade(StudentId studentId, double grade) {
         feedbackDocuments.get(studentId).setGrade(grade);
+        notifyListeners(l -> l.handleGradeUpdate(studentId, grade));
         // Note: we don't automatically save here
     }
 

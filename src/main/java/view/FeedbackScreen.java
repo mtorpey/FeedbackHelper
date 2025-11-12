@@ -439,6 +439,11 @@ public class FeedbackScreen implements AssignmentListener {
     }
 
     @Override
+    public void handleGradeUpdate(StudentId studentId, double grade) {
+        SwingUtilities.invokeLater(() -> previewPanel.updatePreviewBoxGrade(studentId, grade));
+    }
+
+    @Override
     public void handlePhraseAdded(String heading, Phrase phrase) {
         SwingUtilities.invokeLater(() -> {
             if (currentHeading == heading) {

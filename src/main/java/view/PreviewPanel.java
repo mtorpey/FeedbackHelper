@@ -74,10 +74,8 @@ public class PreviewPanel extends JPanel {
      * @param grade   The new grade to display.
      */
     public void updatePreviewBox(StudentId heading, String line, double grade) {
-        this.headingAndPreviewBoxMap.get(heading).setFirstLine(line);
-        this.headingAndPreviewBoxMap.get(heading).setGrade(grade);
-        this.revalidate();
-        this.repaint();
+        updatePreviewBoxLine(heading, line);
+        updatePreviewBoxGrade(heading, grade);
     }
 
     /**
@@ -88,6 +86,18 @@ public class PreviewPanel extends JPanel {
      */
     public void updatePreviewBoxLine(StudentId heading, String line) {
         this.headingAndPreviewBoxMap.get(heading).setFirstLine(line);
+        this.revalidate();
+        this.repaint();
+    }
+
+    /**
+     * Update the contents of a given preview box.
+     *
+     * @param heading The heading of the preview box to update.
+     * @param line    The new line text to display.
+     */
+    public void updatePreviewBoxGrade(StudentId heading, double grade) {
+        this.headingAndPreviewBoxMap.get(heading).setGrade(grade);
         this.revalidate();
         this.repaint();
     }
