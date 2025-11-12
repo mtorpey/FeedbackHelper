@@ -225,7 +225,7 @@ public class FeedbackBox extends JPanel {
 
                     // Check if we need to insert a new line
                     String text = textArea.getText();
-                    if (text.isEmpty() || text.endsWith(NEWLINE) && textArea.getCaretPosition() == text.length()) {
+                    if (text.isEmpty() || (!text.endsWith(lineMarker) && textArea.getCaretPosition() == text.length())) {
                         insertLineMarkerForNewLine();
                     }
                 }
@@ -300,6 +300,10 @@ public class FeedbackBox extends JPanel {
      */
     private void insertLineMarkerForNewLine() {
         int caretPos = this.textArea.getCaretPosition();
+        String text = textArea.getText();
+        if (!text.isEmpty() && !text.substring(0, caretPos).endsWith(NEWLINE)) {
+            textArea.insert(NEWLINE, caretPos);
+        }
         this.textArea.insert(lineMarker, caretPos);
     }
 }
