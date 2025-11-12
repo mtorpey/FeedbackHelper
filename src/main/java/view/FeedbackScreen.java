@@ -443,8 +443,6 @@ public class FeedbackScreen implements AssignmentListener {
         SwingUtilities.invokeLater(() -> {
             if (currentHeading == heading) {
                 phrasesSection.addPhraseToPanel(phrase);
-            } else {
-                handleError("Phrase added for another section", new Exception("This should never happen."));
             }
         });
     }
@@ -454,8 +452,6 @@ public class FeedbackScreen implements AssignmentListener {
         SwingUtilities.invokeLater(() -> {
             if (currentHeading == heading) {
                 phrasesSection.removePhraseFromPanel(phrase);
-            } else {
-                handleError("Phrase deleted for another section", new Exception("This should never happen."));
             }
         });
     }
@@ -465,8 +461,6 @@ public class FeedbackScreen implements AssignmentListener {
         SwingUtilities.invokeLater(() -> {
             if (currentHeading == heading) {
                 phrasesSection.updatePhraseCounter(phrase);
-            } else {
-                handleError("Phrase updated for another section", new Exception("This should never happen."));
             }
         });
     }

@@ -376,10 +376,11 @@ public class Assignment implements Serializable {
     private void updatePhrasesForHeading(String heading, String oldContents, String newContents) {
         Set<String> oldPhrases = splitIntoPhrases(oldContents);
         Set<String> newPhrases = splitIntoPhrases(newContents);
+        List<Phrase> phrasesForHeading = phraseCounts.get(heading);
 
         // Handle phrases that were deleted
         Set<String> removals = Utilities.getRemovalsFromSet(oldPhrases, newPhrases);
-        for (Phrase phrase : getPhrasesForHeading(heading)) {
+        for (Phrase phrase : phrasesForHeading) {
             if (removals.contains(phrase.getPhraseAsString())) {
                 phrase.decrementUsageCount();
                 notifyListeners(l -> l.handlePhraseCounterUpdated(heading, phrase));
@@ -389,7 +390,7 @@ public class Assignment implements Serializable {
 
         // Handle existing phrases that were added
         Set<String> additions = Utilities.getAdditionsToSet(oldPhrases, newPhrases);
-        for (Phrase phrase : getPhrasesForHeading(heading)) {
+        for (Phrase phrase : phrasesForHeading) {
             String text = phrase.getPhraseAsString();
             if (additions.contains(text)) {
                 phrase.incrementUsageCount();
@@ -412,7 +413,8 @@ public class Assignment implements Serializable {
     }
 
     private void removeZeroUsePhrases(String heading) {
-        List<Phrase> filtered = getPhrasesForHeading(heading)
+        List<Phrase> filtered = phraseCounts
+            .get(heading)
             .stream()
             .filter(Phrase::isUnused)
             .collect(Collectors.toList());
@@ -554,7 +556,7 @@ public class Assignment implements Serializable {
             e.printStackTrace();
         }
         */
-        System.out.println("get phrases for " + heading);
+        System.out.println("get phrases for " + heading + ": " + phraseCounts.get(heading));
         return phraseCounts.get(heading);
     }
 }

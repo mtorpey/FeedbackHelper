@@ -224,7 +224,8 @@ public class FeedbackBox extends JPanel {
                     textArea.setCaretColor(textArea.getForeground()); // TODO: bad idea?
 
                     // Check if we need to insert a new line
-                    if (textArea.getText().isEmpty()) {
+                    String text = textArea.getText();
+                    if (text.isEmpty() || text.endsWith(NEWLINE) && textArea.getCaretPosition() == text.length()) {
                         insertLineMarkerForNewLine();
                     }
                 }
@@ -275,18 +276,23 @@ public class FeedbackBox extends JPanel {
     }
 
     /**
-     * Insert a phrase into the feedback box.
+     * Insert a phrase into the feedback box, at the end.
      *
      * @param phrase The phrase to insert.
      */
     public void insertPhrase(String phrase) {
         // Insert phrase
-        int caretPos = this.textArea.getCaretPosition();
-        this.textArea.insert(phrase + NEWLINE, caretPos);
+        String text = textArea.getText();
+        if (!text.endsWith(lineMarker)) {
+            if (!(text.isEmpty() || text.endsWith(NEWLINE))) {
+                textArea.append(NEWLINE);
+            }
+            textArea.append(lineMarker);
+        }
+        textArea.append(phrase + NEWLINE);
 
         // Save new state
         updateFeedback();
-        insertLineMarkerForNewLine();
     }
 
     /**
