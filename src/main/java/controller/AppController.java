@@ -110,17 +110,6 @@ public class AppController {
     }
 
     /**
-     * Get the first line of a feedback document.
-     *
-     * @param studentId  The student id of the document.
-     * @return The first line of the document if it exists or a default message.
-     */
-    public String getFirstLineFromDocument(StudentId studentId) {
-        // TODO: remove (who needs it?)
-        return "<no preview available>";
-    }
-
-    /**
      * Attempt to add a new student with the given ID to the model.
      *
      * @throws IllegalArgumentException if the input is not a valid student ID.

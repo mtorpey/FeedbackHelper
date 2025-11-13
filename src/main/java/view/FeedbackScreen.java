@@ -188,7 +188,6 @@ public class FeedbackScreen implements AssignmentListener {
             PreviewBox previewBox = new PreviewBox(
                 studentId,
                 assignment.getGrade(studentId),
-                this.controller.getFirstLineFromDocument(studentId), // TODO: remove
                 this::switchStudent
             );
             previewBoxes.add(previewBox);
@@ -350,7 +349,7 @@ public class FeedbackScreen implements AssignmentListener {
         Map<String, String> sections = editorPanel.getSections();
         double grade = editorPanel.getGrade();
         controller.updateFeedbackAndGrade(currentStudent, sections, grade); // This saves to disk.
-        this.previewPanel.updatePreviewBox(currentStudent, controller.getFirstLineFromDocument(currentStudent), grade);
+        this.previewPanel.updatePreviewBoxGrade(currentStudent, grade);
     }
 
     private void addNewStudent() {
@@ -371,11 +370,7 @@ public class FeedbackScreen implements AssignmentListener {
         // Wrap up from last student
         scrollbarValues.put(currentStudent, editorPanelScrollPane.getVerticalScrollBar().getValue());
         saveAssignmentForCurrentStudent();
-        previewPanel.updatePreviewBox(
-            currentStudent,
-            controller.getFirstLineFromDocument(currentStudent),
-            assignment.getGrade(currentStudent)
-        );
+        previewPanel.updatePreviewBoxGrade(currentStudent, assignment.getGrade(currentStudent));
         previewPanel.unhighlightPreviewBox(currentStudent);
 
         // Switch to new student

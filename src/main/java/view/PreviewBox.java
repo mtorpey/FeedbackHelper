@@ -19,7 +19,6 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
     // Instance variables
     private Consumer<StudentId> onSelect;
     private StudentId studentId;
-    private String firstLine;
     private double grade;
     private JTextArea textPane;
     private Border unselectedBorder;
@@ -33,11 +32,10 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
      * @param firstLine A unique line from the student's feedback document.
      * @param onSelect Callback for when this box is selected by the user.
      */
-    public PreviewBox(StudentId studentId, double grade, String firstLine, Consumer<StudentId> onSelect) {
+    public PreviewBox(StudentId studentId, double grade, Consumer<StudentId> onSelect) {
         // Store variables
         this.onSelect = onSelect;
         this.studentId = studentId;
-        this.firstLine = firstLine;
         this.grade = grade;
 
         // Layout components from top to bottom on this panel
@@ -82,8 +80,8 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
         );
 
         // Set the contents of the preview box
-        this.textPane.setText(this.studentId + "\n\n" + this.firstLine + "\n\n" + "Grade: " + this.grade);
         this.add(this.textPane, BorderLayout.CENTER);
+        this.updatePreviewBox();
     }
 
     /**
@@ -99,7 +97,7 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
      * Highlight the preview box.
      */
     public void highlight() {
-        this.textPane.setBorder(this.selectedBorder);
+        this.textPane.setBorder(selectedBorder);
         this.textPane.repaint();
         this.textPane.revalidate();
     }
@@ -108,7 +106,7 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
      * Unhighlight the preview box.
      */
     public void unhighlight() {
-        this.textPane.setBorder(this.unselectedBorder);
+        this.textPane.setBorder(unselectedBorder);
         this.textPane.repaint();
         this.textPane.revalidate();
     }
@@ -124,21 +122,10 @@ public class PreviewBox extends JPanel implements Comparable<PreviewBox> {
     }
 
     /**
-     * Set the unique line in the preview box.
-     *
-     * @param line The unique line to display.
-     */
-    public void setFirstLine(String line) {
-        this.firstLine = line;
-        this.updatePreviewBox();
-    }
-
-    /**
      * Update the preview box.
      */
     private void updatePreviewBox() {
-        this.textPane.setText("");
-        this.textPane.setText(this.studentId + "\n\n" + this.firstLine + "\n\n" + "Grade: " + this.grade);
+        this.textPane.setText(this.studentId + ":   " + this.grade + "   (0/0/0)");
         this.textPane.repaint();
         this.textPane.revalidate();
     }
