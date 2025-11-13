@@ -73,6 +73,16 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
         return this.sectionContents.get(heading);
     }
 
+    /** Get an estimate of the total number of words in this document. */
+    public long getWordCount() {
+        return sectionContents
+            .values()
+            .stream()
+            .map(String::trim)
+            .mapToLong(s -> s.isEmpty() ? 0 : s.split("\\W+").length)
+            .sum();
+    }
+
     /**
      * Get the student ID of the feedback document.
      *

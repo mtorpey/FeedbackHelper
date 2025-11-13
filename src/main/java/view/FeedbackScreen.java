@@ -6,7 +6,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,14 +95,16 @@ public class FeedbackScreen implements AssignmentListener {
      */
     private void setupFeedbackScreen() {
         this.feedbackScreen = new JFrame("Feedback Composition");
-        this.feedbackScreen.addWindowListener(new WindowAdapter() {
+        this.feedbackScreen.addWindowListener(
+            new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     System.out.println("Closing");
                     saveAssignmentForCurrentStudent();
                     // TODO: handle thread
                     System.exit(0);
                 }
-        });
+            }
+        );
         this.feedbackScreen.setSize(1200, 800);
         this.feedbackScreen.setLayout(new BorderLayout());
     }
@@ -182,30 +183,24 @@ public class FeedbackScreen implements AssignmentListener {
             previewAndEditorSplitPane.setLeftComponent(previewPanelScrollPane);
         }
 
-        // Create preview boxes
-        List<PreviewBox> previewBoxes = new ArrayList<PreviewBox>();
-        this.assignment.getStudentIds().forEach(studentId -> {
-            PreviewBox previewBox = new PreviewBox(
-                studentId,
-                assignment.getGrade(studentId),
-                this::switchStudent
-            );
-            previewBoxes.add(previewBox);
-        });
+        previewPanel = new PreviewPanel(this::switchStudent);
+        for (StudentId studentId : assignment.getStudentIds()) {
+            previewPanel.addStudent(studentId, assignment.getGrade(studentId), assignment.getWordCount(studentId));
+        }
 
-        // Make the preview panel scrollable
-        this.previewPanel = new PreviewPanel(previewBoxes);
-        this.previewPanelScrollPane.add(this.previewPanel);
-        this.previewPanelScrollPane.getViewport().setView(this.previewPanel);
-        this.previewPanelScrollPane.getVerticalScrollBar().setUnitIncrement(AppView.SCROLL_SPEED);
-
-        // Set scroll position to top
+        // Set up in scroll pane
+        previewPanelScrollPane.add(this.previewPanel);
+        previewPanelScrollPane.getViewport().setView(this.previewPanel);
+        previewPanelScrollPane.getVerticalScrollBar().setUnitIncrement(AppView.SCROLL_SPEED);
         SwingUtilities.invokeLater(() -> this.previewPanelScrollPane.getVerticalScrollBar().setValue(0));
 
         // Start with the first one open if this is first time setup (they should be sorted)
         if (currentStudent == null) {
-            currentStudent = previewBoxes.get(0).getStudentId();
+            currentStudent = assignment.getStudentIds().get(0);
         }
+
+        // Select the current student
+        previewPanel.selectStudent(currentStudent);
     }
 
     /**
@@ -349,7 +344,8 @@ public class FeedbackScreen implements AssignmentListener {
         Map<String, String> sections = editorPanel.getSections();
         double grade = editorPanel.getGrade();
         controller.updateFeedbackAndGrade(currentStudent, sections, grade); // This saves to disk.
-        this.previewPanel.updatePreviewBoxGrade(currentStudent, grade);
+        previewPanel.updateGrade(currentStudent, grade);
+        previewPanel.updateWordCount(currentStudent, assignment.getWordCount(currentStudent));
     }
 
     private void addNewStudent() {
@@ -370,13 +366,12 @@ public class FeedbackScreen implements AssignmentListener {
         // Wrap up from last student
         scrollbarValues.put(currentStudent, editorPanelScrollPane.getVerticalScrollBar().getValue());
         saveAssignmentForCurrentStudent();
-        previewPanel.updatePreviewBoxGrade(currentStudent, assignment.getGrade(currentStudent));
-        previewPanel.unhighlightPreviewBox(currentStudent);
+        previewPanel.updateGrade(currentStudent, assignment.getGrade(currentStudent));
 
         // Switch to new student
         currentStudent = studentId;
         loadEditorPanelData();
-        previewPanel.highlightPreviewBox(studentId);
+        // previewPanel.selectStudent(studentId); // This should be unnecessary, since the preview panel should have *caused* the change.
 
         // Force scroll bar
         editorPanelScrollPane.getVerticalScrollBar().setValue(scrollbarValues.getOrDefault(studentId, 0));
@@ -417,6 +412,7 @@ public class FeedbackScreen implements AssignmentListener {
 
     private void updateFeedbackSection(String heading, String text) {
         controller.updateFeedbackSection(currentStudent, heading, text);
+        previewPanel.updateWordCount(currentStudent, assignment.getWordCount(currentStudent));
     }
 
     private void insertPhrase(String phrase) {
@@ -435,16 +431,14 @@ public class FeedbackScreen implements AssignmentListener {
     public void handleNewStudent(StudentId studentId) {
         SwingUtilities.invokeLater(() -> {
             setupPreviewPanel();
-            // for (PreviewBox pb : previewBoxes) {
-            //     this.previewPanel.unhighlightPreviewBox(pb.getHeading());
-            // }
+            previewPanel.selectStudent(studentId);
             switchStudent(studentId);
         });
     }
 
     @Override
     public void handleGradeUpdate(StudentId studentId, double grade) {
-        SwingUtilities.invokeLater(() -> previewPanel.updatePreviewBoxGrade(studentId, grade));
+        SwingUtilities.invokeLater(() -> previewPanel.updateGrade(studentId, grade));
     }
 
     @Override

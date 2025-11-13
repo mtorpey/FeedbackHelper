@@ -1,80 +1,115 @@
 package view;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Consumer;
 
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.ListSelectionModel;
 
 import model.StudentId;
 
 /**
  * Preview Panel Class.
  */
-public class PreviewPanel extends JPanel {
+public class PreviewPanel extends JList<String> {
 
-    // Instance variables
-    private List<PreviewBox> previewBoxes;
-    private Map<StudentId, PreviewBox> headingAndPreviewBoxMap;
+    private DefaultListModel<String> listModel;
+
+    private List<StudentId> students;
+    private List<Double> grades;
+    private List<Long> wordCounts;
 
     /**
      * Constructor.
      *
-     * @param previewBoxes The list of preview boxes to display on the preview panel.
+     * @param onSelectStudent Callback for when a student is selected.
      */
-    public PreviewPanel(List<PreviewBox> previewBoxes) {
-        // Store the preview boxes and keep a map of them for easy access
-        this.previewBoxes = previewBoxes;
-        this.headingAndPreviewBoxMap = new HashMap<>();
-        previewBoxes.forEach(previewBox -> {
-            this.headingAndPreviewBoxMap.put(previewBox.getStudentId(), previewBox);
+    public PreviewPanel(Consumer<StudentId> onSelectStudent) {
+        // Do JList stuff
+        super();
+        // Set up the list model
+        listModel = new DefaultListModel<String>();
+        setModel(listModel);
+        this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        // Set up data structures for the information that might be displayed
+        students = new ArrayList<>();
+        grades = new ArrayList<>();
+        wordCounts = new ArrayList<>();
+
+        // Handle list selection using the callback
+        addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting()) {
+                onSelectStudent.accept(students.get(getSelectedIndex()));
+            }
         });
 
-        // Set layout top to bottom
-        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-
-        // Setup the preview boxes and make the panel visible
-        setupPreviewBoxes();
+        // Display!
         this.setVisible(true);
     }
 
-    /**
-     * Setup the preview boxes.
-     */
-    private void setupPreviewBoxes() {
-        // Add all the boxes and highlight top preview box
-        this.previewBoxes.forEach(this::add);
-        this.previewBoxes.get(0).highlight();
+    /** Add the given student to the list. */
+    public void addStudent(StudentId studentId, double grade, long wordCount) {
+        // Find insertion point
+        int pos = -Collections.binarySearch(students, studentId) - 1;
+        System.out.println("pos is " + pos + ", there are " + students.size() + " students.");
+
+        // Insert into all three lists
+        students.add(pos, studentId);
+        grades.add(pos, grade);
+        wordCounts.add(pos, wordCount);
+
+        // Add the item to the visible list
+        listModel.add(pos, entryString(pos));
+    }
+
+    private String entryString(int pos) {
+        // Student ID
+        StringBuilder out = new StringBuilder(students.get(pos).toString());
+
+        // Grade
+        double grade = grades.get(pos);
+        if (grade > 0.0) {
+            out.append(" – " + grade);
+        }
+
+        // Word count
+        long wordCount = wordCounts.get(pos);
+        if (wordCount > 0) {
+            out.append(" – " + wordCounts.get(pos) + " words");
+        }
+        return out.toString();
+    }
+
+    /** Selects the given student in the list, without triggering any events. */
+    public void selectStudent(StudentId studentId) {
+        setSelectedIndex(Collections.binarySearch(students, studentId));
     }
 
     /**
-     * Highlight a given preview box.
-     *
-     * @param heading The heading of the preview box to highlight.
-     */
-    public void highlightPreviewBox(StudentId heading) {
-        this.headingAndPreviewBoxMap.get(heading).highlight();
-    }
-
-    /**
-     * Unhighlight a given preview box.
-     *
-     * @param heading The heading of the preview box to unhighlight.
-     */
-    public void unhighlightPreviewBox(StudentId heading) {
-        this.headingAndPreviewBoxMap.get(heading).unhighlight();
-    }
-
-    /**
-     * Update the contents of a given preview box.
+     * Update a student's grade in the display.
      *
      * @param heading The heading of the preview box to update.
-     * @param line    The new line text to display.
+     * @param grade The new grade
      */
-    public void updatePreviewBoxGrade(StudentId heading, double grade) {
-        this.headingAndPreviewBoxMap.get(heading).setGrade(grade);
-        this.revalidate();
-        this.repaint();
+    public void updateGrade(StudentId studentId, double grade) {
+        int pos = Collections.binarySearch(students, studentId);
+        grades.set(pos, grade);
+        listModel.set(pos, entryString(pos));
+    }
+
+    /**
+     * Update a student's word count in the display.
+     *
+     * @param heading The heading of the preview box to update.
+     * @param wordCount The new word count.
+     */
+    public void updateWordCount(StudentId studentId, long wordCount) {
+        int pos = Collections.binarySearch(students, studentId);
+        wordCounts.set(pos, wordCount);
+        listModel.set(pos, entryString(pos));
     }
 }

@@ -532,6 +532,11 @@ public class Assignment implements Serializable {
         return feedbackDocuments.get(studentId).getSectionContents(heading);
     }
 
+    /** Get an estimate of the total number of words used in feedback for this student. */
+    public long getWordCount(StudentId studentId) {
+        return feedbackDocuments.get(studentId).getWordCount();
+    }
+
     public double getGrade(StudentId studentId) {
         return feedbackDocuments.get(studentId).getGrade();
     }
