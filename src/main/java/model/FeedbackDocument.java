@@ -14,6 +14,9 @@ import java.util.Map;
  */
 public class FeedbackDocument implements Serializable, Comparable<FeedbackDocument> {
 
+    /** Last set v5.0 */
+    private static final long serialVersionUID = 4343671957801725532L;
+
     // Instance variables
     private StudentId studentId;
     private double grade;
@@ -73,13 +76,12 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
         return this.sectionContents.get(heading);
     }
 
-    /** Get an estimate of the total number of words in this document. */
-    public long getWordCount() {
+    /** Get the total number of characters in this document. */
+    public long length() {
         return sectionContents
             .values()
             .stream()
-            .map(String::trim)
-            .mapToLong(s -> s.isEmpty() ? 0 : s.split("\\W+").length)
+            .mapToLong(String::length)
             .sum();
     }
 

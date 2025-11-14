@@ -32,7 +32,12 @@ import java.util.stream.Stream;
  */
 public class Assignment implements Serializable {
 
-    private static final long serialVersionUID = 1200109309800080100L;
+    /**
+     * Verification for deserialisation, which should change in releases with breaking changes.
+     *
+     * Last set v5.0
+     */
+    private static final long serialVersionUID = 5215430117083566496L;
 
     // Name of file used when exporting grades.
     private static final String GRADES_FILENAME = "grades.csv";
@@ -532,9 +537,9 @@ public class Assignment implements Serializable {
         return feedbackDocuments.get(studentId).getSectionContents(heading);
     }
 
-    /** Get an estimate of the total number of words used in feedback for this student. */
-    public long getWordCount(StudentId studentId) {
-        return feedbackDocuments.get(studentId).getWordCount();
+    /** Get the total number of characters used in feedback for this student. */
+    public long getFeedbackLength(StudentId studentId) {
+        return feedbackDocuments.get(studentId).length();
     }
 
     public double getGrade(StudentId studentId) {
