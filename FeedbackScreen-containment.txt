@@ -10,13 +10,6 @@ FeedbackScreen
         JScrollPane editorPanelScrollPane
           EditorPanel
             EditingPopupMenu
-      JSplitPane phrasesAndPhraseEntrySplitPane
-        PhrasesSection
-          JTabbedPane
-            JScrollPane*
-              PhrasesPanel
-        PhraseEntryBox
-
       PhrasesSection
         JTabbedPane
           PhrasesTab*

@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.util.function.Consumer;
 
@@ -35,6 +36,7 @@ public class PhraseEntryBox extends JPanel {
         // Set border and visibility
         box.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
         box.setVisible(true);
+        box.setPreferredSize(new Dimension(300, 200));
 
         return box;
     }
