@@ -12,5 +12,14 @@ FeedbackScreen
             EditingPopupMenu
       JSplitPane phrasesAndPhraseEntrySplitPane
         PhrasesSection
-          PhrasesPanel*
+          JTabbedPane
+            JScrollPane*
+              PhrasesPanel
         PhraseEntryBox
+
+      PhrasesSection
+        JTabbedPane
+          PhrasesTab*
+            JScrollPane
+              PhrasesPanel
+            PhraseEntryBox?

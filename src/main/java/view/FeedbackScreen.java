@@ -55,7 +55,6 @@ public class FeedbackScreen implements AssignmentListener {
     private JScrollPane editorPanelScrollPane;
     private EditorPanel editorPanel;
     private EditingPopupMenu editingPopupMenu;
-    private JSplitPane phrasesAndPhraseEntrySplitPane;
     private PhrasesSection phrasesSection;
     private PhraseEntryBox phraseEntryBox;
     private GridBagConstraints gridBagConstraints;
@@ -78,10 +77,9 @@ public class FeedbackScreen implements AssignmentListener {
         screen.setupEditorPanel();
         screen.setupPhrasesSection();
         screen.setupPreviewAndEditorSplitPane();
-        screen.setupPhrasesAndPhraseEntrySplitPane();
         screen.setupMenuBar();
         screen.positionEditorSplitPane();
-        screen.positionPhrasesSplitPane();
+        screen.positionPhrasesSection();
 
         // Add the main panel to the screen and set visibility
         screen.feedbackScreen.add(screen.feedbackScreenPanel, BorderLayout.CENTER);
@@ -125,25 +123,6 @@ public class FeedbackScreen implements AssignmentListener {
     }
 
     /**
-     * Setup the phrases section and phrase entry box.
-     */
-    private void setupPhrasesAndPhraseEntrySplitPane() {
-        // Submitting a custom phrase adds it via the controller
-        this.phraseEntryBox = PhraseEntryBox.create(text -> controller.addCustomPhrase(currentHeading, text));
-        this.phraseEntryBox.disablePhraseEntryBox();
-        this.phrasesAndPhraseEntrySplitPane = new JSplitPane(
-            JSplitPane.VERTICAL_SPLIT,
-            this.phrasesSection,
-            this.phraseEntryBox
-        );
-        this.phrasesAndPhraseEntrySplitPane.setOneTouchExpandable(false);
-        this.phrasesAndPhraseEntrySplitPane.setDividerLocation(600);
-        this.phrasesAndPhraseEntrySplitPane.setMaximumSize(new Dimension(300, 800));
-        this.phrasesAndPhraseEntrySplitPane.setPreferredSize(new Dimension(300, 800));
-        this.phrasesAndPhraseEntrySplitPane.setMinimumSize(new Dimension(300, 800));
-    }
-
-    /**
      * Setup the phrase panels and the phrases section.
      */
     private void setupPhrasesSection() {
@@ -154,8 +133,8 @@ public class FeedbackScreen implements AssignmentListener {
         PhrasesPanel frequentlyUsedPhrasesPanel = PhrasesPanel.create(PhraseType.FREQUENTLY_USED, this::insertPhrase);
 
         // Add panels
-        this.phrasesSection.addPhrasesPanel(customPhrasesPanel);
-        this.phrasesSection.addPhrasesPanel(frequentlyUsedPhrasesPanel);
+        this.phrasesSection.addPhrasesTab(customPhrasesPanel, text -> controller.addCustomPhrase(currentHeading, text));
+        this.phrasesSection.addPhrasesTab(frequentlyUsedPhrasesPanel, null);
 
         // Start on frequently used pane
         this.phrasesSection.setHighlightedPane(1);
@@ -303,11 +282,11 @@ public class FeedbackScreen implements AssignmentListener {
     /**
      * Position the phrases split pane with the gridbag constraints.
      */
-    private void positionPhrasesSplitPane() {
+    private void positionPhrasesSection() {
         this.gridBagConstraints.fill = GridBagConstraints.BOTH;
         this.gridBagConstraints.gridx = 2;
         this.gridBagConstraints.gridy = 0;
-        this.feedbackScreenPanel.add(this.phrasesAndPhraseEntrySplitPane, this.gridBagConstraints);
+        this.feedbackScreenPanel.add(this.phrasesSection, this.gridBagConstraints);
     }
 
     /**
@@ -398,11 +377,6 @@ public class FeedbackScreen implements AssignmentListener {
 
         // Change to the new heading
         currentHeading = heading;
-
-        // Old checking code, might be obselete
-        if (this.phraseEntryBox == null) {
-            handleError("No phrase entry box found!", new Exception("This should never happen."));
-        }
 
         // Clear phrases
         phrasesSection.resetPhrasesPanels();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -19,8 +20,8 @@ import model.Phrase;
 public class PhrasesSection extends JPanel implements SearchBox.Listener {
 
     // Instance variables
-    private JTabbedPane tabbedPane;
     private SearchBox searchBox;
+    private JTabbedPane tabbedPane;
     private List<JScrollPane> phrasesPanelScrollPanes;
     private Map<PhraseType, PhrasesPanel> phrasesPanelsByType;
 
@@ -55,12 +56,10 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
      *
      * @param phrasesPanel The phrases panel to add.
      */
-    public void addPhrasesPanel(PhrasesPanel phrasesPanel) {
-        JScrollPane phrasesPanelScrollPane = new JScrollPane(phrasesPanel);
-        phrasesPanelScrollPane.getVerticalScrollBar().setUnitIncrement(AppView.SCROLL_SPEED);
-        this.phrasesPanelScrollPanes.add(phrasesPanelScrollPane);
+    public void addPhrasesTab(PhrasesPanel phrasesPanel, Consumer<String> onNewCustomPhrase) {
+        PhrasesTab tab = PhrasesTab.create(phrasesPanel, onNewCustomPhrase);
         this.phrasesPanelsByType.put(phrasesPanel.getPhraseType(), phrasesPanel);
-        this.tabbedPane.addTab(phrasesPanel.getPhraseType().getPhraseTypeAsString(), phrasesPanelScrollPane);
+        this.tabbedPane.addTab(phrasesPanel.getPhraseType().getPhraseTypeAsString(), tab);
         this.update();
     }
 
