@@ -7,7 +7,6 @@ FeedbackScreen
       JSplitPane previewAndEditorSplitPane
         JScrollPane previewPanelScrollPane
           PreviewPanel
-            PreviewBox*
         JScrollPane editorPanelScrollPane
           EditorPanel
             EditingPopupMenu

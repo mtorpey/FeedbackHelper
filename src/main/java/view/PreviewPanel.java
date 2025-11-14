@@ -20,7 +20,7 @@ public class PreviewPanel extends JList<String> {
 
     private List<StudentId> students;
     private List<Double> grades;
-    private List<Long> wordCounts;
+    private List<Long> charCounts;
 
     /**
      * Constructor.
@@ -38,7 +38,7 @@ public class PreviewPanel extends JList<String> {
         // Set up data structures for the information that might be displayed
         students = new ArrayList<>();
         grades = new ArrayList<>();
-        wordCounts = new ArrayList<>();
+        charCounts = new ArrayList<>();
 
         // Handle list selection using the callback
         addListSelectionListener(e -> {
@@ -52,7 +52,7 @@ public class PreviewPanel extends JList<String> {
     }
 
     /** Add the given student to the list. */
-    public void addStudent(StudentId studentId, double grade, long wordCount) {
+    public void addStudent(StudentId studentId, double grade, long charCount) {
         // Find insertion point
         int pos = -Collections.binarySearch(students, studentId) - 1;
         System.out.println("pos is " + pos + ", there are " + students.size() + " students.");
@@ -60,7 +60,7 @@ public class PreviewPanel extends JList<String> {
         // Insert into all three lists
         students.add(pos, studentId);
         grades.add(pos, grade);
-        wordCounts.add(pos, wordCount);
+        charCounts.add(pos, charCount);
 
         // Add the item to the visible list
         listModel.add(pos, entryString(pos));
@@ -76,10 +76,10 @@ public class PreviewPanel extends JList<String> {
             out.append(" – " + grade);
         }
 
-        // Word count
-        long wordCount = wordCounts.get(pos);
-        if (wordCount > 0) {
-            out.append(" – " + wordCounts.get(pos) + " words");
+        // Character count
+        long count = charCounts.get(pos);
+        if (count > 0) {
+            out.append(" – " + count + " chars");
         }
         return out.toString();
     }
@@ -102,14 +102,14 @@ public class PreviewPanel extends JList<String> {
     }
 
     /**
-     * Update a student's word count in the display.
+     * Update a student's character count in the display.
      *
      * @param heading The heading of the preview box to update.
-     * @param wordCount The new word count.
+     * @param charCount The new character count.
      */
-    public void updateWordCount(StudentId studentId, long wordCount) {
+    public void updateLength(StudentId studentId, long charCount) {
         int pos = Collections.binarySearch(students, studentId);
-        wordCounts.set(pos, wordCount);
+        charCounts.set(pos, charCount);
         listModel.set(pos, entryString(pos));
     }
 }

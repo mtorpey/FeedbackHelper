@@ -185,7 +185,7 @@ public class FeedbackScreen implements AssignmentListener {
 
         previewPanel = new PreviewPanel(this::switchStudent);
         for (StudentId studentId : assignment.getStudentIds()) {
-            previewPanel.addStudent(studentId, assignment.getGrade(studentId), assignment.getWordCount(studentId));
+            previewPanel.addStudent(studentId, assignment.getGrade(studentId), assignment.getFeedbackLength(studentId));
         }
 
         // Set up in scroll pane
@@ -345,7 +345,7 @@ public class FeedbackScreen implements AssignmentListener {
         double grade = editorPanel.getGrade();
         controller.updateFeedbackAndGrade(currentStudent, sections, grade); // This saves to disk.
         previewPanel.updateGrade(currentStudent, grade);
-        previewPanel.updateWordCount(currentStudent, assignment.getWordCount(currentStudent));
+        previewPanel.updateLength(currentStudent, assignment.getFeedbackLength(currentStudent));
     }
 
     private void addNewStudent() {
@@ -412,7 +412,7 @@ public class FeedbackScreen implements AssignmentListener {
 
     private void updateFeedbackSection(String heading, String text) {
         controller.updateFeedbackSection(currentStudent, heading, text);
-        previewPanel.updateWordCount(currentStudent, assignment.getWordCount(currentStudent));
+        previewPanel.updateLength(currentStudent, assignment.getFeedbackLength(currentStudent));
     }
 
     private void insertPhrase(String phrase) {
