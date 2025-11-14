@@ -16,10 +16,7 @@ public class PhrasesTab extends JSplitPane {
      * @param phrasesPanel The phrases panel to include at the top.
      * @param onNewCustomPhrase Callback for when the user submits a new custom phrase (may be null).
      */
-    public static PhrasesTab create(
-        PhrasesPanel phrasesPanel,
-        Consumer<String> onNewCustomPhrase
-    ) {
+    public static PhrasesTab create(PhrasesPanel phrasesPanel, Consumer<String> onNewCustomPhrase) {
         PhrasesTab tab = new PhrasesTab();
         tab.setOrientation(JSplitPane.VERTICAL_SPLIT);
         tab.removeAll();

@@ -27,7 +27,7 @@ public class PhraseEntryBox extends JPanel {
      */
     public static PhraseEntryBox create(Consumer<String> onSubmit) {
         var box = new PhraseEntryBox(onSubmit);
-        
+
         // Setup components
         box.setLayout(new BorderLayout());
         box.setupTextArea();

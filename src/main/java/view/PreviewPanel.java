@@ -29,7 +29,7 @@ public class PreviewPanel extends JList<String> {
      */
     public static PreviewPanel create(Consumer<StudentId> onSelectStudent) {
         var panel = new PreviewPanel();
-        
+
         // Set up the list model
         panel.listModel = new DefaultListModel<String>();
         panel.setModel(panel.listModel);

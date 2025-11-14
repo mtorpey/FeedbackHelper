@@ -92,7 +92,7 @@ public class FeedbackScreen implements AssignmentListener {
     private FeedbackScreen(AppController controller) {
         this.controller = controller;
     }
-    
+
     /**
      * Setup the feedback screen.
      */

@@ -86,7 +86,7 @@ public class CreateAssignmentScreen extends JFrame {
      */
     public static CreateAssignmentScreen create(AppController controller) {
         CreateAssignmentScreen screen = new CreateAssignmentScreen(controller);
-        
+
         // Setup components
         screen.setLayout(new BorderLayout(SPACING, SPACING));
         screen.setupFrameTitle();
@@ -108,8 +108,8 @@ public class CreateAssignmentScreen extends JFrame {
     }
 
     /**
-    * Setup the title label at the top of the frame.
-    */
+     * Setup the title label at the top of the frame.
+     */
     public void setupFrameTitle() {
         JLabel title = new JLabel("Assignment Configuration", JLabel.CENTER);
         title.setFont(Configuration.getTitleFont());

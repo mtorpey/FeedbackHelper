@@ -59,7 +59,7 @@ public class FeedbackBox extends JPanel {
         BiConsumer<String, String> onUpdateText
     ) {
         FeedbackBox box = new FeedbackBox(heading, lineMarker, onSwitchSection, onEditHeading, onUpdateText);
-        
+
         // Setup components
         box.setupPanel();
         box.setupTextArea();
@@ -237,7 +237,9 @@ public class FeedbackBox extends JPanel {
 
                     // Check if we need to insert a new line
                     String text = textArea.getText();
-                    if (text.isEmpty() || (!text.endsWith(lineMarker) && textArea.getCaretPosition() == text.length())) {
+                    if (
+                        text.isEmpty() || (!text.endsWith(lineMarker) && textArea.getCaretPosition() == text.length())
+                    ) {
                         insertLineMarkerForNewLine();
                     }
                 }

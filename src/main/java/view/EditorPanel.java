@@ -50,11 +50,11 @@ public class EditorPanel extends JPanel {
         Consumer<Double> onUpdateGrade
     ) {
         EditorPanel panel = new EditorPanel(titleText, headings);
-        
+
         // Setup data structures
         panel.feedbackBoxes = new ArrayList<FeedbackBox>();
         panel.headingAndFeedbackBox = new HashMap<String, FeedbackBox>();
-        
+
         // Layout components from top to bottom
         panel.setLayout(new BorderLayout());
         panel.setupTitle();
@@ -120,7 +120,13 @@ public class EditorPanel extends JPanel {
         BiConsumer<String, String> onUpdateText
     ) {
         this.headings.forEach(heading -> {
-            FeedbackBox feedbackBox = FeedbackBox.create(heading, lineMarker, onSwitchSection, onEditHeading, onUpdateText);
+            FeedbackBox feedbackBox = FeedbackBox.create(
+                heading,
+                lineMarker,
+                onSwitchSection,
+                onEditHeading,
+                onUpdateText
+            );
             this.feedbackBoxes.add(feedbackBox);
             this.headingAndFeedbackBox.put(heading, feedbackBox);
             this.feedbackBoxesPanel.add(feedbackBox);

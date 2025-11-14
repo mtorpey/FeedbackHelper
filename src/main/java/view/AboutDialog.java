@@ -47,7 +47,7 @@ public class AboutDialog extends JDialog {
      */
     public static AboutDialog create(JFrame parent) {
         AboutDialog dialog = new AboutDialog(parent);
-        
+
         // Create the dialog components
         JPanel dialogPanel = new JPanel(new BorderLayout());
         dialogPanel.setBorder(BorderFactory.createEmptyBorder(8, 16, 24, 16));

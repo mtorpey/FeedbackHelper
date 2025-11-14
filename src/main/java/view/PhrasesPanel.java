@@ -26,10 +26,7 @@ public class PhrasesPanel extends JPanel {
      * @param phraseType The type of phrases to show on the panel.
      * @param onInsertPhrase Callback for when the user wishes to insert a phrase.
      */
-    public static PhrasesPanel create(
-        PhraseType phraseType,
-        Consumer<String> onInsertPhrase
-    ) {
+    public static PhrasesPanel create(PhraseType phraseType, Consumer<String> onInsertPhrase) {
         // Create panel and data structure
         var panel = new PhrasesPanel(phraseType, onInsertPhrase);
         panel.phraseBoxes = new LinkedList<PhraseBox>();

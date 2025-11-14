@@ -78,11 +78,7 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
 
     /** Get the total number of characters in this document. */
     public long length() {
-        return sectionContents
-            .values()
-            .stream()
-            .mapToLong(String::length)
-            .sum();
+        return sectionContents.values().stream().mapToLong(String::length).sum();
     }
 
     /**
