@@ -25,28 +25,28 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
     private Map<PhraseType, PhrasesPanel> phrasesPanelsByType;
 
     /**
-     * Constructor.
-     *
-     * No controller is passed as an argument, because it seems this object
-     * itself doesn't use it. This could be readded.
+     * Create and return a new object of this class, including setup.
      */
-    public PhrasesSection() {
-        this.tabbedPane = new JTabbedPane();
-        this.phrasesPanelScrollPanes = new ArrayList<>();
-        this.phrasesPanelsByType = new HashMap<PhraseType, PhrasesPanel>();
+    public static PhrasesSection create() {
+        var phrasesSection = new PhrasesSection();
+        phrasesSection.tabbedPane = new JTabbedPane();
+        phrasesSection.phrasesPanelScrollPanes = new ArrayList<>();
+        phrasesSection.phrasesPanelsByType = new HashMap<PhraseType, PhrasesPanel>();
 
         // Set layout, pane and visibility
-        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        this.setupSearchBox();
-        this.add(this.tabbedPane);
-        this.setVisible(true);
+        phrasesSection.setLayout(new BoxLayout(phrasesSection, BoxLayout.PAGE_AXIS));
+        phrasesSection.setupSearchBox();
+        phrasesSection.add(phrasesSection.tabbedPane);
+        phrasesSection.setVisible(true);
+
+        return phrasesSection;
     }
 
     /**
      * Add a search box that can be used to filter phrases.
      */
     private void setupSearchBox() {
-        this.searchBox = new SearchBox(this);
+        this.searchBox = SearchBox.create(this);
         this.add(searchBox);
     }
 

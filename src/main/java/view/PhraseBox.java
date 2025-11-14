@@ -29,26 +29,31 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
     private static ImageIcon insertIcon = loadInsertIcon();
 
     /**
-     * Constructor.
+     * Create and return a new object of this class, including setup.
      *
      * @param phrase     The phrase to display.
-     * @param usageCount The usage count of the phrase.
      * @param onInsertPhrase Callback for when the user wishes to insert a phrase.
      */
-    public PhraseBox(Phrase phrase, Consumer<String> onInsertPhrase) {
+    public static PhraseBox create(Phrase phrase, Consumer<String> onInsertPhrase) {
+        var box = new PhraseBox(phrase);
+
+        // Set up some components
+        box.phraseTextArea = new JTextArea();
+        box.insertButton = new JButton(insertIcon);
+        box.setLayout(new BorderLayout());
+        box.setupInsertButton(onInsertPhrase);
+        box.setupPhraseTextArea();
+        box.setupUsageCountLabel();
+
+        // Arrange for viewing
+        box.setMaximumSize(new Dimension(300, 100));
+        box.setVisible(true);
+
+        return box;
+    }
+
+    private PhraseBox(Phrase phrase) {
         this.phrase = phrase;
-        this.phraseTextArea = new JTextArea();
-
-        this.insertButton = new JButton(insertIcon);
-
-        this.setLayout(new BorderLayout());
-
-        setupInsertButton(onInsertPhrase);
-        setupPhraseTextArea();
-        setupUsageCountLabel();
-
-        this.setMaximumSize(new Dimension(300, 100));
-        this.setVisible(true);
     }
 
     /**

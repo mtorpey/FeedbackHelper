@@ -20,21 +20,27 @@ public class PhraseEntryBox extends JPanel {
     private JButton submitButton;
 
     /**
-     * Constructor.
+     * Create and return a new object of this class, including setup.
      *
      * @param onSubmit Callback for submitting a new phrase.
      */
-    public PhraseEntryBox(Consumer<String> onSubmit) {
-        this.onSubmit = onSubmit;
-
+    public static PhraseEntryBox create(Consumer<String> onSubmit) {
+        var box = new PhraseEntryBox(onSubmit);
+        
         // Setup components
-        this.setLayout(new BorderLayout());
-        this.setupTextArea();
-        this.setupSubmitButton();
+        box.setLayout(new BorderLayout());
+        box.setupTextArea();
+        box.setupSubmitButton();
 
         // Set border and visibility
-        this.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
-        this.setVisible(true);
+        box.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
+        box.setVisible(true);
+
+        return box;
+    }
+
+    private PhraseEntryBox(Consumer<String> onSubmit) {
+        this.onSubmit = onSubmit;
     }
 
     /**

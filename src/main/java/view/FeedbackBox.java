@@ -18,8 +18,6 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import controller.AppController;
-
 /**
  * Feedback Box Class.
  */
@@ -38,47 +36,61 @@ public class FeedbackBox extends JPanel {
     private JTextArea textArea;
 
     // Data instances
-    private AppController controller;
     private String heading;
     private String lineMarker;
     private Consumer<String> onSwitchSection;
+    private BiConsumer<String, String> onEditHeading;
     private BiConsumer<String, String> onUpdateText;
 
     /**
-     * Constructor.
+     * Create and return a new object of this class, including setup.
      *
      * @param heading The heading the feedback box is for.
-     * @param onSwitchSection Callback to be invoked when user selects a new section
-     * @param onUpdateText Callback to be invoked when the text is updated by the user
+     * @param lineMarker The bullet point string to appear at the beginning of a new line.
+     * @param onSwitchSection Callback to be invoked when user selects a new section.
+     * @param onEditHeading Callback to be invoked when user edits a heading.
+     * @param onUpdateText Callback to be invoked when the text is updated by the user.
      */
-    public FeedbackBox(
-        AppController controller,
+    public static FeedbackBox create(
         String heading,
         String lineMarker,
         Consumer<String> onSwitchSection,
+        BiConsumer<String, String> onEditHeading,
         BiConsumer<String, String> onUpdateText
     ) {
-        // Store heading
-        this.controller = controller;
+        FeedbackBox box = new FeedbackBox(heading, lineMarker, onSwitchSection, onEditHeading, onUpdateText);
+        
+        // Setup components
+        box.setupPanel();
+        box.setupTextArea();
+
+        // Layout components from top to bottom on this panel
+        box.setLayout(new BorderLayout());
+
+        // Add components to the panel
+        box.add(box.headingPanel, BorderLayout.PAGE_START);
+        box.add(box.textArea, BorderLayout.CENTER);
+
+        // Add some padding to the bottom on the panel and make it visible
+        box.setBorder(BorderCreator.createEmptyBorderLeavingTop(BorderCreator.PADDING_20_PIXELS));
+        box.setVisible(true);
+
+        return box;
+    }
+
+    private FeedbackBox(
+        String heading,
+        String lineMarker,
+        Consumer<String> onSwitchSection,
+        BiConsumer<String, String> onEditHeading,
+        BiConsumer<String, String> onUpdateText
+    ) {
+        super();
         this.heading = heading;
         this.lineMarker = lineMarker;
         this.onSwitchSection = onSwitchSection;
+        this.onEditHeading = onEditHeading;
         this.onUpdateText = onUpdateText;
-
-        // Setup components
-        setupPanel();
-        setupTextArea();
-
-        // Layout components from top to bottom on this panel
-        this.setLayout(new BorderLayout());
-
-        // Add components to the panel
-        this.add(this.headingPanel, BorderLayout.PAGE_START);
-        this.add(this.textArea, BorderLayout.CENTER);
-
-        // Add some padding to the bottom on the panel and make it visible
-        this.setBorder(BorderCreator.createEmptyBorderLeavingTop(BorderCreator.PADDING_20_PIXELS));
-        this.setVisible(true);
     }
 
     /**
@@ -169,7 +181,7 @@ public class FeedbackBox extends JPanel {
                     // Change heading
                     setHeading(newHeading);
                     // Save new heading
-                    controller.editHeading(currentHeading, newHeading);
+                    onEditHeading.accept(currentHeading, newHeading);
                 }
             } else {
                 edit.accept(true);

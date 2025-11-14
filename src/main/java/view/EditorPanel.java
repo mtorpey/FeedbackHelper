@@ -16,7 +16,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import controller.AppController;
 import model.StudentId;
 
 /**
@@ -25,7 +24,6 @@ import model.StudentId;
 public class EditorPanel extends JPanel {
 
     // Instance variables
-    private final AppController controller;
     private String titleText;
     private JLabel titleLabel;
     private JPanel feedbackBoxesPanel;
@@ -35,37 +33,44 @@ public class EditorPanel extends JPanel {
     private Map<String, FeedbackBox> headingAndFeedbackBox;
 
     /**
-     * Constructor.
+     * Create and return a new object of this class, including setup.
      *
-     * @param controller The controller.
-     * @param titleText  The title text for the editor panel.
-     * @param headings   The headings of the feedback boxes to create.
-     * @param onSwitchSection Callback to be invoked when user selects a new section
+     * @param titleText The title text for the editor panel.
+     * @param headings The headings of the feedback boxes to create.
+     * @param onSwitchSection Callback to be invoked when user selects a new section.
+     * @param onUpdateText Callback to be invoked when user modifies text in a section.
      */
-    public EditorPanel(
-        AppController controller,
+    public static EditorPanel create(
         String titleText,
         List<String> headings,
         String lineMarker,
         Consumer<String> onSwitchSection,
-        BiConsumer<String, String> onUpdateText
+        BiConsumer<String, String> onEditHeading,
+        BiConsumer<String, String> onUpdateText,
+        Consumer<Double> onUpdateGrade
     ) {
-        // Set data variables
-        this.titleText = titleText;
-        this.controller = controller;
-        this.feedbackBoxes = new ArrayList<FeedbackBox>();
-        this.headings = headings;
-        this.headingAndFeedbackBox = new HashMap<String, FeedbackBox>();
-
+        EditorPanel panel = new EditorPanel(titleText, headings);
+        
+        // Setup data structures
+        panel.feedbackBoxes = new ArrayList<FeedbackBox>();
+        panel.headingAndFeedbackBox = new HashMap<String, FeedbackBox>();
+        
         // Layout components from top to bottom
-        this.setLayout(new BorderLayout());
-        this.setupTitle();
-        this.setupFeedbackBoxesPanel();
-        this.setupFeedbackBoxes(lineMarker, onSwitchSection, onUpdateText);
-        this.setupGradeBox();
+        panel.setLayout(new BorderLayout());
+        panel.setupTitle();
+        panel.setupFeedbackBoxesPanel();
+        panel.setupFeedbackBoxes(lineMarker, onSwitchSection, onEditHeading, onUpdateText);
+        panel.setupGradeBox(onUpdateGrade);
 
         // Set visibility
-        this.setVisible(true);
+        panel.setVisible(true);
+
+        return panel;
+    }
+
+    private EditorPanel(String titleText, List<String> headings) {
+        this.titleText = titleText;
+        this.headings = headings;
     }
 
     /**
@@ -79,8 +84,8 @@ public class EditorPanel extends JPanel {
     /**
      * Setup the grade box.
      */
-    private void setupGradeBox() {
-        this.gradeBox = new GradeBox(this.controller);
+    private void setupGradeBox(Consumer<Double> onUpdateGrade) {
+        this.gradeBox = GradeBox.create(onUpdateGrade);
         this.add(this.gradeBox, BorderLayout.PAGE_END);
     }
 
@@ -111,10 +116,11 @@ public class EditorPanel extends JPanel {
     private void setupFeedbackBoxes(
         String lineMarker,
         Consumer<String> onSwitchSection,
+        BiConsumer<String, String> onEditHeading,
         BiConsumer<String, String> onUpdateText
     ) {
         this.headings.forEach(heading -> {
-            FeedbackBox feedbackBox = new FeedbackBox(controller, heading, lineMarker, onSwitchSection, onUpdateText);
+            FeedbackBox feedbackBox = FeedbackBox.create(heading, lineMarker, onSwitchSection, onEditHeading, onUpdateText);
             this.feedbackBoxes.add(feedbackBox);
             this.headingAndFeedbackBox.put(heading, feedbackBox);
             this.feedbackBoxesPanel.add(feedbackBox);
@@ -159,7 +165,6 @@ public class EditorPanel extends JPanel {
     /** Update this panel to display the given student ID. */
     public void setStudentId(StudentId studentId) {
         setTitleLabel("Document for: " + studentId);
-        gradeBox.setStudentId(studentId);
 
         // Refresh the UI
         revalidate();

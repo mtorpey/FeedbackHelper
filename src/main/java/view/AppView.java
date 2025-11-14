@@ -35,7 +35,7 @@ public class AppView {
     public void start() {
         installThirdPartyThemes();
         applyUserTheme();
-        new HomeScreen(controller);
+        HomeScreen.create(controller);
     }
 
     /**

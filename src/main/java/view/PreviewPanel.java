@@ -23,32 +23,34 @@ public class PreviewPanel extends JList<String> {
     private List<Long> charCounts;
 
     /**
-     * Constructor.
+     * Create and return a new object of this class, including setup.
      *
      * @param onSelectStudent Callback for when a student is selected.
      */
-    public PreviewPanel(Consumer<StudentId> onSelectStudent) {
-        // Do JList stuff
-        super();
+    public static PreviewPanel create(Consumer<StudentId> onSelectStudent) {
+        var panel = new PreviewPanel();
+        
         // Set up the list model
-        listModel = new DefaultListModel<String>();
-        setModel(listModel);
-        this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        panel.listModel = new DefaultListModel<String>();
+        panel.setModel(panel.listModel);
+        panel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         // Set up data structures for the information that might be displayed
-        students = new ArrayList<>();
-        grades = new ArrayList<>();
-        charCounts = new ArrayList<>();
+        panel.students = new ArrayList<>();
+        panel.grades = new ArrayList<>();
+        panel.charCounts = new ArrayList<>();
 
         // Handle list selection using the callback
-        addListSelectionListener(e -> {
+        panel.addListSelectionListener(e -> {
             if (e.getValueIsAdjusting()) {
-                onSelectStudent.accept(students.get(getSelectedIndex()));
+                onSelectStudent.accept(panel.students.get(panel.getSelectedIndex()));
             }
         });
 
         // Display!
-        this.setVisible(true);
+        panel.setVisible(true);
+
+        return panel;
     }
 
     /** Add the given student to the list. */

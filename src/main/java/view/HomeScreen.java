@@ -29,36 +29,39 @@ public class HomeScreen extends JFrame {
     private static final int SPACING = 15;
 
     /**
-     * Constructor.
+     * Create and return a new object of this class, including setup.
      *
      * @param controller The controller.
      */
-    public HomeScreen(AppController controller) {
-        // Setup as a JFrame
-        super("Feedback Helper Tool");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout(SPACING, SPACING));
-
-        // Store attributes
-        this.controller = controller;
+    public static HomeScreen create(AppController controller) {
+        var homeScreen = new HomeScreen(controller);
 
         // Setup the components and display the screen
-        createComponents();
+        homeScreen.setLayout(new BorderLayout(SPACING, SPACING));
+        homeScreen.createComponents();
 
         // To pick a dimension that fits your UI,
         // You simply call pack() and Swing gives it a try.
-        pack();
+        homeScreen.pack();
 
         // If line-wrapped components don't look very nice,
         // Then how do you solve it? You just call pack() twice!
-        pack();
+        homeScreen.pack();
 
         // Do Windows or Mac machines work in this way?
         // I have no idea. Let's just hope and pray.
 
         // Finish setting up JFrame
-        setLocationRelativeTo(null); // center
-        setVisible(true);
+        homeScreen.setLocationRelativeTo(null); // center
+        homeScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        homeScreen.setVisible(true);
+
+        return homeScreen;
+    }
+
+    private HomeScreen(AppController controller) {
+        super("Feedback Helper Tool");
+        this.controller = controller;
     }
 
     /**
@@ -116,7 +119,7 @@ public class HomeScreen extends JFrame {
         JButton startButton = new JButton("Start New Assignment");
         startButton.addActionListener(e -> {
             dispose();
-            new CreateAssignmentScreen(this.controller);
+            CreateAssignmentScreen.create(controller);
         });
         parent.add(startButton);
     }
@@ -146,7 +149,7 @@ public class HomeScreen extends JFrame {
                 // Try to load the assignment
                 try {
                     controller.loadAssignment(assignmentFilePath);
-                    new FeedbackScreen(controller);
+                    FeedbackScreen.create(controller);
                     dispose();
                 } catch (Exception exception) {
                     JOptionPane.showMessageDialog(

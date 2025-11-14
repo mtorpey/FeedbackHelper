@@ -1,7 +1,6 @@
 package view;
 
-import controller.AppController;
-import model.StudentId;
+import java.util.function.Consumer;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,41 +13,41 @@ import javax.swing.SpinnerNumberModel;
 public class GradeBox extends JPanel {
 
     // Class variable
-    private static final String GRADE = "Grade: ";
+    private static final String LABEL_TEXT = "Grade: ";
     private static final double MINIMUM = 0.0;
     private static final double MAXIMUM = 20.0;
     private static final double STEP = 0.5;
 
     // Instance variables
-    private final AppController controller;
-    private JLabel label;
+    private Consumer<Double> onUpdateGrade;
     private JSpinner chooser;
-    private StudentId studentId;
 
     /**
-     * Constructor.
+     * Create and return a new object of this class, including setup.
      *
-     * @param controller The controller.
+     * @param onUpdateGrade Callback to update the grade in the model.
      */
-    public GradeBox(AppController controller) {
-        this.controller = controller;
+    public static GradeBox create(Consumer<Double> onUpdateGrade) {
+        GradeBox box = new GradeBox(onUpdateGrade);
 
-        this.setupLabel();
-        this.setupChooser();
+        // Add components
+        box.add(new JLabel(LABEL_TEXT));
+        box.setupChooser();
 
         // Add some padding to the bottom on the panel and make it visible
-        this.setBorder(BorderCreator.createEmptyBorderLeavingTop(BorderCreator.PADDING_20_PIXELS));
-        this.setVisible(true);
+        box.setBorder(BorderCreator.createEmptyBorderLeavingTop(BorderCreator.PADDING_20_PIXELS));
+        box.setVisible(true);
+
+        return box;
     }
 
-    private void setupLabel() {
-        this.label = new JLabel(GRADE);
-        this.add(this.label);
+    private GradeBox(Consumer<Double> onUpdateGrade) {
+        this.onUpdateGrade = onUpdateGrade;
     }
 
     private void setupChooser() {
         chooser = new JSpinner(new SpinnerNumberModel(MINIMUM, MINIMUM, MAXIMUM, STEP));
-        chooser.addChangeListener(e -> controller.updateGrade(studentId, getGrade()));
+        chooser.addChangeListener(e -> onUpdateGrade.accept(getGrade()));
         add(this.chooser);
     }
 
@@ -75,14 +74,5 @@ public class GradeBox extends JPanel {
      */
     public void setGrade(double grade) {
         this.chooser.setValue(grade);
-    }
-
-    /**
-     * Set the student ID that the grade is for.
-     *
-     * @param studentId The student ID that the grade is for.
-     */
-    public void setStudentId(StudentId studentId) {
-        this.studentId = studentId;
     }
 }

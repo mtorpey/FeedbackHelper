@@ -80,33 +80,36 @@ public class CreateAssignmentScreen extends JFrame {
     private JComboBox<Integer> spacingChooser;
 
     /**
-     * Constructor.
+     * Create and return a new object of this class, including setup.
      *
      * @param controller The controller.
      */
-    public CreateAssignmentScreen(AppController controller) {
-        // Setup as a JFrame
-        super("Create assignment");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout(SPACING, SPACING));
-
-        // Store attributes
-        this.controller = controller;
-
+    public static CreateAssignmentScreen create(AppController controller) {
+        CreateAssignmentScreen screen = new CreateAssignmentScreen(controller);
+        
         // Setup components
-        setupFrameTitle();
-        setupConfigForm();
-        setupConfirmationPanel();
+        screen.setLayout(new BorderLayout(SPACING, SPACING));
+        screen.setupFrameTitle();
+        screen.setupConfigForm();
+        screen.setupConfirmationPanel();
 
         // Finish setting up as a JFrame
-        pack(); // resize to fit components
-        setLocationRelativeTo(null); // center
-        setVisible(true);
+        screen.pack(); // resize to fit components
+        screen.setLocationRelativeTo(null); // center
+        screen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        screen.setVisible(true);
+
+        return screen;
+    }
+
+    private CreateAssignmentScreen(AppController controller) {
+        super("Create assignment");
+        this.controller = controller;
     }
 
     /**
-     * Setup the title label at the top of the frame.
-     */
+    * Setup the title label at the top of the frame.
+    */
     public void setupFrameTitle() {
         JLabel title = new JLabel("Assignment Configuration", JLabel.CENTER);
         title.setFont(Configuration.getTitleFont());
@@ -360,7 +363,7 @@ public class CreateAssignmentScreen extends JFrame {
 
         // On back button press go back to the setup options screen
         backButton.addActionListener(e -> {
-            new HomeScreen(this.controller);
+            HomeScreen.create(controller);
             dispose();
         });
         add(confirmationPanel, BorderLayout.SOUTH);
@@ -390,7 +393,7 @@ public class CreateAssignmentScreen extends JFrame {
             controller.saveAssignment();
 
             // Create the feedback screen
-            new FeedbackScreen(controller);
+            FeedbackScreen.create(controller);
 
             // Delete this screen
             dispose();

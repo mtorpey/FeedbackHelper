@@ -21,19 +21,25 @@ public class PhrasesPanel extends JPanel {
     private List<PhraseBox> phraseBoxes;
 
     /**
-     * Constructor.
+     * Create and return a new object of this class, including setup.
      *
      * @param phraseType The type of phrases to show on the panel.
      * @param onInsertPhrase Callback for when the user wishes to insert a phrase.
      */
-    public PhrasesPanel(PhraseType phraseType, Consumer<String> onInsertPhrase) {
-        this.phraseType = phraseType;
-        this.phraseBoxes = new LinkedList<PhraseBox>();
-        this.onInsertPhrase = onInsertPhrase;
+    public static PhrasesPanel create(PhraseType phraseType, Consumer<String> onInsertPhrase) {
+        var panel = new PhrasesPanel(phraseType, onInsertPhrase);
+        panel.phraseBoxes = new LinkedList<PhraseBox>();
 
         // Set layout and visbility
-        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        this.setVisible(true);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        panel.setVisible(true);
+
+        return panel;
+    }
+
+    private PhrasesPanel(PhraseType phraseType, Consumer<String> onInsertPhrase) {
+        this.phraseType = phraseType;
+        this.onInsertPhrase = onInsertPhrase;
     }
 
     /**
@@ -53,7 +59,7 @@ public class PhrasesPanel extends JPanel {
      */
     public void addPhrase(Phrase phrase) {
         // Create the new box
-        PhraseBox phraseBox = new PhraseBox(phrase, onInsertPhrase);
+        PhraseBox phraseBox = PhraseBox.create(phrase, onInsertPhrase);
 
         // Insert it in the correct place in the list
         phraseBoxes.add(phraseBox);

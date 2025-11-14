@@ -29,19 +29,29 @@ public class SearchBox extends JTextField {
     private static final String PROMPT = "🔎 Filter by phrase";
 
     /**
-     * Constructor.
+     * Create and return a new object of this class, including setup.
      *
      * @param listener The object that will handle changes and perform a search.
      */
-    public SearchBox(Listener listener) {
+    public static SearchBox create(Listener listener) {
+        var box = new SearchBox(listener);
+        box.setupListeners();
+
+        // Display with height of one line
+        box.setMaximumSize(new Dimension(Integer.MAX_VALUE, box.getPreferredSize().height));
+        box.setVisible(true);
+
+        return box;
+    }
+
+    private SearchBox(Listener listener) {
         // Start with prompt displayed to user
         super(PROMPT);
-        // Display with height of one line
-        setMaximumSize(new Dimension(Integer.MAX_VALUE, getPreferredSize().height));
-        setVisible(true);
-
-        // Inform listener of all changes to contents
         this.listener = listener;
+    }
+
+    private void setupListeners() {
+        // Inform listener of all changes to contents
         getDocument().addDocumentListener(
             new DocumentListener() {
                 public void changedUpdate(DocumentEvent e) {

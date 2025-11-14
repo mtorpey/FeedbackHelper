@@ -41,12 +41,13 @@ public class AboutDialog extends JDialog {
         "or view the <a href='https://github.com/mtorpey/FeedbackHelper/issues'>issue tracker</a>.</html>";
 
     /**
-     * Constructor.
+     * Create and return a new object of this class, including setup.
      *
      * @param parent the dialog parent
      */
-    public AboutDialog(JFrame parent) {
-        super(parent, "About Feedback Helper", true);
+    public static AboutDialog create(JFrame parent) {
+        AboutDialog dialog = new AboutDialog(parent);
+        
         // Create the dialog components
         JPanel dialogPanel = new JPanel(new BorderLayout());
         dialogPanel.setBorder(BorderFactory.createEmptyBorder(8, 16, 24, 16));
@@ -95,13 +96,19 @@ public class AboutDialog extends JDialog {
         panelEast.add(linksPane);
         linksPane.add(linksEditorPane);
 
-        add(dialogPanel, BorderLayout.CENTER);
+        dialog.add(dialogPanel, BorderLayout.CENTER);
 
-        setResizable(false);
-        pack(); // Adjust dialog size to fit components
-        setLocationRelativeTo(parent); // Center the dialog onscreen
+        dialog.setResizable(false);
+        dialog.pack(); // Adjust dialog size to fit components
+        dialog.setLocationRelativeTo(parent); // Center the dialog onscreen
 
-        setVisible(true);
+        dialog.setVisible(true);
+
+        return dialog;
+    }
+
+    private AboutDialog(JFrame parent) {
+        super(parent, "About Feedback Helper", true);
     }
 
     /**

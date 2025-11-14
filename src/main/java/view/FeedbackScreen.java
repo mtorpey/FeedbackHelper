@@ -39,7 +39,7 @@ public class FeedbackScreen implements AssignmentListener {
     private static Map<StudentId, Integer> scrollbarValues = new HashMap<>(); // TODO: is this the problem?
 
     // References to model and controller
-    private final Assignment assignment;
+    private Assignment assignment;
     private final AppController controller;
 
     // Part of model currently selected for viewing
@@ -61,35 +61,40 @@ public class FeedbackScreen implements AssignmentListener {
     private GridBagConstraints gridBagConstraints;
 
     /**
-     * Constructor.
+     * Create and return a new object of this class, including setup.
      *
      * @param controller The controller.
-     * @param assignment The assignment.
      */
-    public FeedbackScreen(AppController controller) {
-        // Remember the controller, for writing changes to the model.
-        this.controller = controller;
+    public static FeedbackScreen create(AppController controller) {
+        var screen = new FeedbackScreen(controller);
 
         // Subscribe to model for changes, and store a reference to it for querying.
-        this.assignment = controller.registerWithModel(this);
+        screen.assignment = controller.registerWithModel(screen);
 
         // Setup components
-        setupFeedbackScreen();
-        setupFeedbackScreenPanel();
-        setupPreviewPanel();
-        setupEditorPanel();
-        setupPhrasesSection();
-        setupPreviewAndEditorSplitPane();
-        setupPhrasesAndPhraseEntrySplitPane();
-        setupMenuBar();
-        positionEditorSplitPane();
-        positionPhrasesSplitPane();
+        screen.setupFeedbackScreen();
+        screen.setupFeedbackScreenPanel();
+        screen.setupPreviewPanel();
+        screen.setupEditorPanel();
+        screen.setupPhrasesSection();
+        screen.setupPreviewAndEditorSplitPane();
+        screen.setupPhrasesAndPhraseEntrySplitPane();
+        screen.setupMenuBar();
+        screen.positionEditorSplitPane();
+        screen.positionPhrasesSplitPane();
 
         // Add the main panel to the screen and set visibility
-        this.feedbackScreen.add(this.feedbackScreenPanel, BorderLayout.CENTER);
-        this.feedbackScreen.setVisible(true);
+        screen.feedbackScreen.add(screen.feedbackScreenPanel, BorderLayout.CENTER);
+        screen.feedbackScreen.setLocationRelativeTo(null); // center
+        screen.feedbackScreen.setVisible(true);
+
+        return screen;
     }
 
+    private FeedbackScreen(AppController controller) {
+        this.controller = controller;
+    }
+    
     /**
      * Setup the feedback screen.
      */
@@ -124,7 +129,7 @@ public class FeedbackScreen implements AssignmentListener {
      */
     private void setupPhrasesAndPhraseEntrySplitPane() {
         // Submitting a custom phrase adds it via the controller
-        this.phraseEntryBox = new PhraseEntryBox(text -> controller.addCustomPhrase(currentHeading, text));
+        this.phraseEntryBox = PhraseEntryBox.create(text -> controller.addCustomPhrase(currentHeading, text));
         this.phraseEntryBox.disablePhraseEntryBox();
         this.phrasesAndPhraseEntrySplitPane = new JSplitPane(
             JSplitPane.VERTICAL_SPLIT,
@@ -142,11 +147,11 @@ public class FeedbackScreen implements AssignmentListener {
      * Setup the phrase panels and the phrases section.
      */
     private void setupPhrasesSection() {
-        this.phrasesSection = new PhrasesSection();
+        this.phrasesSection = PhrasesSection.create();
 
         // Create panels
-        PhrasesPanel customPhrasesPanel = new PhrasesPanel(PhraseType.CUSTOM, this::insertPhrase);
-        PhrasesPanel frequentlyUsedPhrasesPanel = new PhrasesPanel(PhraseType.FREQUENTLY_USED, this::insertPhrase);
+        PhrasesPanel customPhrasesPanel = PhrasesPanel.create(PhraseType.CUSTOM, this::insertPhrase);
+        PhrasesPanel frequentlyUsedPhrasesPanel = PhrasesPanel.create(PhraseType.FREQUENTLY_USED, this::insertPhrase);
 
         // Add panels
         this.phrasesSection.addPhrasesPanel(customPhrasesPanel);
@@ -183,7 +188,7 @@ public class FeedbackScreen implements AssignmentListener {
             previewAndEditorSplitPane.setLeftComponent(previewPanelScrollPane);
         }
 
-        previewPanel = new PreviewPanel(this::switchStudent);
+        previewPanel = PreviewPanel.create(this::switchStudent);
         for (StudentId studentId : assignment.getStudentIds()) {
             previewPanel.addStudent(studentId, assignment.getGrade(studentId), assignment.getFeedbackLength(studentId));
         }
@@ -212,13 +217,14 @@ public class FeedbackScreen implements AssignmentListener {
         editorPanelScrollPane = new JScrollPane();
 
         // Create editor panel with popup menu
-        editorPanel = new EditorPanel(
-            controller,
+        editorPanel = EditorPanel.create(
             assignment.getTitle(),
             assignment.getHeadings(),
             assignment.getLineMarker(),
             this::switchSection,
-            this::updateFeedbackSection
+            controller::editHeading,
+            this::updateFeedbackSection,
+            this::updateGrade
         );
         this.editingPopupMenu = new EditingPopupMenu();
         this.editorPanel.registerPopupMenu(this.editingPopupMenu);
@@ -278,7 +284,7 @@ public class FeedbackScreen implements AssignmentListener {
         visGradesOption.addActionListener(e -> controller.visualiseGrades());
 
         // Show the 'about' dialog window
-        aboutOption.addActionListener(l -> new AboutDialog(feedbackScreen));
+        aboutOption.addActionListener(l -> AboutDialog.create(feedbackScreen));
 
         // Add all options to menus
         fileMenu.add(saveOption);
@@ -413,6 +419,10 @@ public class FeedbackScreen implements AssignmentListener {
     private void updateFeedbackSection(String heading, String text) {
         controller.updateFeedbackSection(currentStudent, heading, text);
         previewPanel.updateLength(currentStudent, assignment.getFeedbackLength(currentStudent));
+    }
+
+    private void updateGrade(double grade) {
+        controller.updateGrade(currentStudent, grade);
     }
 
     private void insertPhrase(String phrase) {
