@@ -95,6 +95,7 @@ public class CreateAssignmentScreen extends JFrame {
 
         // Finish setting up as a JFrame
         screen.pack(); // resize to fit components
+        screen.setMinimumSize(screen.getSize());
         screen.setLocationRelativeTo(null); // center
         screen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         screen.setVisible(true);
@@ -176,10 +177,16 @@ public class CreateAssignmentScreen extends JFrame {
      */
     private void setupAssignmentHeadingsControls() {
         addLabelToConfigForm("Assignment headings:");
-        assignmentHeadingsTextArea = new JTextArea("Code\nReport\nOverall", 7, 30);
-        JScrollPane scrollPane = new JScrollPane(assignmentHeadingsTextArea);
-        scrollPane.setMinimumSize(new Dimension(0, 100)); // stop this collapsing
-        addToConfigForm(scrollPane, 2);
+        assignmentHeadingsTextArea = new JTextArea("Code\nReport\nOverall") {
+                @Override
+                public Dimension getMinimumSize() {
+                    Dimension minimum = super.getMinimumSize();
+                    Dimension preferred = getPreferredSize();
+                    return new Dimension(minimum.width, preferred.height);
+                }
+        };
+        assignmentHeadingsTextArea.setRows(7);
+        addToConfigForm(assignmentHeadingsTextArea, 2);
     }
 
     /**

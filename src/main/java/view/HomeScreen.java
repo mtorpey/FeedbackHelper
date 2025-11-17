@@ -52,6 +52,7 @@ public class HomeScreen extends JFrame {
         // I have no idea. Let's just hope and pray.
 
         // Finish setting up JFrame
+        homeScreen.setMinimumSize(homeScreen.getSize());
         homeScreen.setLocationRelativeTo(null); // center
         homeScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         homeScreen.setVisible(true);
