@@ -37,8 +37,6 @@ public class SearchBox extends JTextField {
         var box = new SearchBox(listener);
         box.setupListeners();
 
-        // Display with height of one line
-        box.setMaximumSize(new Dimension(Integer.MAX_VALUE, box.getPreferredSize().height));
         box.setVisible(true);
 
         return box;

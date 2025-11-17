@@ -1,6 +1,5 @@
 package view;
 
-import java.awt.Dimension;
 import java.util.function.Consumer;
 
 import javax.swing.JScrollPane;
@@ -18,12 +17,15 @@ public class PhrasesTab extends JSplitPane {
      */
     public static PhrasesTab create(PhrasesPanel phrasesPanel, Consumer<String> onNewCustomPhrase) {
         PhrasesTab tab = new PhrasesTab();
+
         tab.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        tab.setOneTouchExpandable(false);
+
         tab.removeAll();
+        tab.setResizeWeight(1.0);  // All extra space to top component, bottom is fixed
 
         // Make scroll pane for phrases panel
-        JScrollPane scrollPane = new JScrollPane(phrasesPanel);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(AppView.SCROLL_SPEED);
+        JScrollPane scrollPane = PhrasesPanel.newVerticalScrollPane(phrasesPanel);
         tab.setTopComponent(scrollPane);
 
         // Make phrase entry box if applicable
@@ -31,14 +33,8 @@ public class PhrasesTab extends JSplitPane {
             // Split pane of scroll pane and phrase entry box
             PhraseEntryBox phraseEntryBox = PhraseEntryBox.create(onNewCustomPhrase);
             tab.setBottomComponent(phraseEntryBox);
-            tab.setOneTouchExpandable(false);
-            tab.setDividerLocation(600);
-            tab.setMaximumSize(new Dimension(300, 800));
-            tab.setPreferredSize(new Dimension(300, 800));
-            tab.setMinimumSize(new Dimension(300, 800));
         }
 
-        // Set layout and visbility
         tab.setVisible(true);
 
         return tab;

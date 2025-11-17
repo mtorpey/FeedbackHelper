@@ -1,9 +1,6 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
@@ -15,7 +12,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
@@ -33,11 +29,7 @@ import model.StudentId;
 /**
  * Main window for an assignment in progress, containing all components.
  */
-public class FeedbackScreen implements AssignmentListener {
-
-    //Remember Scrolling, not ideal because reset at restart, but quick fix that helps a lot
-    private static Map<StudentId, Integer> scrollbarValues = new HashMap<>(); // TODO: is this the problem?
-
+public class FeedbackScreen extends JFrame implements AssignmentListener {
     // References to model and controller
     private Assignment assignment;
     private final AppController controller;
@@ -47,17 +39,14 @@ public class FeedbackScreen implements AssignmentListener {
     private String currentHeading;
 
     // Swing components
-    private JFrame feedbackScreen;
-    private JPanel feedbackScreenPanel;
-    private JSplitPane previewAndEditorSplitPane;
+    private JSplitPane mainSplitPane;
+    private JSplitPane leftSplitPane;
     private JScrollPane previewPanelScrollPane;
     private PreviewPanel previewPanel;
     private JScrollPane editorPanelScrollPane;
     private EditorPanel editorPanel;
     private EditingPopupMenu editingPopupMenu;
     private PhrasesSection phrasesSection;
-    private PhraseEntryBox phraseEntryBox;
-    private GridBagConstraints gridBagConstraints;
 
     /**
      * Create and return a new object of this class, including setup.
@@ -71,34 +60,36 @@ public class FeedbackScreen implements AssignmentListener {
         screen.assignment = controller.registerWithModel(screen);
 
         // Setup components
-        screen.setupFeedbackScreen();
-        screen.setupFeedbackScreenPanel();
+        screen.setup();
+        screen.setupMenuBar();
         screen.setupPreviewPanel();
         screen.setupEditorPanel();
         screen.setupPhrasesSection();
-        screen.setupPreviewAndEditorSplitPane();
-        screen.setupMenuBar();
-        screen.positionEditorSplitPane();
-        screen.positionPhrasesSection();
 
-        // Add the main panel to the screen and set visibility
-        screen.feedbackScreen.add(screen.feedbackScreenPanel, BorderLayout.CENTER);
-        screen.feedbackScreen.setLocationRelativeTo(null); // center
-        screen.feedbackScreen.setVisible(true);
+        // Add components to main (triple) split pane in middle of screen
+        screen.setupSplitPanes();
+        screen.add(screen.mainSplitPane, BorderLayout.CENTER);
+        
+        // Do visual stuff and display
+        screen.pack();
+        screen.pack();
+        screen.setLocationRelativeTo(null); // center
+        screen.setVisible(true);
 
         return screen;
     }
 
     private FeedbackScreen(AppController controller) {
+        super();
         this.controller = controller;
     }
 
     /**
      * Setup the feedback screen.
      */
-    private void setupFeedbackScreen() {
-        this.feedbackScreen = new JFrame("Feedback Composition");
-        this.feedbackScreen.addWindowListener(
+    private void setup() {
+        setTitle("Feedback Composition");
+        addWindowListener(
             new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     System.out.println("Closing");
@@ -108,129 +99,11 @@ public class FeedbackScreen implements AssignmentListener {
                 }
             }
         );
-        this.feedbackScreen.setSize(1200, 800);
-        this.feedbackScreen.setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
     }
 
     /**
-     * Setup the feedback screen panel.
-     */
-    private void setupFeedbackScreenPanel() {
-        this.feedbackScreenPanel = new JPanel(new GridBagLayout());
-        this.gridBagConstraints = new GridBagConstraints();
-        this.gridBagConstraints.weightx = 1.0;
-        this.gridBagConstraints.weighty = 1.0;
-    }
-
-    /**
-     * Setup the phrase panels and the phrases section.
-     */
-    private void setupPhrasesSection() {
-        this.phrasesSection = PhrasesSection.create();
-
-        // Create panels
-        PhrasesPanel customPhrasesPanel = PhrasesPanel.create(PhraseType.CUSTOM, this::insertPhrase);
-        PhrasesPanel frequentlyUsedPhrasesPanel = PhrasesPanel.create(PhraseType.FREQUENTLY_USED, this::insertPhrase);
-
-        // Add panels
-        this.phrasesSection.addPhrasesTab(customPhrasesPanel, text -> controller.addCustomPhrase(currentHeading, text));
-        this.phrasesSection.addPhrasesTab(frequentlyUsedPhrasesPanel, null);
-
-        // Start on frequently used pane
-        this.phrasesSection.setHighlightedPane(1);
-    }
-
-    /**
-     * Setup the preview and editor split pane.
-     */
-    private void setupPreviewAndEditorSplitPane() {
-        this.previewAndEditorSplitPane = new JSplitPane(
-            JSplitPane.HORIZONTAL_SPLIT,
-            this.previewPanelScrollPane,
-            this.editorPanelScrollPane
-        );
-        this.previewAndEditorSplitPane.setMaximumSize(new Dimension(900, 800));
-        this.previewAndEditorSplitPane.setPreferredSize(new Dimension(900, 800));
-        this.previewAndEditorSplitPane.setMinimumSize(new Dimension(900, 800));
-        this.previewAndEditorSplitPane.setOneTouchExpandable(true);
-        this.previewAndEditorSplitPane.setDividerLocation(300);
-    }
-
-    /**
-     * Setup the preview panel and put it in the scroll pane, replacing any old panel that was there.
-     */
-    private void setupPreviewPanel() {
-        previewPanelScrollPane = new JScrollPane();
-
-        // Re-add in case this is a reset
-        if (previewAndEditorSplitPane != null) {
-            previewAndEditorSplitPane.setLeftComponent(previewPanelScrollPane);
-        }
-
-        previewPanel = PreviewPanel.create(this::switchStudent);
-        for (StudentId studentId : assignment.getStudentIds()) {
-            previewPanel.addStudent(studentId, assignment.getGrade(studentId), assignment.getFeedbackLength(studentId));
-        }
-
-        // Set up in scroll pane
-        previewPanelScrollPane.add(this.previewPanel);
-        previewPanelScrollPane.getViewport().setView(this.previewPanel);
-        previewPanelScrollPane.getVerticalScrollBar().setUnitIncrement(AppView.SCROLL_SPEED);
-        SwingUtilities.invokeLater(() -> this.previewPanelScrollPane.getVerticalScrollBar().setValue(0));
-
-        // Start with the first one open if this is first time setup (they should be sorted)
-        if (currentStudent == null) {
-            currentStudent = assignment.getStudentIds().get(0);
-        }
-
-        // Select the current student
-        previewPanel.selectStudent(currentStudent);
-    }
-
-    /**
-     * Setup the editor panel.
-     *
-     * Should be called after setupPreviewPanel, which sets currentStudent
-     */
-    private void setupEditorPanel() {
-        editorPanelScrollPane = new JScrollPane();
-
-        // Create editor panel with popup menu
-        editorPanel = EditorPanel.create(
-            assignment.getTitle(),
-            assignment.getHeadings(),
-            assignment.getLineMarker(),
-            this::switchSection,
-            controller::editHeading,
-            this::updateFeedbackSection,
-            this::updateGrade
-        );
-        this.editingPopupMenu = new EditingPopupMenu();
-        this.editorPanel.registerPopupMenu(this.editingPopupMenu);
-
-        // Set the document data
-        loadEditorPanelData();
-
-        // Make the panel scrollable
-        this.editorPanelScrollPane.add(this.editorPanel);
-        this.editorPanelScrollPane.getViewport().setView(this.editorPanel);
-        this.editorPanelScrollPane.getVerticalScrollBar().setUnitIncrement(AppView.SCROLL_SPEED);
-
-        // TODO: does this really need an invokeLater?
-        SwingUtilities.invokeLater(() -> this.editorPanelScrollPane.getVerticalScrollBar().setValue(0));
-    }
-
-    /** Update the editor panel with the ID, feedback and grade for the current student in the model. */
-    private void loadEditorPanelData() {
-        editorPanel.setStudentId(currentStudent);
-        for (String heading : assignment.getHeadings()) {
-            editorPanel.setSectionContents(heading, assignment.getSectionContents(currentStudent, heading));
-        }
-        editorPanel.setGrade(assignment.getGrade(currentStudent));
-    }
-
-    /**
-     * Setup the menubar.
+     * Setup the menubar and add it to the screen.
      */
     private void setupMenuBar() {
         // Menu bar
@@ -263,7 +136,7 @@ public class FeedbackScreen implements AssignmentListener {
         visGradesOption.addActionListener(e -> controller.visualiseGrades());
 
         // Show the 'about' dialog window
-        aboutOption.addActionListener(l -> AboutDialog.create(feedbackScreen));
+        aboutOption.addActionListener(l -> AboutDialog.create(this));
 
         // Add all options to menus
         fileMenu.add(saveOption);
@@ -272,31 +145,120 @@ public class FeedbackScreen implements AssignmentListener {
         fileMenu.add(visGradesOption);
         helpMenu.add(aboutOption);
 
-        // Add the menu bar to the screen
+        // Add the menus to the menu bar
         menuBar.add(fileMenu);
         menuBar.add(preferencesMenu);
         menuBar.add(helpMenu);
-        this.feedbackScreen.add(menuBar, BorderLayout.PAGE_START);
+
+        // Add the menu bar to the screen
+        setJMenuBar(menuBar);
     }
 
     /**
-     * Position the phrases split pane with the gridbag constraints.
+     * Setup the preview panel and put it in the scroll pane, replacing any old panel that was there.
      */
-    private void positionPhrasesSection() {
-        this.gridBagConstraints.fill = GridBagConstraints.BOTH;
-        this.gridBagConstraints.gridx = 2;
-        this.gridBagConstraints.gridy = 0;
-        this.feedbackScreenPanel.add(this.phrasesSection, this.gridBagConstraints);
+    private void setupPreviewPanel() {
+        previewPanel = PreviewPanel.create(this::switchStudent);
+        for (StudentId studentId : assignment.getStudentIds()) {
+            previewPanel.addStudent(studentId, assignment.getGrade(studentId), assignment.getFeedbackLength(studentId));
+        }
+
+        // Create scroll pane with this panel
+        previewPanelScrollPane = new JScrollPane(previewPanel);
+
+        // Re-add in case this is a reset
+        if (leftSplitPane != null) {
+            leftSplitPane.setLeftComponent(previewPanelScrollPane);
+        }
+
+        // Start with the first one open if this is first time setup (they should be sorted)
+        if (currentStudent == null) {
+            currentStudent = assignment.getStudentIds().get(0);
+        }
+
+        // Select the current student
+        previewPanel.selectStudent(currentStudent);
     }
 
     /**
-     * Position the editor split pane with the gridbag constraints.
+     * Setup the editor panel.
+     *
+     * Should be called after setupPreviewPanel, which sets currentStudent
      */
-    private void positionEditorSplitPane() {
-        this.gridBagConstraints.fill = GridBagConstraints.BOTH;
-        this.gridBagConstraints.gridx = 0;
-        this.gridBagConstraints.gridy = 0;
-        this.feedbackScreenPanel.add(this.previewAndEditorSplitPane, this.gridBagConstraints);
+    private void setupEditorPanel() {
+        // Create editor panel with popup menu
+        editorPanel = EditorPanel.create(
+            assignment.getTitle(),
+            assignment.getHeadings(),
+            assignment.getLineMarker(),
+            this::switchSection,
+            controller::editHeading,
+            this::updateFeedbackSection,
+            this::updateGrade
+        );
+        this.editingPopupMenu = new EditingPopupMenu();
+        this.editorPanel.registerPopupMenu(this.editingPopupMenu);
+
+        // Set the document data
+        loadEditorPanelData();
+
+        // Make the panel scrollable
+        editorPanelScrollPane = EditorPanel.newVerticalScrollPane(editorPanel);
+        this.editorPanelScrollPane.getViewport().setView(this.editorPanel);
+        //this.editorPanelScrollPane.getVerticalScrollBar().setUnitIncrement(AppView.SCROLL_SPEED);
+
+        // TODO: does this really need an invokeLater?
+        SwingUtilities.invokeLater(() -> this.editorPanelScrollPane.getVerticalScrollBar().setValue(0));
+    }
+
+    /** Update the editor panel with the ID, feedback and grade for the current student in the model. */
+    private void loadEditorPanelData() {
+        editorPanel.setStudentId(currentStudent);
+        for (String heading : assignment.getHeadings()) {
+            editorPanel.setSectionContents(heading, assignment.getSectionContents(currentStudent, heading));
+        }
+        editorPanel.setGrade(assignment.getGrade(currentStudent));
+    }
+
+    /**
+     * Setup the phrase panels and the phrases section.
+     */
+    private void setupPhrasesSection() {
+        this.phrasesSection = PhrasesSection.create();
+
+        // Create panels
+        PhrasesPanel customPhrasesPanel = PhrasesPanel.create(PhraseType.CUSTOM, this::insertPhrase);
+        PhrasesPanel frequentlyUsedPhrasesPanel = PhrasesPanel.create(PhraseType.FREQUENTLY_USED, this::insertPhrase);
+
+        // Add panels
+        this.phrasesSection.addPhrasesTab(customPhrasesPanel, text -> controller.addCustomPhrase(currentHeading, text));
+        this.phrasesSection.addPhrasesTab(frequentlyUsedPhrasesPanel, null);
+
+        // Start on frequently used pane
+        this.phrasesSection.setHighlightedPane(1);
+    }
+
+    /**
+     * Setup the triple split pane that sits inside the JFrame and holds the main components.
+     */
+    private void setupSplitPanes() {
+        leftSplitPane = new JSplitPane(
+            JSplitPane.HORIZONTAL_SPLIT,
+            previewPanelScrollPane,
+            editorPanelScrollPane
+        );
+        mainSplitPane = new JSplitPane(
+            JSplitPane.HORIZONTAL_SPLIT,
+            leftSplitPane,
+            phrasesSection
+        );
+
+        leftSplitPane.setOneTouchExpandable(false);
+        mainSplitPane.setOneTouchExpandable(false);
+
+        // Resize behaviour
+        leftSplitPane.setResizeWeight(0.0); // Editor panel gets extra weight, preview panel is fixed
+        mainSplitPane.setResizeWeight(1.0); // Left panels get extra weight, phrases panel is fixed
     }
 
     private JMenu createPreferencesMenu() {
@@ -322,7 +284,7 @@ public class FeedbackScreen implements AssignmentListener {
         ) {
             handleError("Error setting theme", e);
         }
-        SwingUtilities.updateComponentTreeUI(feedbackScreen);
+        SwingUtilities.updateComponentTreeUI(this);
     }
 
     private void saveAssignmentForCurrentStudent() {
@@ -334,7 +296,7 @@ public class FeedbackScreen implements AssignmentListener {
     }
 
     private void addNewStudent() {
-        String input = JOptionPane.showInputDialog(this.feedbackScreen, "Enter the new student id");
+        String input = JOptionPane.showInputDialog(this, "Enter the new student id");
         try {
             controller.addNewStudent(input);
         } catch (IllegalArgumentException e) {
@@ -349,7 +311,6 @@ public class FeedbackScreen implements AssignmentListener {
      */
     private void switchStudent(StudentId studentId) {
         // Wrap up from last student
-        scrollbarValues.put(currentStudent, editorPanelScrollPane.getVerticalScrollBar().getValue());
         saveAssignmentForCurrentStudent();
         previewPanel.updateGrade(currentStudent, assignment.getGrade(currentStudent));
 
@@ -357,9 +318,6 @@ public class FeedbackScreen implements AssignmentListener {
         currentStudent = studentId;
         loadEditorPanelData();
         // previewPanel.selectStudent(studentId); // This should be unnecessary, since the preview panel should have *caused* the change.
-
-        // Force scroll bar
-        editorPanelScrollPane.getVerticalScrollBar().setValue(scrollbarValues.getOrDefault(studentId, 0));
 
         // Refresh UI
         this.previewPanel.repaint();
@@ -472,7 +430,7 @@ public class FeedbackScreen implements AssignmentListener {
     public void handleError(String description, Exception exception) {
         String message = description + ": " + exception.toString();
         SwingUtilities.invokeLater(() ->
-            JOptionPane.showMessageDialog(this.feedbackScreen, message, "Error!", JOptionPane.ERROR_MESSAGE)
+            JOptionPane.showMessageDialog(this, message, "Error!", JOptionPane.ERROR_MESSAGE)
         );
     }
 }

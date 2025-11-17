@@ -46,7 +46,6 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
         box.setupUsageCountLabel();
 
         // Arrange for viewing
-        box.setMaximumSize(new Dimension(300, 100));
         box.setVisible(true);
 
         return box;
@@ -89,8 +88,6 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      */
     private void setupPhraseTextArea() {
         // Set properties
-        this.phraseTextArea.setRows(5);
-        this.phraseTextArea.setColumns(10);
         this.phraseTextArea.setBorder(BorderCreator.createEmptyBorderLeavingBottom(BorderCreator.PADDING_10_PIXELS));
         this.phraseTextArea.setText(phrase.getPhraseAsString());
         this.phraseTextArea.setLineWrap(true);
@@ -147,6 +144,19 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
         String contents = this.getPhraseText().toLowerCase();
         query = query.toLowerCase();
         this.setVisible(contents.contains(query));
+    }
+
+    /**
+     * Get the maximum size of this object for display.
+     *
+     * This is overridden so that the object is never taller than it needs to
+     * be. That is, its maximum height is always equal to its preferred height.
+     */
+    @Override
+    public Dimension getMaximumSize() {
+        Dimension maximum = super.getMaximumSize();
+        Dimension preferred = getPreferredSize();
+        return new Dimension(maximum.width, preferred.height);
     }
 
     /**

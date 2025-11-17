@@ -11,6 +11,7 @@ FeedbackScreen
           EditorPanel
             EditingPopupMenu
       PhrasesSection
+        SearchBox
         JTabbedPane
           PhrasesTab*
             JScrollPane

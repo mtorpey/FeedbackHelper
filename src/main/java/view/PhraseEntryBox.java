@@ -36,7 +36,6 @@ public class PhraseEntryBox extends JPanel {
         // Set border and visibility
         box.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
         box.setVisible(true);
-        box.setPreferredSize(new Dimension(300, 200));
 
         return box;
     }
@@ -49,11 +48,12 @@ public class PhraseEntryBox extends JPanel {
      * Setup the text area.
      */
     private void setupTextArea() {
-        this.textArea = new JTextArea();
-        this.textArea.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
-        this.textArea.setLineWrap(true);
-        this.textArea.setWrapStyleWord(true);
-        this.add(this.textArea, BorderLayout.CENTER);
+        textArea = new JTextArea();
+        textArea.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setMinimumSize(new Dimension(0, 0));
+        add(textArea, BorderLayout.CENTER);
     }
 
     /**
@@ -77,29 +77,5 @@ public class PhraseEntryBox extends JPanel {
             onSubmit.accept(textArea.getText());
             textArea.setText("");
         });
-    }
-
-    /**
-     * Disable the phrase entry box.
-     */
-    public void disablePhraseEntryBox() {
-        this.submitButton.setEnabled(false);
-        this.textArea.setEnabled(false);
-
-        // Refresh the UI
-        this.repaint();
-        this.revalidate();
-    }
-
-    /**
-     * Enable the phrase entry box.
-     */
-    public void enablePhraseEntryBox() {
-        this.submitButton.setEnabled(true);
-        this.textArea.setEnabled(true);
-
-        // Refresh the UI
-        this.repaint();
-        this.revalidate();
     }
 }

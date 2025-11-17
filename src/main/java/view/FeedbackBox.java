@@ -2,6 +2,7 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -121,8 +122,7 @@ public class FeedbackBox extends JPanel {
         this.headingButton = new JButton(EDIT_SYMBOL);
 
         // Set heading font
-        Font currentFont = getFont();
-        this.headingField.setFont(new Font(currentFont.getFontName(), Font.BOLD, currentFont.getSize()));
+        this.headingField.setFont(Configuration.getTitleFont());
 
         // Add to the panel
         this.headingPanel.add(this.headingField, BorderLayout.WEST);
@@ -205,10 +205,11 @@ public class FeedbackBox extends JPanel {
     private void setupTextArea() {
         // Create the text area and set properties
         this.textArea = new JTextArea();
-        this.textArea.setRows(10);
+        this.textArea.setRows(3);
         this.textArea.setEditable(true);
         this.textArea.setLineWrap(true);
         this.textArea.setWrapStyleWord(true);
+        this.textArea.setMinimumSize(new Dimension(0, 0));
         this.textArea.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
 
         // Listen for enter press

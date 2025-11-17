@@ -21,7 +21,7 @@ import model.StudentId;
 /**
  * Editor Panel Class.
  */
-public class EditorPanel extends JPanel {
+public class EditorPanel extends VerticalScrollablePanel {
 
     // Instance variables
     private String titleText;

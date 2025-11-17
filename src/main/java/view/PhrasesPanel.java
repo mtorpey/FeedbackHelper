@@ -13,7 +13,7 @@ import model.Phrase;
 /**
  * Phrases Panel Class.
  */
-public class PhrasesPanel extends JPanel {
+public class PhrasesPanel extends VerticalScrollablePanel {
 
     // Instance variables
     private Consumer<String> onInsertPhrase;

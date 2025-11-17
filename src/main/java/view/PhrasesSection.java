@@ -1,12 +1,12 @@
 package view;
 
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -30,25 +30,18 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
      */
     public static PhrasesSection create() {
         var phrasesSection = new PhrasesSection();
-        phrasesSection.tabbedPane = new JTabbedPane();
         phrasesSection.phrasesPanelScrollPanes = new ArrayList<>();
         phrasesSection.phrasesPanelsByType = new HashMap<PhraseType, PhrasesPanel>();
 
-        // Set layout, pane and visibility
-        phrasesSection.setLayout(new BoxLayout(phrasesSection, BoxLayout.PAGE_AXIS));
-        phrasesSection.setupSearchBox();
-        phrasesSection.add(phrasesSection.tabbedPane);
+        // Set layout, contents and visibility
+        phrasesSection.setLayout(new BorderLayout());
+        phrasesSection.searchBox = SearchBox.create(phrasesSection);
+        phrasesSection.add(phrasesSection.searchBox, BorderLayout.NORTH);
+        phrasesSection.tabbedPane = new JTabbedPane();
+        phrasesSection.add(phrasesSection.tabbedPane, BorderLayout.CENTER);
         phrasesSection.setVisible(true);
 
         return phrasesSection;
-    }
-
-    /**
-     * Add a search box that can be used to filter phrases.
-     */
-    private void setupSearchBox() {
-        this.searchBox = SearchBox.create(this);
-        this.add(searchBox);
     }
 
     /**
