@@ -37,7 +37,7 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
         phrasesSection.setLayout(new BorderLayout());
         phrasesSection.searchBox = SearchBox.create(phrasesSection);
         phrasesSection.add(phrasesSection.searchBox, BorderLayout.NORTH);
-        phrasesSection.tabbedPane = new JTabbedPane();
+        phrasesSection.tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
         phrasesSection.add(phrasesSection.tabbedPane, BorderLayout.CENTER);
         phrasesSection.setVisible(true);
 

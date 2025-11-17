@@ -1,9 +1,10 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,12 +72,27 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         screen.add(screen.mainSplitPane, BorderLayout.CENTER);
         
         // Do visual stuff and display
-        screen.pack();
-        screen.pack();
-        screen.setLocationRelativeTo(null); // center
+        screen.initialResize();
         screen.setVisible(true);
 
         return screen;
+    }
+
+    private void initialResize() {
+        // Resize according to contents
+        pack();
+        pack();
+
+        // Clamp using monitor size (should work for multi-monitor setups okay)
+        Dimension preferred = getContentPane().getPreferredSize();
+        Rectangle monitor = getGraphicsConfiguration().getBounds();
+        setSize(
+            Math.min(preferred.width, monitor.width),
+            Math.min(preferred.height, monitor.height)
+        );
+
+        // Center on screen
+        setLocationRelativeTo(null);
     }
 
     private FeedbackScreen(AppController controller) {
@@ -258,7 +274,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
         // Resize behaviour
         leftSplitPane.setResizeWeight(0.0); // Editor panel gets extra weight, preview panel is fixed
-        mainSplitPane.setResizeWeight(1.0); // Left panels get extra weight, phrases panel is fixed
+        mainSplitPane.setResizeWeight(0.8); // Left panels get most weight, phrases panel a bit
     }
 
     private JMenu createPreferencesMenu() {
