@@ -37,7 +37,7 @@ public class AppView {
     public void start() {
         installThirdPartyThemes();
         applyUserTheme();
-        //applyFontScaling(1.5f);
+        applyFontScaling(UserPreferences.getScale());
         HomeScreen.create(controller);
     }
 

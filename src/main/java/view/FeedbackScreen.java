@@ -14,7 +14,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -275,13 +277,26 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
     }
 
     private JMenu createPreferencesMenu() {
+        JMenu preferencesMenu = new JMenu("Preferences");
+        
+        // Choose a theme
         JMenu themeMenu = new JMenu("Theme");
         for (LookAndFeelInfo theme : UIManager.getInstalledLookAndFeels()) {
             JMenuItem item = new JMenuItem(theme.getName());
             item.addActionListener(e -> setTheme(theme.getClassName()));
             themeMenu.add(item);
         }
-        return themeMenu;
+        preferencesMenu.add(themeMenu);
+
+        // Set UI scaling
+        JMenu scaleMenu = new JMenu("Scale factor (requires restart)");
+        JSpinner scaleSpinner = new JSpinner(new SpinnerNumberModel(UserPreferences.getScale(), 0.25, 4.0, 0.05));
+        scaleSpinner.setEditor(new JSpinner.NumberEditor(scaleSpinner, "0%"));
+        scaleSpinner.addChangeListener(e -> UserPreferences.setScale((float) (double) scaleSpinner.getValue()));
+        scaleMenu.add(scaleSpinner);
+        preferencesMenu.add(scaleMenu);
+
+        return preferencesMenu;
     }
 
     private void setTheme(String name) {
