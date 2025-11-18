@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import javax.swing.BoxLayout;
-import javax.swing.JPanel;
 
 import model.Phrase;
 

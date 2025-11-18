@@ -275,7 +275,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Resize behaviour
         leftSplitPane.setResizeWeight(0.0); // Editor panel gets extra weight, preview panel is fixed
         mainSplitPane.setResizeWeight(0.8); // Left panels get most weight, phrases panel a bit
-        }
+    }
 
     private JMenu createPreferencesMenu() {
         JMenu themeMenu = new JMenu("Theme");
