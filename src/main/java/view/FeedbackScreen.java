@@ -221,10 +221,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Make the panel scrollable
         editorPanelScrollPane = EditorPanel.newVerticalScrollPane(editorPanel);
         this.editorPanelScrollPane.getViewport().setView(this.editorPanel);
-        //this.editorPanelScrollPane.getVerticalScrollBar().setUnitIncrement(AppView.SCROLL_SPEED);
-
-        // TODO: does this really need an invokeLater?
-        SwingUtilities.invokeLater(() -> this.editorPanelScrollPane.getVerticalScrollBar().setValue(0));
+        scrollEditorPaneToTop();
     }
 
     /** Update the editor panel with the ID, feedback and grade for the current student in the model. */
@@ -338,7 +335,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Switch to new student
         currentStudent = studentId;
         loadEditorPanelData();
-        // previewPanel.selectStudent(studentId); // This should be unnecessary, since the preview panel should have *caused* the change.
+        scrollEditorPaneToTop();
 
         // Refresh UI
         this.previewPanel.repaint();
@@ -380,6 +377,10 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
     private void insertPhrase(String phrase) {
         editorPanel.insertPhraseIntoFeedbackBox(currentHeading, phrase);
+    }
+
+    private void scrollEditorPaneToTop() {
+        SwingUtilities.invokeLater(() -> editorPanelScrollPane.getVerticalScrollBar().setValue(0));
     }
 
     //
