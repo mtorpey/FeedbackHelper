@@ -71,6 +71,7 @@ public class AboutDialog extends JDialog {
         JEditorPane linksEditorPane = new JEditorPane("text/html", LINKS);
 
         linksEditorPane.setEditable(false);
+        linksEditorPane.setFocusable(false); 
         linksEditorPane.setOpaque(false);
 
         // Hyperlink navigation

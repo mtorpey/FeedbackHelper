@@ -98,6 +98,7 @@ public class HomeScreen extends JFrame {
             To resume work on an existing assignment, click the 'Load Assignment' button and select your '.fht' file."""
         );
         description.setEditable(false);
+        description.setFocusable(false); 
         description.setLineWrap(true);
         description.setWrapStyleWord(true);
         description.setOpaque(false);
