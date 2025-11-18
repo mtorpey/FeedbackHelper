@@ -42,9 +42,7 @@ public class PreviewPanel extends JList<String> {
 
         // Handle list selection using the callback
         panel.addListSelectionListener(e -> {
-            if (e.getValueIsAdjusting()) {
-                onSelectStudent.accept(panel.students.get(panel.getSelectedIndex()));
-            }
+            onSelectStudent.accept(panel.students.get(panel.getSelectedIndex()));
         });
 
         // Display!
