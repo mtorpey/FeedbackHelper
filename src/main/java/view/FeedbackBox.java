@@ -3,7 +3,6 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -122,7 +121,7 @@ public class FeedbackBox extends JPanel {
         this.headingButton = new JButton(EDIT_SYMBOL);
 
         // Set heading font
-        this.headingField.setFont(Configuration.getTitleFont());
+        this.headingField.setFont(Configuration.getSubtitleFont());
 
         // Add to the panel
         this.headingPanel.add(this.headingField, BorderLayout.WEST);

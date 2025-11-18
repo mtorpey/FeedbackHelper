@@ -103,9 +103,9 @@ public class EditorPanel extends VerticalScrollablePanel {
      */
     private void setupTitle() {
         this.titleLabel = new JLabel(this.titleText);
-        this.titleLabel.setFont(new Font("Helvetica Neue", Font.PLAIN, 20));
+        this.titleLabel.setFont(Configuration.getTitleFont());
         this.titleLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        this.titleLabel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        this.titleLabel.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_20_PIXELS));
         this.add(this.titleLabel, BorderLayout.PAGE_START);
     }
 
@@ -170,7 +170,7 @@ public class EditorPanel extends VerticalScrollablePanel {
 
     /** Update this panel to display the given student ID. */
     public void setStudentId(StudentId studentId) {
-        setTitleLabel("Document for: " + studentId);
+        setTitleLabel(studentId.toString());
 
         // Refresh the UI
         revalidate();

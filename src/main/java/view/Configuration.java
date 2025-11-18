@@ -20,18 +20,22 @@ public abstract class Configuration {
     public static final Color COLOR_BORDER_SELECTED = Color.GREEN;
 
     /**
-     * Return a font that can be used for titles, following the current
-     * look-and-feel as much as possible.
+     * Return a font that can be used for titles, based on standard Label font
      */
     public static Font getTitleFont() {
-        // Look for a large font from the L&F
-        Font titleFont = UIManager.getFont("Label.large.font");
+        return getSizedFont(3);
+    }
 
-        // If not found, make a big bold version of the standard font
-        if (titleFont == null) {
-            Font baseFont = UIManager.getFont("Label.font");
-            titleFont = baseFont.deriveFont(Font.BOLD, baseFont.getSize() * 2f);
-        }
+    /**
+     * Return a font that can be used for subtitles, based on standard Label font
+     */
+    public static Font getSubtitleFont() {
+        return getSizedFont(2);
+    }
+
+    private static Font getSizedFont(float scale) {
+        Font baseFont = UIManager.getFont("Label.font");
+        Font titleFont = baseFont.deriveFont(Font.BOLD, baseFont.getSize() * scale);
         return titleFont;
     }
 }
