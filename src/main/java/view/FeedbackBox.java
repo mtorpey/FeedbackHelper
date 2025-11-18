@@ -234,7 +234,7 @@ public class FeedbackBox extends JPanel {
                     onSwitchSection.accept(heading);
 
                     // Set the caret colour (in some themes it might be hard to see)
-                    textArea.setCaretColor(textArea.getForeground()); // TODO: bad idea?
+                    textArea.setCaretColor(textArea.getForeground());
 
                     // Check if we need to insert a new line
                     String text = textArea.getText();
