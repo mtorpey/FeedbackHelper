@@ -71,6 +71,7 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
      */
     public void addPhraseToPanel(Phrase phrase) {
         addPhraseToPanelForType(phrase, PhraseType.FREQUENTLY_USED);
+        updatePhraseCounter(phrase);
     }
 
     /**
