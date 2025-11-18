@@ -48,6 +48,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
     private PreviewPanel previewPanel;
     private JScrollPane editorPanelScrollPane;
     private EditorPanel editorPanel;
+    private StatusBar statusBar;
     private EditingPopupMenu editingPopupMenu;
     private PhrasesSection phrasesSection;
 
@@ -64,6 +65,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
         // Setup components
         screen.setup();
+        screen.setupStatusBar();
         screen.setupMenuBar();
         screen.setupPreviewPanel();
         screen.setupEditorPanel();
@@ -256,6 +258,11 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         this.phrasesSection.setHighlightedPane(1);
     }
 
+    private void setupStatusBar() {
+        statusBar = StatusBar.create();
+        add(statusBar, BorderLayout.SOUTH);
+    }
+
     /**
      * Setup the triple split pane that sits inside the JFrame and holds the main components.
      */
@@ -385,10 +392,6 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Add new phrases
         assignment.getPhrasesForHeading(currentHeading).forEach(phrase -> handlePhraseAdded(heading, phrase));
         assignment.getCustomPhrases(currentHeading).forEach(phrase -> handleCustomPhraseAdded(heading, phrase));
-
-        // TODO: handle phrase entry box
-        //this.phraseEntryBox.enablePhraseEntryBox();
-        //this.phraseEntryBox.disablePhraseEntryBox();
     }
 
     private void updateFeedbackSection(String heading, String text) {
@@ -471,7 +474,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
     @Override
     public void handleInfo(String message) {
         System.out.println(message);
-        // TODO: display in bottom bar?
+        statusBar.showMessage(message);
     }
 
     @Override
