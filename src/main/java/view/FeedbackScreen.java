@@ -87,8 +87,8 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         Dimension preferred = getContentPane().getPreferredSize();
         Rectangle monitor = getGraphicsConfiguration().getBounds();
         setSize(
-            Math.min(preferred.width * 5/4, monitor.width),
-            Math.min(preferred.height * 5/4, monitor.height)
+            Math.min(preferred.width * 5/4, monitor.width * 4/5),
+            Math.min(preferred.height * 5/4, monitor.height * 4/5)
         );
 
         // Center on screen
