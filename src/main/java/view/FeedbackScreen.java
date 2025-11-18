@@ -110,10 +110,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         addWindowListener(
             new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
-                    System.out.println("Closing");
-                    saveAssignmentForCurrentStudent();
-                    // TODO: handle thread
-                    System.exit(0);
+                    exitProgram();
                 }
             }
         );
@@ -129,10 +126,11 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
         // Create the file menu and items
         JMenu fileMenu = new JMenu("File");
-        JMenuItem saveOption = new JMenuItem("Save current document");
+        JMenuItem saveOption = new JMenuItem("Save assignment");
         JMenuItem addStudentOption = new JMenuItem("Add new student");
         JMenuItem exportDocsOption = new JMenuItem("Export grades and feedback documents");
         JMenuItem visGradesOption = new JMenuItem("Visualise grades");
+        JMenuItem exitOption = new JMenuItem("Exit");
 
         // Create the theme preferences menu
         JMenu preferencesMenu = createPreferencesMenu();
@@ -153,6 +151,9 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Visualise grades option
         visGradesOption.addActionListener(e -> controller.visualiseGrades());
 
+        // Exit program option
+        exitOption.addActionListener(e -> exitProgram());
+
         // Show the 'about' dialog window
         aboutOption.addActionListener(l -> AboutDialog.create(this));
 
@@ -161,6 +162,8 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         fileMenu.add(addStudentOption);
         fileMenu.add(exportDocsOption);
         fileMenu.add(visGradesOption);
+        fileMenu.addSeparator();
+        fileMenu.add(exitOption);
         helpMenu.add(aboutOption);
 
         // Add the menus to the menu bar
@@ -313,6 +316,13 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
             handleError("Error setting theme", e);
         }
         SwingUtilities.updateComponentTreeUI(this);
+    }
+
+    private void exitProgram() {
+        System.out.println("Closing");
+        saveAssignmentForCurrentStudent();
+        // TODO: handle thread
+        System.exit(0);
     }
 
     private void saveAssignmentForCurrentStudent() {
