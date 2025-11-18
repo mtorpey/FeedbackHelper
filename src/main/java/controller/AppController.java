@@ -173,7 +173,8 @@ public class AppController {
      */
     public void addCustomPhrase(String heading, String phrase) {
         // Filter out empty lines
-        if (!phrase.trim().isEmpty() && !phrase.trim().equals(assignment.getLineMarker())) {
+        phrase = phrase.trim();
+        if (!phrase.isEmpty() && !phrase.equals(assignment.getLineMarker())) {
             assignment.addCustomPhrase(heading, phrase);
         }
     }
