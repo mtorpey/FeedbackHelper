@@ -489,7 +489,6 @@ public class Assignment implements Serializable {
     //
     private void reportInfo(String message) {
         notifyListeners(l -> l.handleInfo(message));
-        System.out.println(message);
     }
 
     private void reportError(String description, Exception exception) {

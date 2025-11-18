@@ -55,7 +55,6 @@ public class PreviewPanel extends JList<String> {
     public void addStudent(StudentId studentId, double grade, long charCount) {
         // Find insertion point
         int pos = -Collections.binarySearch(students, studentId) - 1;
-        System.out.println("pos is " + pos + ", there are " + students.size() + " students.");
 
         // Insert into all three lists
         students.add(pos, studentId);

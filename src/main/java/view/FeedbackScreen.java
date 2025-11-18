@@ -303,7 +303,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
     }
 
     private void setTheme(String name) {
-        System.out.println("Setting theme " + name);
+        handleInfo("Setting theme " + name);
         UserPreferences.setTheme(name);
         try {
             UIManager.setLookAndFeel(name);
@@ -319,7 +319,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
     }
 
     private void exitProgram() {
-        System.out.println("Closing");
+        handleInfo("Closing...");
         saveAssignmentForCurrentStudent();
         // TODO: handle thread
         System.exit(0);
@@ -470,6 +470,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
     @Override
     public void handleInfo(String message) {
+        System.out.println(message);
         // TODO: display in bottom bar?
     }
 
