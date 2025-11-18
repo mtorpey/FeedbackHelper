@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
@@ -27,11 +26,11 @@ public class AboutDialog extends JDialog {
     public static final String DEVELOPER_INFO =
         "Feedback Helper was developed by Bhuvan Bezawada as part of a CS5099 project at the University of St Andrews.";
 
-    public static final String CONTRIBUTOR_INFO =
-        "Later contributions by Michael Young, Johannes Zelger, and Oluwanifemi Fadare.";
-
     public static final String GOAL_INFO =
         "The goal of this tool is to help markers create feedback documents more efficiently.";
+
+    public static final String CONTRIBUTOR_INFO =
+        "Later contributions by Michael Young, Johannes Zelger, and Oluwanifemi Fadare.";
 
     public static final String ABOUT_INFO =
         "<html><br>" + DEVELOPER_INFO + "<br>" + GOAL_INFO + "<br><br>" + CONTRIBUTOR_INFO + "</html>";
@@ -50,7 +49,7 @@ public class AboutDialog extends JDialog {
 
         // Create the dialog components
         JPanel dialogPanel = new JPanel(new BorderLayout());
-        dialogPanel.setBorder(BorderFactory.createEmptyBorder(8, 16, 24, 16));
+
 
         JPanel panelWest = new JPanel(new FlowLayout());
 
@@ -61,7 +60,7 @@ public class AboutDialog extends JDialog {
         panelEast.setLayout(new BoxLayout(panelEast, BoxLayout.Y_AXIS));
         // Create program header
         JLabel headerLabel = new JLabel("Feedback Helper");
-        headerLabel.setFont(headerLabel.getFont().deriveFont(32.0f)); // Increase size
+        headerLabel.setFont(Configuration.getTitleFont());
         // Create a label to display the Java version
         JLabel javaVersionLabel = new JLabel("Java Version: " + System.getProperty("java.version"));
         // Create labels to add information
