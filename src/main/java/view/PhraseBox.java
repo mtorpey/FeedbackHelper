@@ -1,11 +1,14 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Insets;
 import java.net.URL;
 import java.util.function.Consumer;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -28,6 +31,10 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
     // Green arrow icon
     private static ImageIcon insertIcon = loadInsertIcon();
 
+    // Minimum spacing around the arrow inside the button
+    private static final int BUTTON_MARGIN_SIZE = 10;
+    private static final Insets BUTTON_MARGIN = new Insets(BUTTON_MARGIN_SIZE, BUTTON_MARGIN_SIZE, BUTTON_MARGIN_SIZE, BUTTON_MARGIN_SIZE);
+
     /**
      * Create and return a new object of this class, including setup.
      *
@@ -38,8 +45,6 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
         var box = new PhraseBox(phrase);
 
         // Set up some components
-        box.phraseTextArea = new JTextArea();
-        box.insertButton = new JButton(insertIcon);
         box.setLayout(new BorderLayout());
         box.setupInsertButton(onInsertPhrase);
         box.setupPhraseTextArea();
@@ -63,7 +68,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
         // Green arrow image from: https://commons.wikimedia.org/wiki/File:Eo_circle_green_arrow-left.svg
         // (creative commons license)
         URL url = PhraseBox.class.getResource("/green_arrow.png");
-        Image image = new ImageIcon(url).getImage().getScaledInstance(25, 25, Image.SCALE_DEFAULT);
+        Image image = new ImageIcon(url).getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
         return new ImageIcon(image);
     }
 
@@ -71,32 +76,42 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      * Setup the insert button.
      */
     private void setupInsertButton(Consumer<String> onInsertPhrase) {
-        this.insertButton.addActionListener(l -> onInsertPhrase.accept(phrase.getPhraseAsString()));
-        this.add(this.insertButton, BorderLayout.LINE_START);
-    }
-
-    /**
-     * Setup the usage count label.
-     */
-    private void setupUsageCountLabel() {
-        this.usageCountLabel = new JLabel(String.valueOf(phrase.getUsageCount()));
-        this.add(this.usageCountLabel, BorderLayout.BEFORE_FIRST_LINE);
+        insertButton = new JButton(insertIcon);
+        insertButton.setMargin(BUTTON_MARGIN);
+        insertButton.addActionListener(l -> onInsertPhrase.accept(phrase.getPhraseAsString()));
+        add(insertButton, BorderLayout.LINE_START);
     }
 
     /**
      * Setup the phrase text area.
      */
     private void setupPhraseTextArea() {
+        phraseTextArea = new JTextArea();
+
         // Set properties
-        this.phraseTextArea.setBorder(BorderCreator.createEmptyBorderLeavingBottom(BorderCreator.PADDING_10_PIXELS));
-        this.phraseTextArea.setText(phrase.getPhraseAsString());
-        this.phraseTextArea.setLineWrap(true);
-        this.phraseTextArea.setWrapStyleWord(true);
-        this.phraseTextArea.setEditable(false);
+        phraseTextArea.setBorder(
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createEtchedBorder(),
+                BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_5_PIXELS)
+            )
+        );
+        phraseTextArea.setText(phrase.getPhraseAsString());
+        phraseTextArea.setLineWrap(true);
+        phraseTextArea.setWrapStyleWord(true);
+        phraseTextArea.setEditable(false);
+        phraseTextArea.setFocusable(false); 
 
         // Add the text area and some padding to the bottom of the panel
-        this.add(this.phraseTextArea, BorderLayout.CENTER);
-        this.setBorder(BorderCreator.createEmptyBorderLeavingBottom(BorderCreator.PADDING_20_PIXELS));
+        add(phraseTextArea, BorderLayout.CENTER);
+    }
+
+    /**
+     * Setup the usage count label.
+     */
+    private void setupUsageCountLabel() {
+        usageCountLabel = new JLabel(String.valueOf(phrase.getUsageCount()));
+        usageCountLabel.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_5_PIXELS));
+        add(usageCountLabel, BorderLayout.LINE_END);
     }
 
     /**

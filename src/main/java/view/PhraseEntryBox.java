@@ -68,7 +68,7 @@ public class PhraseEntryBox extends JPanel {
             new ImageIcon(
                 new ImageIcon(this.getClass().getResource("/submit_arrow.png"))
                     .getImage()
-                    .getScaledInstance(25, 25, Image.SCALE_DEFAULT)
+                    .getScaledInstance(25, 25, Image.SCALE_SMOOTH)
             )
         );
         this.add(this.submitButton, BorderLayout.LINE_END);
