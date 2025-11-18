@@ -1,5 +1,7 @@
 package view;
 
+import java.awt.Font;
+
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -35,6 +37,7 @@ public class AppView {
     public void start() {
         installThirdPartyThemes();
         applyUserTheme();
+        //applyFontScaling(1.5f);
         HomeScreen.create(controller);
     }
 
@@ -68,5 +71,19 @@ public class AppView {
                 e.printStackTrace();
             }
         }
+    }
+
+    /** Apply font scaling to all fonts in the UI. */
+    private static void applyFontScaling(float scale) {
+        UIManager
+            .getDefaults()
+            .keySet()
+            .stream()
+            .map(Object::toString)
+            .filter(s -> s.endsWith(".font"))
+            .forEach(key -> {
+                    Font font = UIManager.getFont(key);
+                    UIManager.put(key, font.deriveFont(font.getSize() * scale));
+                });
     }
 }
