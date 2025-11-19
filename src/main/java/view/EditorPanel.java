@@ -227,15 +227,6 @@ public class EditorPanel extends VerticalScrollablePanel {
     }
 
     /**
-     * Get feedback boxes.
-     *
-     * @return The feedback boxes.
-     */
-    public List<FeedbackBox> getFeedbackBoxes() {
-        return this.feedbackBoxes;
-    }
-
-    /**
      * Get the grade.
      *
      * @return The grade value.
