@@ -22,7 +22,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -114,6 +113,7 @@ public class CreateAssignmentScreen extends JFrame {
     public void setupFrameTitle() {
         JLabel title = new JLabel("Assignment Configuration", JLabel.CENTER);
         title.setFont(Configuration.getTitleFont());
+        title.setBorder(BorderCreator.emptyBorderMedium());
         add(title, BorderLayout.NORTH);
     }
 
