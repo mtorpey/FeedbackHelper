@@ -108,7 +108,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
      * Setup the feedback screen.
      */
     private void setup() {
-        setTitle("Feedback Composition");
+        setTitle("Feedback Helper – " + assignment.getTitle());
         addWindowListener(
             new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
