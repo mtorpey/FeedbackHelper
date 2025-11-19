@@ -36,6 +36,14 @@ public class HomeScreen extends JFrame {
     public static HomeScreen create(AppController controller) {
         var homeScreen = new HomeScreen(controller);
 
+        // Warn about beta
+        JOptionPane.showMessageDialog(
+            homeScreen,
+            "This is a beta release and has not been thoroughly tested. Back up often using the Export option and consider copying output to another directory just in case.",
+            "Warning",
+            JOptionPane.WARNING_MESSAGE
+        );
+
         // Setup the components and display the screen
         homeScreen.setLayout(new BorderLayout(SPACING, SPACING));
         homeScreen.createComponents();
