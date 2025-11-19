@@ -6,7 +6,7 @@
 
     <groupId>uk.myoung</groupId>
     <artifactId>FeedbackHelper</artifactId>
-    <version>4.0</version>
+    <version>5.0-beta</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -34,6 +34,15 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
+        <!--
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>6.0.1</version>
+            <scope>test</scope>
+        </dependency>
+        -->
 
         <dependency>
             <groupId>com.formdev</groupId>
