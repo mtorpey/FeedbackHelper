@@ -142,6 +142,9 @@ public class HomeScreen extends JFrame {
         loadButton.addActionListener(event -> {
             // Show a file chooser
             Path lastPath = UserPreferences.getLastOpenedAssignmentPath();
+            if (lastPath == null) {
+                lastPath = Path.of(System.getProperty("user.home"));
+            }
             JFileChooser fileChooser = new JFileChooser(lastPath.toString());
             fileChooser.setDialogTitle("Choose an assignment to resume");
 

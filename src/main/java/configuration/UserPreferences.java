@@ -13,8 +13,10 @@ public abstract class UserPreferences {
     private static String NODE_NAME = "FeedbackHelper";
     private static Preferences prefs = Preferences.userRoot().node(NODE_NAME);
 
+    private static final String THEME_DEFAULT = "com.formdev.flatlaf.FlatLightLaf";
+
     public static String getTheme() {
-        return prefs.get(THEME, null);
+        return prefs.get(THEME, THEME_DEFAULT);
     }
 
     public static void setTheme(String name) {
