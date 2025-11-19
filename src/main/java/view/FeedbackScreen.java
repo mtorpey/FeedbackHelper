@@ -5,6 +5,9 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -33,9 +36,10 @@ import model.StudentId;
  * Main window for an assignment in progress, containing all components.
  */
 public class FeedbackScreen extends JFrame implements AssignmentListener {
-    // References to model and controller
+    // References to other parts of program
     private Assignment assignment;
     private final AppController controller;
+    private Collection<Thread> saveThreads;
 
     // Part of model currently selected for viewing
     private StudentId currentStudent;
@@ -59,6 +63,9 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
      */
     public static FeedbackScreen create(AppController controller) {
         var screen = new FeedbackScreen(controller);
+
+        // Create pool of threads that must be run to completion.
+        screen.saveThreads = new ArrayList<>();
 
         // Subscribe to model for changes, and store a reference to it for querying.
         screen.assignment = controller.registerWithModel(screen);
@@ -328,8 +335,18 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
     private void exitProgram() {
         handleInfo("Closing...");
         saveAssignmentForCurrentStudent();
-        // TODO: handle thread
-        System.exit(0);
+        SwingUtilities.invokeLater(this::joinSaveThreadsAndExit);
+    }
+
+    private void joinSaveThreadsAndExit() {
+        try {
+            for (Thread thread : saveThreads) {
+                thread.join();
+            }
+            System.exit(0);
+        } catch (InterruptedException e) {
+            handleError("Interrupted while saving", e);
+        }
     }
 
     private void saveAssignmentForCurrentStudent() {
@@ -469,6 +486,17 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
                 handleError("Custom phrase added for another section", new Exception("This should never happen."));
             }
         });
+    }
+
+    /**
+     * Received a notification that the assignment is being saved in another thread.
+     *
+     * This method takes the thread and stores a reference to it, so it can be
+     * joined at shutdown to avoid interrupting it.
+     */
+    @Override
+    public void handleSaveThread(Thread saveThread) {
+        SwingUtilities.invokeLater(() -> saveThreads.add(saveThread));
     }
 
     @Override

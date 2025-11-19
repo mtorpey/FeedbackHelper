@@ -3,6 +3,7 @@ package model;
 import static java.util.function.Predicate.not;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,6 +12,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -239,16 +241,45 @@ public class Assignment implements Serializable {
 
     /**
      * Save assignment details into an FHT file.
+     *
+     * @return The thread that is doing the saving, which will run in the background.
      */
     public void save() {
-        String fileName = getFileSafeTitle() + ".fht";
-        Path fhtFile = directory.resolve(fileName);
-        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(Files.newOutputStream(fhtFile))) {
-            objectOutputStream.writeObject(this);
-            reportInfo("Saved to " + fhtFile);
+        // Write to a byte array (synchronous) then copy that to a file (asynchronous)
+        try (
+            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteStream);
+        ) {
+            // Write to byte array
+            synchronized(this) {
+                objectOutputStream.writeObject(this);
+                objectOutputStream.flush();
+            }
+            byte[] bytes = byteStream.toByteArray();
+
+            // Save to disk in another thread
+            Thread saveThread = new Thread(() -> {
+                try {
+                    Path tempFile = Files.createTempFile(null, null);
+                    Files.write(tempFile, bytes);
+                    String fileName = getFileSafeTitle() + ".fht";
+                    Path fhtFile = directory.resolve(fileName);
+                    copyFile(tempFile, fhtFile);
+                    reportInfo("Saved to " + fhtFile);
+                } catch (IOException e) {
+                    reportError("Error saving assignment", e);
+                }
+            });
+            saveThread.start();
+            notifyListeners(l -> l.handleSaveThread(saveThread));
         } catch (IOException e) {
-            reportError("Error saving assignment.", e);
+            reportError("Error saving assignment", e);
         }
+    }
+
+    /** Do the copying, which should be synchronized to just one thread. */
+    private synchronized void copyFile(Path source, Path target) throws IOException {
+        Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
     }
 
     /**

@@ -38,6 +38,8 @@ public interface AssignmentListener {
     // NEW_CUSTOM_PHRASE_MESSAGE = "newCustomPhrase";
     void handleCustomPhraseAdded(String heading, Phrase phrase);
 
+    void handleSaveThread(Thread saveThread);
+
     void handleInfo(String message);
 
     // ERROR_MESSAGE = "error";
