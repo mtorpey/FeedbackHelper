@@ -50,6 +50,10 @@ public class AppController {
         }
         this.assignment = new Assignment(title, headings, studentListFile, directory);
         assignment.save();
+
+        // Since this was successful, remember it as the default for next load
+        UserPreferences.setLastOpenedAssignment(directory);
+
         return this.assignment;
     }
 
