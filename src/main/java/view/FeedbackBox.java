@@ -246,6 +246,7 @@ public class FeedbackBox extends JPanel {
 
                 @Override
                 public void focusLost(FocusEvent e) {
+                    trimText();                    
                     updateFeedback();
                 }
             }
@@ -321,5 +322,15 @@ public class FeedbackBox extends JPanel {
             textArea.setCaretPosition(caretPos);
         }
         textArea.insert(lineMarker, caretPos);
+    }
+
+    /** Trim the text in the box on leaving it. */
+    private void trimText() {
+        String text = textArea.getText();
+        while (text.endsWith(lineMarker)) {
+            text = text.substring(0, text.length() - lineMarker.length());
+        }
+        text = text.trim();
+        textArea.setText(text);
     }
 }
