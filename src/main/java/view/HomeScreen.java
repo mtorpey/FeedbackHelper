@@ -80,7 +80,7 @@ public class HomeScreen extends JFrame {
     public void createFrameTitle() {
         JLabel title = new JLabel("Feedback Helper", JLabel.CENTER);
         title.setFont(Configuration.getTitleFont());
-        title.setBorder(BorderCreator.emptyBorder15Pixels());
+        title.setBorder(BorderCreator.emptyBorderMedium());
         add(title, BorderLayout.NORTH);
     }
 

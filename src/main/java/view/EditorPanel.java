@@ -103,7 +103,7 @@ public class EditorPanel extends VerticalScrollablePanel {
         this.titleLabel = new JLabel(this.titleText);
         this.titleLabel.setFont(Configuration.getTitleFont());
         this.titleLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        this.titleLabel.setBorder(BorderCreator.emptyBorder15Pixels());
+        this.titleLabel.setBorder(BorderCreator.emptyBorderMedium());
         this.add(this.titleLabel, BorderLayout.PAGE_START);
     }
 

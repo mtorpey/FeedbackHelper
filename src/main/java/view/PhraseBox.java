@@ -81,7 +81,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      */
     private void setupUsageCountLabel() {
         usageCountLabel = new JLabel(String.valueOf(phrase.getUsageCount()));
-        usageCountLabel.setBorder(BorderCreator.emptyBorder5Pixels());
+        usageCountLabel.setBorder(BorderCreator.emptyBorderSmall());
         add(usageCountLabel, BorderLayout.LINE_END);
     }
 

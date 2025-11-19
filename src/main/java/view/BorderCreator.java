@@ -3,39 +3,47 @@ package view;
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
 
+import configuration.UserPreferences;
+
 /**
  * Border Creator Class.
  */
 public abstract class BorderCreator {
 
     // Constants for number of pixels in 100% scaled display
-    public static final int PADDING_1_PIXEL = 1;
-    public static final int PADDING_5_PIXELS = 5;
-    public static final int PADDING_15_PIXELS = 15;
+    public static final int PADDING_TINY = 2;
+    public static final int PADDING_SMALL = 5;
+    public static final int PADDING_MEDIUM = 15;
 
     public static final Border textAreaBorder() {
         return BorderFactory.createCompoundBorder(
             BorderFactory.createEtchedBorder(),
-            emptyBorder5Pixels()
+            emptyBorderSmall()
         );
     }
 
     public static Border statusBarBorder() {
         return BorderFactory.createCompoundBorder(
             BorderFactory.createLoweredBevelBorder(),
-            emptyBorder1Pixel()
+            emptyBorderTiny()
         );
     }
 
-    public static Border emptyBorder1Pixel() {
-        return BorderFactory.createEmptyBorder(PADDING_1_PIXEL, PADDING_1_PIXEL, PADDING_1_PIXEL, PADDING_1_PIXEL);
+    public static Border emptyBorderTiny() {
+        return emptyBorderScaled(PADDING_TINY);
     }
 
-    public static Border emptyBorder5Pixels() {
-        return BorderFactory.createEmptyBorder(PADDING_5_PIXELS, PADDING_5_PIXELS, PADDING_5_PIXELS, PADDING_5_PIXELS);
+    public static Border emptyBorderSmall() {
+        return emptyBorderScaled(PADDING_SMALL);
     }
 
-    public static Border emptyBorder15Pixels() {
-        return BorderFactory.createEmptyBorder(PADDING_15_PIXELS, PADDING_15_PIXELS, PADDING_15_PIXELS, PADDING_15_PIXELS);
+    public static Border emptyBorderMedium() {
+        return emptyBorderScaled(PADDING_MEDIUM);
     }
+
+    private static Border emptyBorderScaled(int padding) {
+        padding = Math.round(padding * UserPreferences.getScale());
+        return BorderFactory.createEmptyBorder(padding, padding, padding, padding);
+    }
+
 }

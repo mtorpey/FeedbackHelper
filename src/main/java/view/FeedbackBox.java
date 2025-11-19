@@ -71,7 +71,7 @@ public class FeedbackBox extends JPanel {
         box.add(box.textArea, BorderLayout.CENTER);
 
         // Add some padding to the bottom on the panel and make it visible
-        box.setBorder(BorderCreator.emptyBorder15Pixels());
+        box.setBorder(BorderCreator.emptyBorderMedium());
         box.setVisible(true);
 
         return box;
@@ -141,7 +141,7 @@ public class FeedbackBox extends JPanel {
             } else {
                 // Stop editing
                 headingButton.setText(FeedbackBox.EDIT_SYMBOL);
-                headingField.setBorder(BorderCreator.emptyBorder5Pixels());
+                headingField.setBorder(BorderCreator.emptyBorderSmall());
             }
 
             headingPanel.revalidate();

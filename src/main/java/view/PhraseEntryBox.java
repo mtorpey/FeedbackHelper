@@ -32,7 +32,7 @@ public class PhraseEntryBox extends JPanel {
         box.setupSubmitButton();
 
         // Set border and visibility
-        box.setBorder(BorderCreator.emptyBorder5Pixels());
+        box.setBorder(BorderCreator.emptyBorderSmall());
         box.setVisible(true);
 
         return box;
