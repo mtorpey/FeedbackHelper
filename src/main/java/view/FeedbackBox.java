@@ -9,7 +9,6 @@ import java.awt.event.KeyEvent;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
