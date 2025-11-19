@@ -1,7 +1,6 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -72,7 +71,7 @@ public class FeedbackBox extends JPanel {
         box.add(box.textArea, BorderLayout.CENTER);
 
         // Add some padding to the bottom on the panel and make it visible
-        box.setBorder(BorderCreator.createEmptyBorderLeavingTop(BorderCreator.PADDING_20_PIXELS));
+        box.setBorder(BorderCreator.emptyBorder15Pixels());
         box.setVisible(true);
 
         return box;
@@ -114,14 +113,15 @@ public class FeedbackBox extends JPanel {
      */
     private void setupPanel() {
         this.headingPanel = new JPanel(new BorderLayout());
-        this.headingPanel.setBorder(BorderCreator.createEmptyBorderBottomOnly(BorderCreator.PADDING_10_PIXELS));
+        //this.headingPanel.setBorder(BorderCreator.emptyBorder5Pixels());
 
         // Create components
-        this.headingField = new JTextField(this.heading, this.heading.length());
+        this.headingField = new JTextField(this.heading);
         this.headingButton = new JButton(EDIT_SYMBOL);
 
         // Set heading font
-        this.headingField.setFont(Configuration.getSubtitleFont());
+        headingField.setFont(Configuration.getSubtitleFont());
+        headingButton.setFont(Configuration.getSubtitleFont());
 
         // Add to the panel
         this.headingPanel.add(this.headingField, BorderLayout.WEST);
@@ -131,18 +131,17 @@ public class FeedbackBox extends JPanel {
         Consumer<Boolean> edit = state -> {
             headingField.setEditable(state);
             headingField.setOpaque(state);
+            headingField.setFocusable(state);
+            headingField.repaint();
 
             // Set editable
             if (state) {
                 headingButton.setText(FeedbackBox.FINISH_SYMBOL);
-                headingField.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-                headingField.setBackground(Color.WHITE);
+                headingField.setBorder(BorderCreator.textAreaBorder());
             } else {
                 // Stop editing
                 headingButton.setText(FeedbackBox.EDIT_SYMBOL);
-                //headingField.setBorder(BorderCreator.createEmptyBorderBottomOnly(BorderCreator.PADDING_10_PIXELS))
-                headingField.setBorder(BorderFactory.createEmptyBorder());
-                headingField.setBackground(new Color(0, 0, 0, 0));
+                headingField.setBorder(BorderCreator.emptyBorder5Pixels());
             }
 
             headingPanel.revalidate();
@@ -152,8 +151,8 @@ public class FeedbackBox extends JPanel {
         this.headingField.getDocument().addDocumentListener(
             new DocumentListener() {
                 public void changedUpdate(DocumentEvent e) {
-                    String currentHeading = headingField.getText();
-                    headingField.setColumns(currentHeading.length());
+                    //String currentHeading = headingField.getText();
+                    //headingField.setColumns(currentHeading.length());
                     headingPanel.revalidate();
                 }
 
@@ -209,7 +208,7 @@ public class FeedbackBox extends JPanel {
         this.textArea.setLineWrap(true);
         this.textArea.setWrapStyleWord(true);
         this.textArea.setMinimumSize(new Dimension(0, 0));
-        this.textArea.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
+        this.textArea.setBorder(BorderCreator.textAreaBorder());
 
         // Listen for enter press
         this.textArea.addKeyListener(

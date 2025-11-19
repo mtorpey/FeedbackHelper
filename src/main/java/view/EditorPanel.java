@@ -1,7 +1,6 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +13,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 
 import model.StudentId;
 
@@ -105,7 +103,7 @@ public class EditorPanel extends VerticalScrollablePanel {
         this.titleLabel = new JLabel(this.titleText);
         this.titleLabel.setFont(Configuration.getTitleFont());
         this.titleLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        this.titleLabel.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_20_PIXELS));
+        this.titleLabel.setBorder(BorderCreator.emptyBorder15Pixels());
         this.add(this.titleLabel, BorderLayout.PAGE_START);
     }
 

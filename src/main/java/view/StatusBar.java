@@ -7,7 +7,7 @@ public class StatusBar extends JLabel {
     public static StatusBar create() {
         StatusBar statusBar = new StatusBar();
         statusBar.setText("hello");
-        statusBar.setBorder(BorderFactory.createLoweredSoftBevelBorder());
+        statusBar.setBorder(BorderCreator.statusBarBorder());
         return statusBar;
     }
 

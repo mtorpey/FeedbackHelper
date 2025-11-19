@@ -1,6 +1,5 @@
 package view;
 
-import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.UIManager;
@@ -12,12 +11,6 @@ import javax.swing.UIManager;
  * to Swing's look-and-feel (LAF) system.
  */
 public abstract class Configuration {
-
-    /** Colour used for the border of an unselected component. */
-    public static final Color COLOR_BORDER_UNSELECTED = Color.LIGHT_GRAY;
-
-    /** Colour used for the border of a component when it is selected. */
-    public static final Color COLOR_BORDER_SELECTED = Color.GREEN;
 
     /**
      * Return a font that can be used for titles, based on standard Label font

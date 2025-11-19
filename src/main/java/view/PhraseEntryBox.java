@@ -32,7 +32,7 @@ public class PhraseEntryBox extends JPanel {
         box.setupSubmitButton();
 
         // Set border and visibility
-        box.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
+        box.setBorder(BorderCreator.emptyBorder5Pixels());
         box.setVisible(true);
 
         return box;
@@ -47,7 +47,7 @@ public class PhraseEntryBox extends JPanel {
      */
     private void setupTextArea() {
         textArea = new JTextArea();
-        textArea.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_10_PIXELS));
+        textArea.setBorder(BorderCreator.textAreaBorder());
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setMinimumSize(new Dimension(0, 0));

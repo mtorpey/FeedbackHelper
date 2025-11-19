@@ -35,7 +35,7 @@ public class GradeBox extends JPanel {
         box.setupChooser();
 
         // Add some padding to the bottom on the panel and make it visible
-        box.setBorder(BorderCreator.createEmptyBorderLeavingTop(BorderCreator.PADDING_20_PIXELS));
+        box.setBorder(BorderCreator.emptyBorder5Pixels());
         box.setVisible(true);
 
         return box;

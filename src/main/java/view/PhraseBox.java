@@ -65,12 +65,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
         phraseTextArea = new JTextArea();
 
         // Set properties
-        phraseTextArea.setBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createEtchedBorder(),
-                BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_5_PIXELS)
-            )
-        );
+        phraseTextArea.setBorder(BorderCreator.textAreaBorder());
         phraseTextArea.setText(phrase.getPhraseAsString());
         phraseTextArea.setLineWrap(true);
         phraseTextArea.setWrapStyleWord(true);
@@ -86,7 +81,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      */
     private void setupUsageCountLabel() {
         usageCountLabel = new JLabel(String.valueOf(phrase.getUsageCount()));
-        usageCountLabel.setBorder(BorderCreator.createAllSidesEmptyBorder(BorderCreator.PADDING_5_PIXELS));
+        usageCountLabel.setBorder(BorderCreator.emptyBorder5Pixels());
         add(usageCountLabel, BorderLayout.LINE_END);
     }
 
