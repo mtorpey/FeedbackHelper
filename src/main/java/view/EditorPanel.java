@@ -25,7 +25,7 @@ public class EditorPanel extends VerticalScrollablePanel {
     private String titleText;
     private JLabel titleLabel;
     private JPanel feedbackBoxesPanel;
-    private List<FeedbackBox> feedbackBoxes; // TODO: remove?
+    private List<FeedbackBox> feedbackBoxes;
     private GradeBox gradeBox;
     private List<String> headings;
     private Map<String, FeedbackBox> headingAndFeedbackBox;
