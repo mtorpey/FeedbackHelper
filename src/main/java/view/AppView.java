@@ -1,9 +1,13 @@
 package view;
 
 import java.awt.Font;
+import java.awt.event.KeyEvent;
 
+import javax.swing.InputMap;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.text.DefaultEditorKit;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
@@ -38,6 +42,7 @@ public class AppView {
         installThirdPartyThemes();
         applyUserTheme();
         applyFontScaling(UserPreferences.getScale());
+        addMacKeyBindings();
         HomeScreen.create(controller);
     }
 
@@ -82,8 +87,17 @@ public class AppView {
             .map(Object::toString)
             .filter(s -> s.endsWith(".font"))
             .forEach(key -> {
-                    Font font = UIManager.getFont(key);
-                    UIManager.put(key, font.deriveFont(font.getSize() * scale));
-                });
+                Font font = UIManager.getFont(key);
+                UIManager.put(key, font.deriveFont(font.getSize() * scale));
+            });
+    }
+
+    /** Attempt to support command key cut/copy/paste on a Mac. */
+    private void addMacKeyBindings() {
+        // From https://stackoverflow.com/questions/7252749
+        InputMap im = (InputMap) UIManager.get("TextField.focusInputMap");
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK), DefaultEditorKit.copyAction);
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.META_DOWN_MASK), DefaultEditorKit.pasteAction);
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.META_DOWN_MASK), DefaultEditorKit.cutAction);
     }
 }
