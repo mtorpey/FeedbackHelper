@@ -7,6 +7,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 public class PhrasesTab extends JSplitPane {
+    private JScrollPane scrollPane;
+    private PhraseEntryBox phraseEntryBox;
 
     /**
      * Create and return a new object of this class, including setup.
@@ -38,7 +40,15 @@ public class PhrasesTab extends JSplitPane {
         return tab;
     }
 
-    private PhrasesTab(Component newLeftComponent, Component newRightComponent) {
-        super(PhrasesTab.VERTICAL_SPLIT, newLeftComponent, newRightComponent);
+    private PhrasesTab(JScrollPane scrollPane, PhraseEntryBox phraseEntryBox) {
+        super(PhrasesTab.VERTICAL_SPLIT, scrollPane, phraseEntryBox);
+        this.scrollPane = scrollPane;
+        this.phraseEntryBox = phraseEntryBox;
+    }
+
+    public void enablePhraseEntryBox() {
+        if (phraseEntryBox != null) {
+            phraseEntryBox.enableButton();
+        }
     }
 }

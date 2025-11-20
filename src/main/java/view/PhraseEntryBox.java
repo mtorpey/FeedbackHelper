@@ -66,5 +66,12 @@ public class PhraseEntryBox extends JPanel {
             onSubmit.accept(textArea.getText());
             textArea.setText("");
         });
+
+        // Disable until a section is selectde
+        submitButton.setEnabled(false);
+    }
+
+    public void enableButton() {
+        submitButton.setEnabled(true);
     }
 }

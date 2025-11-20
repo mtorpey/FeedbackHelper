@@ -24,6 +24,7 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
     private JTabbedPane tabbedPane;
     private List<JScrollPane> phrasesPanelScrollPanes;
     private Map<PhraseType, PhrasesPanel> phrasesPanelsByType;
+    private List<PhrasesTab> tabs;
 
     /**
      * Create and return a new object of this class, including setup.
@@ -32,6 +33,7 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
         var phrasesSection = new PhrasesSection();
         phrasesSection.phrasesPanelScrollPanes = new ArrayList<>();
         phrasesSection.phrasesPanelsByType = new HashMap<PhraseType, PhrasesPanel>();
+        phrasesSection.tabs = new ArrayList<>();
 
         // Set layout, contents and visibility
         phrasesSection.setLayout(new BorderLayout());
@@ -51,16 +53,22 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
      */
     public void addPhrasesTab(PhrasesPanel phrasesPanel, Consumer<String> onNewCustomPhrase) {
         PhrasesTab tab = PhrasesTab.create(phrasesPanel, onNewCustomPhrase);
-        this.phrasesPanelsByType.put(phrasesPanel.getPhraseType(), phrasesPanel);
-        this.tabbedPane.addTab(phrasesPanel.getPhraseType().getPhraseTypeAsString(), tab);
-        this.update();
+        tabs.add(tab);
+        phrasesPanelsByType.put(phrasesPanel.getPhraseType(), phrasesPanel);
+        tabbedPane.addTab(phrasesPanel.getPhraseType().getPhraseTypeAsString(), tab);
+        update();
     }
 
     /**
      * Reset both phrases panels.
      */
     public void resetPhrasesPanels() {
+        // Clear phrases
         phrasesPanelsByType.values().forEach(PhrasesPanel::clear);
+
+        // Enable phrase entry box
+        tabs.forEach(PhrasesTab::enablePhraseEntryBox);
+
         update();
     }
 

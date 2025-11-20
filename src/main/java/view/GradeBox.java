@@ -48,7 +48,12 @@ public class GradeBox extends JPanel {
     private void setupChooser() {
         chooser = new JSpinner(new SpinnerNumberModel(MINIMUM, MINIMUM, MAXIMUM, STEP));
         chooser.addChangeListener(e -> onUpdateGrade.accept(getGrade()));
+        chooser.setEnabled(false);
         add(this.chooser);
+    }
+
+    public void enableChooser() {
+        chooser.setEnabled(true);
     }
 
     /**

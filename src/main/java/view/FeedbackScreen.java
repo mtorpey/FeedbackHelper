@@ -66,12 +66,15 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Create pool of threads that must be run to completion.
         screen.saveThreads = new ArrayList<>();
 
+        // Get the status bar ready for updates
+        screen.setLayout(new BorderLayout());
+        screen.setupStatusBar();
+
         // Subscribe to model for changes, and store a reference to it for querying.
         screen.assignment = controller.registerWithModel(screen);
 
         // Setup components
         screen.setup();
-        screen.setupStatusBar();
         screen.setupMenuBar();
         screen.setupPreviewPanel();
         screen.setupEditorPanel();
@@ -122,7 +125,6 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
                 }
             }
         );
-        setLayout(new BorderLayout());
     }
 
     /**
@@ -187,7 +189,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
      * Setup the preview panel and put it in the scroll pane, replacing any old panel that was there.
      */
     private void setupPreviewPanel() {
-        previewPanel = PreviewPanel.create(this::switchStudent);
+        previewPanel = PreviewPanel.create(this::switchStudentIfNeeded);
         for (StudentId studentId : assignment.getStudentIds()) {
             previewPanel.addStudent(studentId, assignment.getGrade(studentId), assignment.getFeedbackLength(studentId));
         }
@@ -201,7 +203,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         }
 
         // Start with the first one open if this is first time setup (they should be sorted)
-        if (currentStudent == null) {
+        if (currentStudent == null && !assignment.getStudentIds().isEmpty()) {
             currentStudent = assignment.getStudentIds().get(0);
         }
 
@@ -229,7 +231,9 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         this.editorPanel.registerPopupMenu(this.editingPopupMenu);
 
         // Set the document data
-        loadEditorPanelData();
+        if (currentStudent != null) {
+            loadEditorPanelData();
+        }
 
         // Make the panel scrollable
         editorPanelScrollPane = EditorPanel.newVerticalScrollPane(editorPanel);
@@ -349,9 +353,20 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
     }
 
     private void saveAssignmentForCurrentStudent() {
+        // If no student is selected, simply save to disk
+        if (currentStudent == null) {
+            controller.saveAssignment();
+            return;
+        }
+
+        // Extract anything from the view that might not have been committed
         Map<String, String> sections = editorPanel.getSections();
         double grade = editorPanel.getGrade();
+
+        // Send it to the controller for saving
         controller.updateFeedbackAndGrade(currentStudent, sections, grade); // This saves to disk.
+
+        // Update the left panel with the latest data
         previewPanel.updateGrade(currentStudent, grade);
         previewPanel.updateLength(currentStudent, assignment.getFeedbackLength(currentStudent));
     }
@@ -366,15 +381,24 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
     }
 
     /**
+     * Change the student currently selected in the view, if not the same as the current one.
+     *
+     * @param studentId The ID of the student we are now viewing.
+     */
+    private void switchStudentIfNeeded(StudentId studentId) {
+        System.out.println("Trying to switch to student " + studentId + " from " + currentStudent);
+
+        if (!studentId.equals(currentStudent)) {
+            switchStudent(studentId);
+        }
+    }
+
+    /**
      * Change the student currently selected in the view.
      *
      * @param studentId The ID of the student we are now viewing.
      */
     private void switchStudent(StudentId studentId) {
-        // Ignore re-selecting current student
-        if (studentId.equals(currentStudent)) {
-            return;
-        }
 
         // Wrap up from last student
         saveAssignmentForCurrentStudent();

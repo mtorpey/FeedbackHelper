@@ -203,7 +203,8 @@ public class FeedbackBox extends JPanel {
         // Create the text area and set properties
         this.textArea = new JTextArea();
         this.textArea.setRows(3);
-        this.textArea.setEditable(true);
+        this.textArea.setEditable(false);
+        this.textArea.setFocusable(false);
         this.textArea.setLineWrap(true);
         this.textArea.setWrapStyleWord(true);
         this.textArea.setMinimumSize(new Dimension(0, 0));
@@ -250,6 +251,13 @@ public class FeedbackBox extends JPanel {
                 }
             }
         );
+    }
+
+    public void enableTextArea() {
+        System.out.println("Text area enabled");
+        textArea.setEditable(true);
+        textArea.setFocusable(true);
+        repaint();
     }
 
     /** Send the current feedback to the model. */

@@ -169,6 +169,7 @@ public class EditorPanel extends VerticalScrollablePanel {
     /** Update this panel to display the given student ID. */
     public void setStudentId(StudentId studentId) {
         setTitleLabel(studentId.toString());
+        gradeBox.enableChooser();
 
         // Refresh the UI
         revalidate();
@@ -185,6 +186,7 @@ public class EditorPanel extends VerticalScrollablePanel {
         FeedbackBox box = headingAndFeedbackBox.get(heading);
         box.setContents("");
         box.setContents(contents);
+        box.enableTextArea(); // allow editing now a student is selected
 
         // Refresh the UI
         revalidate();
