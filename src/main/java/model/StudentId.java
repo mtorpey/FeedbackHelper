@@ -10,7 +10,9 @@ public record StudentId(String id) implements Comparable<StudentId>, Serializabl
      * An ID must be at least 1 character, and consist of only alphanumeric
      * characters and a few other allowed symbols.
      */
-    public static final String ALLOWED_PATTERN = "[-a-zA-Z_0-9!#$%&\\*\\+/=\\?\\^\\{\\}~]+";
+    public static final String ALLOWED_CHARACTERS = "-a-zA-Z_0-9!#$%&\\*\\+/=\\?\\^\\{\\}~";
+    public static final String ALLOWED_PATTERN = "[" + ALLOWED_CHARACTERS + "]+";
+    public static final String DELIMITER = "[^" + ALLOWED_CHARACTERS + "]+";
 
     /**
      * Regex pattern for St Andrews matric numbers (9 digits).

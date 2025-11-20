@@ -199,7 +199,7 @@ public class Assignment implements Serializable {
         }
         List<StudentId> studentIds = new ArrayList<>();
         try (Scanner scanner = new Scanner(file)) {
-            scanner.useDelimiter("\\s|,|;");
+            scanner.useDelimiter(StudentId.DELIMITER);
             while (scanner.hasNext()) {
                 try {
                     StudentId studentId = new StudentId(scanner.next());
