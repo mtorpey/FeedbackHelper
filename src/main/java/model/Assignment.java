@@ -473,7 +473,7 @@ public class Assignment implements Serializable {
         return Arrays.stream(contents.split("\n"))
             .map(String::trim)
             .filter(line -> line.startsWith(lineMarker))
-            .map(line -> line.replaceFirst(lineMarker, ""))
+            .map(line -> line.substring(lineMarker.length()))
             .collect(Collectors.toSet());
     }
 
