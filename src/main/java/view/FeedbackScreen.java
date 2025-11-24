@@ -2,14 +2,18 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -65,6 +69,8 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
         // Create pool of threads that must be run to completion.
         screen.saveThreads = new ArrayList<>();
+        
+        screen.setIconImage(LogoIcon.getInstance());
 
         // Get the status bar ready for updates
         screen.setLayout(new BorderLayout());
