@@ -22,7 +22,6 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
     // Instance variables
     private SearchBox searchBox;
     private JTabbedPane tabbedPane;
-    private List<JScrollPane> phrasesPanelScrollPanes;
     private Map<PhraseType, PhrasesPanel> phrasesPanelsByType;
     private List<PhrasesTab> tabs;
 
@@ -31,7 +30,6 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
      */
     public static PhrasesSection create() {
         var phrasesSection = new PhrasesSection();
-        phrasesSection.phrasesPanelScrollPanes = new ArrayList<>();
         phrasesSection.phrasesPanelsByType = new HashMap<PhraseType, PhrasesPanel>();
         phrasesSection.tabs = new ArrayList<>();
 
@@ -93,11 +91,8 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
 
     private void addPhraseToPanelForType(Phrase phrase, PhraseType type) {
         this.phrasesPanelsByType.get(type).addPhrase(phrase);
-        for (JScrollPane scrollPane : this.phrasesPanelScrollPanes) {
-            SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
-            scrollPane.getVerticalScrollBar().setValue(0);
-        }
         this.searchBox.clear(); // new phrase added, so current search is over
+        tabs.forEach(PhrasesTab::scrollToTop); // scroll all phrases tabs to top (a bit of overkill)
     }
 
     /**

@@ -1,10 +1,10 @@
 package view;
 
-import java.awt.Component;
 import java.util.function.Consumer;
 
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
 
 public class PhrasesTab extends JSplitPane {
     private JScrollPane scrollPane;
@@ -50,5 +50,10 @@ public class PhrasesTab extends JSplitPane {
         if (phraseEntryBox != null) {
             phraseEntryBox.enableButton();
         }
+    }
+
+    /** Scroll pane to top. */
+    public void scrollToTop() {
+        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
     }
 }
