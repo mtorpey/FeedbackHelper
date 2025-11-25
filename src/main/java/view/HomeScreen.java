@@ -2,6 +2,7 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.io.IOException;
 import java.nio.file.Path;
 
 import javax.swing.BorderFactory;
@@ -35,6 +36,9 @@ public class HomeScreen extends JFrame {
      */
     public static HomeScreen create(AppController controller) {
         var homeScreen = new HomeScreen(controller);
+
+        // Set icon
+        LogoIcon.applyIcon(homeScreen);
 
         // Warn about beta
         JOptionPane.showMessageDialog(

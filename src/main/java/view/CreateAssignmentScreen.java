@@ -86,6 +86,9 @@ public class CreateAssignmentScreen extends JFrame {
     public static CreateAssignmentScreen create(AppController controller) {
         CreateAssignmentScreen screen = new CreateAssignmentScreen(controller);
 
+        // Set icon
+        LogoIcon.applyIcon(screen);
+
         // Setup components
         screen.setLayout(new BorderLayout(SPACING, SPACING));
         screen.setupFrameTitle();
