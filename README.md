@@ -57,3 +57,5 @@ Or to create an executable jar, do the following:
 
 ## Copyright
 Copyright (C) 2020-2024 by Bhuvan Bezawada and contributors
+
+30cb7bdd64970c272b62b0afdac8d6cb3315926aee40d1887475f6d687c2715
