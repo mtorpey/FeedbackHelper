@@ -2,8 +2,11 @@ package view;
 
 import java.awt.Font;
 import java.awt.event.KeyEvent;
+import java.nio.file.Path;
 
 import javax.swing.InputMap;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -27,23 +30,50 @@ public class AppView {
     private final AppController controller;
 
     /**
-     * Constructor.
+     * Create and return a new object of this class, including setup.
      *
-     * @param controller The controller.
+     * @param controller The controller for the program.
      */
-    public AppView(AppController controller) {
-        this.controller = controller;
-    }
-
-    /**
-     * Start the app.
-     */
-    public void start() {
+    public static AppView create(AppController controller) {
+        AppView view = new AppView(controller);
+        
         installThirdPartyThemes();
         applyUserTheme();
         applyFontScaling(UserPreferences.getScale());
         addMacKeyBindings();
+    
+        return view;
+    }
+    
+    private AppView(AppController controller) {
+        this.controller = controller;
+    }
+    
+    /**
+     * Start the app at the homescreen, without a file already provided.
+     */
+    public void start() {
         HomeScreen.create(controller);
+    }
+
+    /** Start the app with a pre-specified file to open, skipping the home screen. */
+    public void startWithFile(Path fhtFile) {
+        // Try to load the assignment
+        try {
+            controller.loadAssignment(fhtFile);
+            FeedbackScreen.create(controller);
+        } catch (Exception exception) {
+            JFrame parent = new JFrame();
+            LogoIcon.applyIcon(parent);
+            JOptionPane.showMessageDialog(
+                parent,
+                exception.toString(),
+                "Problem loading assignment",
+                JOptionPane.ERROR_MESSAGE
+            );
+            exception.printStackTrace();
+            parent.dispose();
+        }
     }
 
     /**
@@ -93,7 +123,7 @@ public class AppView {
     }
 
     /** Attempt to support command key cut/copy/paste on a Mac. */
-    private void addMacKeyBindings() {
+    private static void addMacKeyBindings() {
         // From https://stackoverflow.com/questions/7252749
         InputMap im = (InputMap) UIManager.get("TextField.focusInputMap");
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK), DefaultEditorKit.copyAction);

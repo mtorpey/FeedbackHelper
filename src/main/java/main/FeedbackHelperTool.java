@@ -1,5 +1,7 @@
 package main;
 
+import java.nio.file.Path;
+
 import controller.AppController;
 import view.AppView;
 
@@ -14,20 +16,17 @@ public class FeedbackHelperTool {
      * @param args The arguments to the program (none expected).
      */
     public static void main(String[] args) {
-        FeedbackHelperTool fht = new FeedbackHelperTool();
-        fht.start();
-    }
-
-    /**
-     * Start the program.
-     */
-    public void start() {
         // Create controller and view.
         // The Assignment (model) is created by the controller later
         AppController controller = new AppController();
-        AppView view = new AppView(controller);
+        AppView view = AppView.create(controller);
 
-        // Start the view
-        view.start();
+        // Handle filename passed by command-line args
+        if (args.length > 0) {
+            Path fhtFile = Path.of(args[0]);
+            view.startWithFile(fhtFile);
+        } else {
+            view.start();
+        }
     }
 }
