@@ -10,7 +10,7 @@ public abstract class UserPreferences {
     public static final String SCALE = "scale";
     public static final String LAST_OPENED_ASSIGNMENT_PATH = "lastOpenedAssignmentPath";
 
-    private static String NODE_NAME = "FeedbackHelper";
+    private static String NODE_NAME = "FeedbackHelper-5";
     private static Preferences prefs = Preferences.userRoot().node(NODE_NAME);
 
     private static final String THEME_DEFAULT = "com.formdev.flatlaf.FlatLightLaf";
