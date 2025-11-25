@@ -332,7 +332,7 @@ public class FeedbackBox extends JPanel {
     }
 
     /** Trim the text in the box on leaving it. */
-    private void trimText() {
+    public void trimText() {
         String text = textArea.getText();
         while (text.endsWith(lineMarker)) {
             text = text.substring(0, text.length() - lineMarker.length());

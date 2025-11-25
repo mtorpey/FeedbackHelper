@@ -234,4 +234,9 @@ public class EditorPanel extends VerticalScrollablePanel {
     public double getGrade() {
         return this.gradeBox.getGrade();
     }
+
+    /** Trim the text in all feedback boxes, removing loose whitespace and line markers. */
+    public void trimFeedbackBoxes() {
+        feedbackBoxes.forEach(FeedbackBox::trimText);
+    }
 }

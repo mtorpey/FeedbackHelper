@@ -402,8 +402,8 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
      * @param studentId The ID of the student we are now viewing.
      */
     private void switchStudent(StudentId studentId) {
-
         // Wrap up from last student
+        editorPanel.trimFeedbackBoxes();
         saveAssignmentForCurrentStudent();
         previewPanel.updateGrade(currentStudent, assignment.getGrade(currentStudent));
 
