@@ -215,7 +215,7 @@ public class CreateAssignmentScreen extends JFrame {
      */
     private void setupLineMarkerControls() {
         addLabelToConfigForm("Line marker style:");
-        lineMarkerChooser = new JComboBox<>(new String[] { "-", "->", "=>", "*", "+" });
+        lineMarkerChooser = new JComboBox<>(new String[] { "-", "•", "*", "+", "->", "=>" });
         addToConfigForm(lineMarkerChooser, 2);
     }
 
