@@ -1,0 +1,43 @@
+{
+    "bin": {"feedback-helper": "jdeploy-bundle/jdeploy.js"},
+    "author": "Michael Young & Bhuvan Bezawada",
+    "description": "Tool for efficiently creating bullet-pointed feedback on assignments, with exports for St Andrews' MMS.",
+    "main": "index.js",
+    "preferGlobal": true,
+    "repository": "",
+    "version": "5.0-beta-2",
+    "jdeploy": {
+        "jdk": false,
+        "fallbackToUniversal": false,
+        "generateLegacyBundles": false,
+        "publishTargets": [{
+            "name": "github: https://github.com/mtorpey/FeedbackHelper",
+            "type": "GITHUB",
+            "url": "https://github.com/mtorpey/FeedbackHelper"
+        }],
+        "javaVersion": "17",
+        "documentTypes": [{
+            "editor": true,
+            "extension": "fht",
+            "custom": true,
+            "mimetype": "application/java-serialized-object"
+        }],
+        "jar": "FeedbackHelper-5.0-beta.2-complete.jar",
+        "javafx": false,
+        "title": "FeedbackHelper",
+        "downloadPage": {"platforms": ["default"]},
+        "platformBundlesEnabled": false
+    },
+    "dependencies": {
+        "command-exists-promise": "^2.0.2",
+        "node-fetch": "2.6.7",
+        "tar": "^4.4.8",
+        "yauzl": "^2.10.0",
+        "shelljs": "^0.8.4"
+    },
+    "license": "GPL 3",
+    "name": "FeedbackHelper",
+    "files": ["jdeploy-bundle"],
+    "scripts": {"test": "echo \"Error: no test specified\" && exit 1"},
+    "homepage": "https://github.com/mtorpey/FeedbackHelper"
+}
