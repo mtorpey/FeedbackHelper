@@ -54,8 +54,7 @@ public class PhrasesPanel extends VerticalScrollablePanel {
     /**
      * Add a phrase to the panel.
      *
-     * @param phrase      The phrase to add.
-     * @param phraseCount The usage count of the phrase.
+     * @param phrase The phrase to add.
      */
     public void addPhrase(Phrase phrase) {
         // Create the new box
@@ -63,7 +62,9 @@ public class PhrasesPanel extends VerticalScrollablePanel {
 
         // Insert it in the correct place in the list
         phraseBoxes.add(phraseBox);
-        phraseBoxes.sort(null);
+        if (phraseType == PhraseType.FREQUENTLY_USED) {
+            phraseBoxes.sort(null);
+        }
 
         // Add it in the correct place in the panel
         int pos = phraseBoxes.indexOf(phraseBox);
@@ -107,7 +108,9 @@ public class PhrasesPanel extends VerticalScrollablePanel {
 
         // Sort the list
         this.removeAll();
-        Collections.sort(this.phraseBoxes);
+        if (phraseType == PhraseType.FREQUENTLY_USED) {
+            phraseBoxes.sort(null);
+        }
         this.phraseBoxes.forEach(this::add);
         this.update();
     }
