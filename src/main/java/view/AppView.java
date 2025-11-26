@@ -36,19 +36,19 @@ public class AppView {
      */
     public static AppView create(AppController controller) {
         AppView view = new AppView(controller);
-        
+
         installThirdPartyThemes();
         applyUserTheme();
         applyFontScaling(UserPreferences.getScale());
         addMacKeyBindings();
-    
+
         return view;
     }
-    
+
     private AppView(AppController controller) {
         this.controller = controller;
     }
-    
+
     /**
      * Start the app at the homescreen, without a file already provided.
      */
@@ -110,8 +110,7 @@ public class AppView {
 
     /** Apply font scaling to all fonts in the UI. */
     private static void applyFontScaling(float scale) {
-        UIManager
-            .getDefaults()
+        UIManager.getDefaults()
             .keySet()
             .stream()
             .map(Object::toString)

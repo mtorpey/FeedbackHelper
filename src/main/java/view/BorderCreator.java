@@ -16,17 +16,11 @@ public abstract class BorderCreator {
     public static final int PADDING_MEDIUM = 15;
 
     public static final Border textAreaBorder() {
-        return BorderFactory.createCompoundBorder(
-            BorderFactory.createEtchedBorder(),
-            emptyBorderSmall()
-        );
+        return BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(), emptyBorderSmall());
     }
 
     public static Border statusBarBorder() {
-        return BorderFactory.createCompoundBorder(
-            BorderFactory.createLoweredBevelBorder(),
-            emptyBorderTiny()
-        );
+        return BorderFactory.createCompoundBorder(BorderFactory.createLoweredBevelBorder(), emptyBorderTiny());
     }
 
     public static Border emptyBorderTiny() {
@@ -45,5 +39,4 @@ public abstract class BorderCreator {
         padding = Math.round(padding * UserPreferences.getScale());
         return BorderFactory.createEmptyBorder(padding, padding, padding, padding);
     }
-
 }

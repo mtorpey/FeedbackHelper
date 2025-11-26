@@ -251,7 +251,7 @@ public class Assignment implements Serializable {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteStream);
         ) {
             // Write to byte array
-            synchronized(this) {
+            synchronized (this) {
                 objectOutputStream.writeObject(this);
                 objectOutputStream.flush();
             }

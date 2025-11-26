@@ -181,12 +181,12 @@ public class CreateAssignmentScreen extends JFrame {
     private void setupAssignmentHeadingsControls() {
         addLabelToConfigForm("Assignment headings:");
         assignmentHeadingsTextArea = new JTextArea("Code\nReport\nOverall") {
-                @Override
-                public Dimension getMinimumSize() {
-                    Dimension minimum = super.getMinimumSize();
-                    Dimension preferred = getPreferredSize();
-                    return new Dimension(minimum.width, preferred.height);
-                }
+            @Override
+            public Dimension getMinimumSize() {
+                Dimension minimum = super.getMinimumSize();
+                Dimension preferred = getPreferredSize();
+                return new Dimension(minimum.width, preferred.height);
+            }
         };
         assignmentHeadingsTextArea.setRows(7);
         addToConfigForm(assignmentHeadingsTextArea, 2);

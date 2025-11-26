@@ -3,6 +3,7 @@ package view;
 import javax.swing.JLabel;
 
 public class StatusBar extends JLabel {
+
     public static StatusBar create() {
         StatusBar statusBar = new StatusBar();
         statusBar.setText(" ");

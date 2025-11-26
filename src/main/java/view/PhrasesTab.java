@@ -7,6 +7,7 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 
 public class PhrasesTab extends JSplitPane {
+
     private JScrollPane scrollPane;
     private PhraseEntryBox phraseEntryBox;
 
@@ -19,7 +20,6 @@ public class PhrasesTab extends JSplitPane {
      * @param onNewCustomPhrase Callback for when the user submits a new custom phrase (may be null).
      */
     public static PhrasesTab create(PhrasesPanel phrasesPanel, Consumer<String> onNewCustomPhrase) {
-
         // Make scroll pane for phrases panel
         JScrollPane scrollPane = PhrasesPanel.newVerticalScrollPane(phrasesPanel);
 
@@ -34,7 +34,7 @@ public class PhrasesTab extends JSplitPane {
         }
 
         tab.setOneTouchExpandable(false);
-        tab.setResizeWeight(1.0);  // All extra space to top component, bottom is fixed
+        tab.setResizeWeight(1.0); // All extra space to top component, bottom is fixed
         tab.setVisible(true);
 
         return tab;

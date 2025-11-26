@@ -35,6 +35,7 @@ import model.StudentId;
  * Main window for an assignment in progress, containing all components.
  */
 public class FeedbackScreen extends JFrame implements AssignmentListener {
+
     // References to other parts of program
     private Assignment assignment;
     private final AppController controller;
@@ -86,7 +87,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Add components to main (triple) split pane in middle of screen
         screen.setupSplitPanes();
         screen.add(screen.mainSplitPane, BorderLayout.CENTER);
-        
+
         // Do visual stuff and display
         screen.initialResize();
         screen.setVisible(true);
@@ -103,8 +104,8 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         Dimension preferred = getContentPane().getPreferredSize();
         Rectangle monitor = getGraphicsConfiguration().getBounds();
         setSize(
-            Math.min(preferred.width * 5/4, monitor.width * 4/5),
-            Math.min(preferred.height * 5/4, monitor.height * 4/5)
+            Math.min((preferred.width * 5) / 4, (monitor.width * 4) / 5),
+            Math.min((preferred.height * 5) / 4, (monitor.height * 4) / 5)
         );
 
         // Center on screen
@@ -280,16 +281,8 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
      * Setup the triple split pane that sits inside the JFrame and holds the main components.
      */
     private void setupSplitPanes() {
-        leftSplitPane = new JSplitPane(
-            JSplitPane.HORIZONTAL_SPLIT,
-            previewPanelScrollPane,
-            editorPanelScrollPane
-        );
-        mainSplitPane = new JSplitPane(
-            JSplitPane.HORIZONTAL_SPLIT,
-            leftSplitPane,
-            phrasesSection
-        );
+        leftSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, previewPanelScrollPane, editorPanelScrollPane);
+        mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplitPane, phrasesSection);
 
         leftSplitPane.setOneTouchExpandable(false);
         mainSplitPane.setOneTouchExpandable(false);
@@ -301,7 +294,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
     private JMenu createPreferencesMenu() {
         JMenu preferencesMenu = new JMenu("Preferences");
-        
+
         // Choose a theme
         JMenu themeMenu = new JMenu("Theme");
         for (LookAndFeelInfo theme : UIManager.getInstalledLookAndFeels()) {

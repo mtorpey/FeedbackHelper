@@ -69,7 +69,7 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
         phraseTextArea.setLineWrap(true);
         phraseTextArea.setWrapStyleWord(true);
         phraseTextArea.setEditable(false);
-        phraseTextArea.setFocusable(false); 
+        phraseTextArea.setFocusable(false);
 
         // Add the text area and some padding to the bottom of the panel
         add(phraseTextArea, BorderLayout.CENTER);

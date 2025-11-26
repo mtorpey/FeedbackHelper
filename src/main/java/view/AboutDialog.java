@@ -50,7 +50,6 @@ public class AboutDialog extends JDialog {
         // Create the dialog components
         JPanel dialogPanel = new JPanel(new BorderLayout());
 
-
         JPanel panelWest = new JPanel(new FlowLayout());
 
         // Add information icon
@@ -70,7 +69,7 @@ public class AboutDialog extends JDialog {
         JEditorPane linksEditorPane = new JEditorPane("text/html", LINKS);
 
         linksEditorPane.setEditable(false);
-        linksEditorPane.setFocusable(false); 
+        linksEditorPane.setFocusable(false);
         linksEditorPane.setOpaque(false);
 
         // Hyperlink navigation

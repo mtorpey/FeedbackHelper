@@ -237,16 +237,14 @@ public class FeedbackBox extends JPanel {
                     // Check if we need to insert a new line
                     String text = textArea.getText();
                     boolean atEnd = textArea.getCaretPosition() == text.length();
-                    if (
-                        text.isEmpty() || (!text.endsWith(lineMarker) && atEnd)
-                    ) {
+                    if (text.isEmpty() || (!text.endsWith(lineMarker) && atEnd)) {
                         insertLineMarkerForNewLine();
                     }
                 }
 
                 @Override
                 public void focusLost(FocusEvent e) {
-                    trimText();                    
+                    trimText();
                     updateFeedback();
                 }
             }

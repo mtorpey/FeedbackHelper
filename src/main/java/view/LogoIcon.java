@@ -13,9 +13,10 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 public class LogoIcon {
-    private static final int SIZE = 512;  // should scale down to smaller sizes nicely
+
+    private static final int SIZE = 512; // should scale down to smaller sizes nicely
     private static Image image;
-    
+
     public static Image getImage() throws IOException {
         if (image == null) {
             create();
@@ -30,7 +31,14 @@ public class LogoIcon {
         } catch (IOException e) {
             // Problem: alert user
             e.printStackTrace();
-            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame, "Error loading FeedbackHelper icon", "Error!", JOptionPane.ERROR_MESSAGE));
+            SwingUtilities.invokeLater(() ->
+                JOptionPane.showMessageDialog(
+                    frame,
+                    "Error loading FeedbackHelper icon",
+                    "Error!",
+                    JOptionPane.ERROR_MESSAGE
+                )
+            );
         }
     }
 

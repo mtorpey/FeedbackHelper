@@ -9,7 +9,8 @@ import javax.swing.JScrollPane;
 import javax.swing.Scrollable;
 
 /** JPanel for use inside a vertical JScrollPane. Will not expand horizontally. */
-public class VerticalScrollablePanel extends JPanel implements Scrollable{
+public class VerticalScrollablePanel extends JPanel implements Scrollable {
+
     @Override
     public Dimension getPreferredScrollableViewportSize() {
         return getPreferredSize();
@@ -40,10 +41,6 @@ public class VerticalScrollablePanel extends JPanel implements Scrollable{
      * with a VerticalScrollablePanel.
      */
     public static JScrollPane newVerticalScrollPane(Component view) {
-        return new JScrollPane(
-            view,
-            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
-        );
+        return new JScrollPane(view, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
 }
