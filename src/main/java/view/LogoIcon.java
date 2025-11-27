@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -24,21 +27,26 @@ public class LogoIcon {
         return image;
     }
 
+    public static Icon getIcon() throws IOException {
+        return new ImageIcon(getImage());
+    }
+
+    public static JLabel createLabel() {
+        try {
+            return new JLabel(getIcon());
+        } catch (IOException e) {
+            alertError(e);
+        }
+        return new JLabel("FeedbackHelper");
+    }
+    
     public static void applyIcon(JFrame frame) {
         try {
             // Set the icon
             frame.setIconImage(getImage());
         } catch (IOException e) {
             // Problem: alert user
-            e.printStackTrace();
-            SwingUtilities.invokeLater(() ->
-                JOptionPane.showMessageDialog(
-                    frame,
-                    "Error loading FeedbackHelper icon",
-                    "Error!",
-                    JOptionPane.ERROR_MESSAGE
-                )
-            );
+            alertError(e);
         }
     }
 
@@ -47,6 +55,18 @@ public class LogoIcon {
         BufferedImage baseImage = ImageIO.read(url);
         Image scaledImage = scaleNearest(baseImage, SIZE);
         image = scaledImage;
+    }
+
+    private static void alertError(IOException e) {
+        e.printStackTrace();
+        SwingUtilities.invokeLater(() ->
+            JOptionPane.showMessageDialog(
+                null,
+                "Error loading FeedbackHelper icon",
+                "Error!",
+                JOptionPane.ERROR_MESSAGE
+            )
+        );
     }
 
     private static Image scaleNearest(BufferedImage src, int size) {

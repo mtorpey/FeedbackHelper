@@ -14,9 +14,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+
+import configuration.Metadata;
 
 /**
  * About Dialog Class.
@@ -53,15 +54,17 @@ public class AboutDialog extends JDialog {
         JPanel panelWest = new JPanel(new FlowLayout());
 
         // Add information icon
-        JLabel iconLabel = new JLabel(UIManager.getLookAndFeel().getDefaults().getIcon("OptionPane.informationIcon"));
+        JLabel iconLabel = LogoIcon.createLabel();
 
         JPanel panelEast = new JPanel();
         panelEast.setLayout(new BoxLayout(panelEast, BoxLayout.Y_AXIS));
         // Create program header
         JLabel headerLabel = new JLabel("Feedback Helper");
         headerLabel.setFont(Configuration.getTitleFont());
-        // Create a label to display the Java version
-        JLabel javaVersionLabel = new JLabel("Java Version: " + System.getProperty("java.version"));
+        // Create labels for versions
+        JLabel feedbackHelperVersionLabel = new JLabel("Version " + Metadata.getVersion());
+        feedbackHelperVersionLabel.setFont(Configuration.getSubtitleFont());
+        JLabel javaVersionLabel = new JLabel("Java version " + System.getProperty("java.version"));
         // Create labels to add information
         JLabel developersLabel = new JLabel(ABOUT_INFO);
         // Add hyperlink pane
@@ -89,6 +92,7 @@ public class AboutDialog extends JDialog {
         panelWest.add(iconLabel, BorderLayout.CENTER);
         dialogPanel.add(panelEast, BorderLayout.EAST);
         panelEast.add(headerLabel);
+        panelEast.add(feedbackHelperVersionLabel);
         panelEast.add(javaVersionLabel);
         panelEast.add(developersLabel);
         // Add pane for links

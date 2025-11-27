@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import configuration.Metadata;
 import configuration.UserPreferences;
 import controller.AppController;
 
@@ -42,7 +43,9 @@ public class HomeScreen extends JFrame {
         // Warn about beta
         JOptionPane.showMessageDialog(
             homeScreen,
-            "This is a beta release and has not been thoroughly tested. Back up often using the Export option and consider copying output to another directory just in case.",
+            "This is a pre-release (version "
+            + Metadata.getVersion()
+            + ") and has not been thoroughly tested. Back up often using the Export option and consider copying output to another directory just in case.",
             "Warning",
             JOptionPane.WARNING_MESSAGE
         );
@@ -72,7 +75,7 @@ public class HomeScreen extends JFrame {
     }
 
     private HomeScreen(AppController controller) {
-        super("Feedback Helper Tool");
+        super("Feedback Helper");
         this.controller = controller;
     }
 
@@ -100,9 +103,9 @@ public class HomeScreen extends JFrame {
      */
     public void createDescriptionArea() {
         JTextArea description = new JTextArea();
-        description.setText(
+        description.setText("Welcome to FeedbackHelper (version " + Metadata.getVersion() +
             """
-            Welcome to the Feedback Helper Tool!
+            ).
 
             To get started with creating feedback documents click the 'Start New Assignment' button. You will then be prompted for some details to set up the project.
 
