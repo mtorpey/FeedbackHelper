@@ -52,7 +52,7 @@ public class CreateAssignmentScreen extends JFrame {
     private static final Map<String, String> HEADING_STYLES = Collections.unmodifiableMap(
         new LinkedHashMap<String, String>() {
             {
-                put("No hash", "");
+                put("No decoration", "");
                 put("Single hash (#)", "#");
                 put("Double hash (##)", "##");
             }
@@ -127,6 +127,7 @@ public class CreateAssignmentScreen extends JFrame {
         this.configFormPanel = new JPanel(new GridBagLayout());
         this.gridBagCounter = 0;
 
+        setupInfoLabel();
         setupAssignmentTitleControls();
         setupAssignmentDirectoryControls();
         setupAssignmentHeadingsControls();
@@ -140,12 +141,18 @@ public class CreateAssignmentScreen extends JFrame {
         add(this.configFormPanel, BorderLayout.CENTER);
     }
 
+    private void setupInfoLabel() {
+        addToConfigForm(new JLabel("Hover over an item for more information.", JLabel.CENTER), GRID_WIDTH);
+    }
+
     /**
      * Setup the assignment title controls.
      */
     private void setupAssignmentTitleControls() {
-        addLabelToConfigForm("Assignment title:");
+        String tooltip = "A name that identifies this assignment, used for the name of the save file and export directory.";
+        addLabelToConfigForm("Assignment title:", tooltip);
         assignmentTitleField = new JTextField("CS5000-P1");
+        assignmentTitleField.setToolTipText(tooltip);
         addToConfigForm(assignmentTitleField, 2);
     }
 
@@ -153,11 +160,13 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the assignment directory controls.
      */
     private void setupAssignmentDirectoryControls() {
-        addLabelToConfigForm("Assignment directory:");
+        String tooltip = "The directory where the save file and exported feedback and grades will be placed.\nIf this directory contains the student submissions, the tool will attempt to use this for the list of students below.";
+        addLabelToConfigForm("Assignment directory:", tooltip);
 
         // Text field
         String defaultDir = System.getProperty("user.home");
         assignmentDirectoryField = new JTextField(defaultDir);
+        assignmentDirectoryField.setToolTipText(tooltip);
         addToConfigForm(assignmentDirectoryField, true);
 
         // Directory chooser
@@ -171,7 +180,8 @@ public class CreateAssignmentScreen extends JFrame {
                     "Submit"
                 ).toString()
             )
-        );
+            );
+        assignmentDirectoryChooser.setToolTipText(tooltip);
         addToConfigForm(assignmentDirectoryChooser);
     }
 
@@ -179,7 +189,8 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the assignment headings controls.
      */
     private void setupAssignmentHeadingsControls() {
-        addLabelToConfigForm("Assignment headings:");
+        String tooltip = "Headings for the sections in the feedback documents.";
+        addLabelToConfigForm("Assignment headings:", tooltip);
         assignmentHeadingsTextArea = new JTextArea("Code\nReport\nOverall") {
             @Override
             public Dimension getMinimumSize() {
@@ -188,7 +199,9 @@ public class CreateAssignmentScreen extends JFrame {
                 return new Dimension(minimum.width, preferred.height);
             }
         };
+        assignmentHeadingsTextArea.setToolTipText(tooltip);
         assignmentHeadingsTextArea.setRows(7);
+        assignmentHeadingsTextArea.setBorder(BorderCreator.textAreaBorder());
         addToConfigForm(assignmentHeadingsTextArea, 2);
     }
 
@@ -196,8 +209,10 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the heading style controls.
      */
     private void setupHeadingStyleControls() {
-        addLabelToConfigForm("Heading style:");
+        String tooltip = "Characters that will appear before a heading in exported feedback documents.";
+        addLabelToConfigForm("Heading style:", tooltip);
         headingStyleChooser = new JComboBox<String>(HEADING_STYLES.keySet().toArray(new String[0]));
+        headingStyleChooser.setToolTipText(tooltip);
         addToConfigForm(headingStyleChooser, 2);
     }
 
@@ -205,8 +220,10 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the heading underline controls.
      */
     private void setupHeadingUnderlineControls() {
-        addLabelToConfigForm("Heading underline:");
+        String tooltip = "Character that will be used to underline a heading in exported feedback documents.";
+        addLabelToConfigForm("Heading underline:", tooltip);
         underlineChooser = new JComboBox<>(UNDERLINE_STYLES.keySet().toArray(new String[0]));
+        underlineChooser.setToolTipText(tooltip);
         addToConfigForm(underlineChooser, 2);
     }
 
@@ -214,8 +231,10 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the line marker controls.
      */
     private void setupLineMarkerControls() {
-        addLabelToConfigForm("Line marker style:");
+        String tooltip = "Marker that will be placed at the beginning of each bullet point in feedback.";
+        addLabelToConfigForm("Line marker style:", tooltip);
         lineMarkerChooser = new JComboBox<>(new String[] { "-", "•", "*", "+", "->", "=>" });
+        lineMarkerChooser.setToolTipText(tooltip);
         addToConfigForm(lineMarkerChooser, 2);
     }
 
@@ -223,8 +242,11 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup heading line spacing controls.
      */
     private void setupHeadingLineSpacingControls() {
-        addLabelToConfigForm("Line spacing between sections:");
+        
+        String tooltip = "Number of blank lines inserted between sections in exported feedback documents.";
+        addLabelToConfigForm("Line spacing between sections:", tooltip);
         spacingChooser = new JComboBox<>(new Integer[] { 1, 2, 3 });
+        spacingChooser.setToolTipText(tooltip);
         addToConfigForm(spacingChooser, 2);
     }
 
@@ -232,10 +254,16 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the student list controls.
      */
     private void setupStudentListControls() {
-        addLabelToConfigForm("Student list file:");
+        String tooltip =
+            """
+            Text file containing all the student IDs for this assignment, separated by commas or whitespace.
+            MMS provides a suitable file for this: see "Download a template file to fill here" on MMS.
+            If no file is selected, the tool will attempt to guess the IDs from the assignment directory (above).""";
+        addLabelToConfigForm("Student list file:", tooltip);
 
         // Text field
         studentListField = new JTextField();
+        studentListField.setToolTipText(tooltip);
         addToConfigForm(studentListField, true);
 
         // Button
@@ -250,13 +278,17 @@ public class CreateAssignmentScreen extends JFrame {
                 ).toString()
             )
         );
+        studentListFileButton.setToolTipText(tooltip);
         addToConfigForm(studentListFileButton);
     }
 
     /** Setup the indicator for the expected list of students that will be imported. */
     private void setupStudentListIndicator() {
+        String tooltip = "This shows the student IDs that will be used, based on 'Assignment directory' and 'Student list file' above.";
+
         // Add the indicator to the panel
         studentListIndicator = new JLabel("", JLabel.CENTER);
+        studentListIndicator.setToolTipText(tooltip);
         addToConfigForm(studentListIndicator, true, 3);
 
         // Set up a listener that will update the indicator when the user's selection changes
@@ -300,8 +332,10 @@ public class CreateAssignmentScreen extends JFrame {
     }
 
     /** Add a label component to the config form, aligned right. */
-    private void addLabelToConfigForm(String text) {
-        addToConfigForm(new JLabel(text, SwingConstants.RIGHT));
+    private void addLabelToConfigForm(String text, String tooltip) {
+        JLabel label = new JLabel(text, SwingConstants.RIGHT);
+        label.setToolTipText(tooltip);
+        addToConfigForm(label);
     }
 
     /** Add a component to the config form (the main part of the window). */
