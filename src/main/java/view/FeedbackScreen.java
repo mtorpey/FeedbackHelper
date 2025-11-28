@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -529,7 +528,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
             var desktop = Desktop.getDesktop();
             try {
                 desktop.open(outputDirectory.toFile());
-            } catch (IOException e) {
+            } catch (Exception e) {
                 handleError("Failed to open file manager", e);
             }
         }
