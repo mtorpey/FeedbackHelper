@@ -39,6 +39,8 @@ public interface AssignmentListener {
     // NEW_CUSTOM_PHRASE_MESSAGE = "newCustomPhrase";
     void handleCustomPhraseAdded(String heading, Phrase phrase);
 
+    void handleCustomPhraseDeleted(String heading, String phrase);
+
     void handleSaveThread(Thread saveThread);
 
     void handleExported(Path outputDirectory);

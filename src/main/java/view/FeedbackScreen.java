@@ -264,8 +264,8 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         this.phrasesSection = PhrasesSection.create();
 
         // Create panels
-        PhrasesPanel customPhrasesPanel = PhrasesPanel.create(PhraseType.CUSTOM, this::insertPhrase);
-        PhrasesPanel frequentlyUsedPhrasesPanel = PhrasesPanel.create(PhraseType.FREQUENTLY_USED, this::insertPhrase);
+        PhrasesPanel customPhrasesPanel = PhrasesPanel.create(PhraseType.CUSTOM, this::insertPhrase, this::deleteCustomPhrase);
+        PhrasesPanel frequentlyUsedPhrasesPanel = PhrasesPanel.create(PhraseType.FREQUENTLY_USED, this::insertPhrase, null);
 
         // Add panels
         this.phrasesSection.addPhrasesTab(customPhrasesPanel, text -> controller.addCustomPhrase(currentHeading, text));
@@ -441,6 +441,10 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         editorPanel.insertPhraseIntoFeedbackBox(currentHeading, phrase);
     }
 
+    private void deleteCustomPhrase(String phrase) {
+        controller.deleteCustomPhrase(currentHeading, phrase);
+    }
+
     private void scrollEditorPaneToTop() {
         SwingUtilities.invokeLater(() -> editorPanelScrollPane.getVerticalScrollBar().setValue(0));
     }
@@ -503,6 +507,13 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
                 Exception e = new Exception("This should never happen.");
                 e.printStackTrace();
             }
+        });
+    }
+
+    @Override
+    public void handleCustomPhraseDeleted(String heading, String phrase) {
+        SwingUtilities.invokeLater(() -> {
+            switchSection(currentHeading);
         });
     }
 

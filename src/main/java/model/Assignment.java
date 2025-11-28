@@ -525,6 +525,11 @@ public class Assignment implements Serializable {
         notifyListeners(l -> l.handleCustomPhraseAdded(heading, getPhraseCount(heading, text)));
     }
 
+    public void deleteCustomPhrase(String heading, String phrase) {
+        customPhrases.get(heading).remove(phrase);
+        notifyListeners(l -> l.handleCustomPhraseDeleted(heading, phrase));
+    }
+
     /** Get a Phrase object representing uses of the given text phrase in the given heading. */
     private Phrase getPhraseCount(String heading, String text) {
         return phraseCounts

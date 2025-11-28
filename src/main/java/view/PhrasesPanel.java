@@ -15,6 +15,7 @@ public class PhrasesPanel extends VerticalScrollablePanel {
 
     // Instance variables
     private Consumer<String> onInsertPhrase;
+    private Consumer<String> onDeleteCustomPhrase;
     private PhraseType phraseType;
     private List<PhraseBox> phraseBoxes;
 
@@ -24,9 +25,9 @@ public class PhrasesPanel extends VerticalScrollablePanel {
      * @param phraseType The type of phrases to show on the panel.
      * @param onInsertPhrase Callback for when the user wishes to insert a phrase.
      */
-    public static PhrasesPanel create(PhraseType phraseType, Consumer<String> onInsertPhrase) {
+    public static PhrasesPanel create(PhraseType phraseType, Consumer<String> onInsertPhrase, Consumer<String> onDeleteCustomPhrase) {
         // Create panel and data structure
-        var panel = new PhrasesPanel(phraseType, onInsertPhrase);
+        var panel = new PhrasesPanel(phraseType, onInsertPhrase, onDeleteCustomPhrase);
         panel.phraseBoxes = new LinkedList<PhraseBox>();
 
         // Set layout and visbility
@@ -36,9 +37,10 @@ public class PhrasesPanel extends VerticalScrollablePanel {
         return panel;
     }
 
-    private PhrasesPanel(PhraseType phraseType, Consumer<String> onInsertPhrase) {
+    private PhrasesPanel(PhraseType phraseType, Consumer<String> onInsertPhrase, Consumer<String> onDeleteCustomPhrase) {
         this.phraseType = phraseType;
         this.onInsertPhrase = onInsertPhrase;
+        this.onDeleteCustomPhrase = onDeleteCustomPhrase;
     }
 
     /**
@@ -61,7 +63,7 @@ public class PhrasesPanel extends VerticalScrollablePanel {
         if (phraseType == PhraseType.FREQUENTLY_USED) {
             phraseBox = PhraseBox.create(phrase, onInsertPhrase);
         } else {
-            phraseBox = CustomPhraseBox.create(phrase, onInsertPhrase);
+            phraseBox = CustomPhraseBox.create(phrase, onInsertPhrase, onDeleteCustomPhrase);
         }
 
         // Insert it in the correct place in the list

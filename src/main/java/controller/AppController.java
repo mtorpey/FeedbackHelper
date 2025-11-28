@@ -182,4 +182,8 @@ public class AppController {
             assignment.addCustomPhrase(heading, phrase);
         }
     }
+
+    public void deleteCustomPhrase(String heading, String phrase) {
+        assignment.deleteCustomPhrase(heading, phrase);
+    }
 }
