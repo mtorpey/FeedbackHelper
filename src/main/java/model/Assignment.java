@@ -160,7 +160,6 @@ public class Assignment implements Serializable {
     private void setStudentIds(Path studentListFile, Path assignmentDirectory) {
         // Get the ids
         List<StudentId> studentIds = findStudentIds(studentListFile, assignmentDirectory);
-        System.out.println("Using student ids " + studentIds);
 
         // Create and install documents
         for (StudentId studentId : studentIds) {
@@ -172,18 +171,17 @@ public class Assignment implements Serializable {
     public static List<StudentId> findStudentIds(Path studentListFile, Path assignmentDirectory) {
         List<StudentId> studentIds;
         try {
-            System.out.print("Searching for student ids in file '" + studentListFile + "'...");
+            // Read from the student list file
             studentIds = findStudentIdsFromFile(studentListFile);
         } catch (IOException | NullPointerException e) {
-            System.out.println(" failed to read file.");
-            System.out.print("Searching for submissions in '" + assignmentDirectory + "'...");
             try {
+                // Try searching the assignment directory instead
                 studentIds = findStudentIdsFromDirectory(assignmentDirectory);
             } catch (NullPointerException e2) {
+                // No students
                 studentIds = new ArrayList<>();
             }
         }
-        System.out.println(" found " + studentIds.size() + " students.");
         return studentIds;
     }
 
@@ -595,14 +593,6 @@ public class Assignment implements Serializable {
 
     /** Get all used phrases for a heading, with their usage counts, in order. */
     public List<Phrase> getPhrasesForHeading(String heading) {
-        /*
-        try {
-            throw new RuntimeException("oh");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        */
-        System.out.println("get phrases for " + heading + ": " + phraseCounts.get(heading));
         return phraseCounts.get(heading);
     }
 }

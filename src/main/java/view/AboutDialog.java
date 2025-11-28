@@ -81,7 +81,12 @@ public class AboutDialog extends JDialog {
                 public void hyperlinkUpdate(HyperlinkEvent hle) {
                     // Open in browser on hyperlink activation
                     if (HyperlinkEvent.EventType.ACTIVATED.equals(hle.getEventType())) {
-                        openLocation(hle.getURL().toString());
+                        try {
+                            openLocation(hle.getURL().toURI());
+                        } catch (URISyntaxException e) {
+                            // Unlikely
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -117,9 +122,9 @@ public class AboutDialog extends JDialog {
     /**
      * Open a given url
      *
-     * @param url of webpage
+     * @param location of webpage
      */
-    private static void openLocation(String url) {
+    private static void openLocation(URI location) {
         if (!Desktop.isDesktopSupported()) {
             JOptionPane.showMessageDialog(
                 null,
@@ -133,15 +138,14 @@ public class AboutDialog extends JDialog {
         Desktop desktop = Desktop.getDesktop();
 
         try {
-            desktop.browse(new URI(url));
+            desktop.browse(location);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(
                 null,
-                "Failed to launch the link, your computer is likely misconfigured.",
+                "Failed to launch the link.",
                 "Cannot Launch Link",
                 JOptionPane.WARNING_MESSAGE
             );
-        } catch (URISyntaxException e) {
             e.printStackTrace();
         }
     }

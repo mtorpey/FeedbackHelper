@@ -33,7 +33,6 @@ public class FeedbackHelperTool {
         // Handle filename passed by command-line args (Linux/Windows)
         if (args.length > 0) {
             Path fhtFile = Path.of(args[0]);
-            System.out.println("Application started with file " + fhtFile);
             view.startWithFile(fhtFile);
         } else {
             view.start();

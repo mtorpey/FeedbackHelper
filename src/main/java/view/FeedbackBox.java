@@ -257,7 +257,6 @@ public class FeedbackBox extends JPanel {
     }
 
     public void enableTextArea() {
-        System.out.println("Text area enabled");
         textArea.setEditable(true);
         textArea.setFocusable(true);
         repaint();

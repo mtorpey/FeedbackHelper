@@ -55,7 +55,7 @@ public class AppView {
      */
     public synchronized void start() {
         homeScreen = HomeScreen.create(controller);
-        System.out.println("Finished AppView::start");
+        System.out.println("Application started without a file open");
     }
 
     /** Start the app with a pre-specified file to open, skipping the home screen. */
@@ -81,6 +81,7 @@ public class AppView {
             exception.printStackTrace();
             parent.dispose();
         }
+        System.out.println("Application started with file " + fhtFile);
     }
 
     /**

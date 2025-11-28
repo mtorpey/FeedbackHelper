@@ -385,8 +385,6 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
      * @param studentId The ID of the student we are now viewing.
      */
     private void switchStudentIfNeeded(StudentId studentId) {
-        System.out.println("Trying to switch to student " + studentId + " from " + currentStudent);
-
         if (!studentId.equals(currentStudent)) {
             switchStudent(studentId);
         }

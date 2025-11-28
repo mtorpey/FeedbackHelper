@@ -170,14 +170,14 @@ public class HomeScreen extends JFrame {
                     controller.loadAssignment(assignmentFilePath);
                     FeedbackScreen.create(controller);
                     dispose();
-                } catch (Exception exception) {
+                } catch (Exception e) {
                     JOptionPane.showMessageDialog(
                         this,
-                        exception.toString(),
+                        e.toString(),
                         "Problem loading assignment",
                         JOptionPane.ERROR_MESSAGE
                     );
-                    exception.printStackTrace();
+                    e.printStackTrace();
                 }
             }
         });

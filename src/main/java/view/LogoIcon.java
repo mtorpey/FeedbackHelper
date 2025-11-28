@@ -58,7 +58,6 @@ public class LogoIcon {
     }
 
     private static void alertError(IOException e) {
-        e.printStackTrace();
         SwingUtilities.invokeLater(() ->
             JOptionPane.showMessageDialog(
                 null,
@@ -67,6 +66,7 @@ public class LogoIcon {
                 JOptionPane.ERROR_MESSAGE
             )
         );
+        e.printStackTrace();
     }
 
     private static Image scaleNearest(BufferedImage src, int size) {

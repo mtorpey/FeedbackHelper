@@ -442,6 +442,7 @@ public class CreateAssignmentScreen extends JFrame {
             // Delete this screen
             dispose();
         } catch (IOException exception) {
+            // Something went wrong: explain what
             JOptionPane.showMessageDialog(
                 this,
                 "Error creating assignment: " + exception.toString(),

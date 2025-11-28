@@ -15,7 +15,7 @@ public class Metadata {
                 p.load(is);
                 return p.getProperty("version", "");
             } catch (IOException e) {
-                System.err.println("Could not load version metadata (not running from jar?)");
+                // Could not load version metadata (not running from jar?)
             }
         }
         return "unknown";
