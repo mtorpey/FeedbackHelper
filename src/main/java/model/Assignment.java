@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,8 +42,12 @@ public class Assignment implements Serializable {
      */
     private static final long serialVersionUID = 5215430117083566496L;
 
-    // Name of file used when exporting grades.
+    // Names for files
     private static final String GRADES_FILENAME = "grades.csv";
+    private static final String BACKUP_DIRECTORY = "backups";
+
+    // How long to wait between backups, in milliseconds
+    private static final long BACKUP_INTERVAL = 15 * 60 * 1000;
 
     // Instance variables (saved to disk)
     private String title;
@@ -55,6 +60,7 @@ public class Assignment implements Serializable {
     private transient Path directory;
     private transient Map<String, List<Phrase>> phraseCounts;
     private transient List<AssignmentListener> listeners;
+    private transient long lastBackupTime;
 
     /**
      * Constructor.
@@ -105,6 +111,7 @@ public class Assignment implements Serializable {
         // Set transient fields
         assignment.directory = fhtFile.getParent().toAbsolutePath();
         assignment.listeners = new ArrayList<>();
+        assignment.lastBackupTime = System.currentTimeMillis();
         assignment.computePhraseCounts();
 
         System.out.println("Loaded assignment from " + fhtFile);
@@ -262,8 +269,11 @@ public class Assignment implements Serializable {
                     Files.write(tempFile, bytes);
                     String fileName = getFileSafeTitle() + ".fht";
                     Path fhtFile = directory.resolve(fileName);
-                    copyFile(tempFile, fhtFile);
+                    moveFile(tempFile, fhtFile);
                     reportInfo("Saved to " + fhtFile);
+                    if (isBackupDue()) {
+                        makeBackup(bytes);
+                    }
                 } catch (IOException e) {
                     reportError("Error saving assignment", e);
                 }
@@ -276,8 +286,40 @@ public class Assignment implements Serializable {
     }
 
     /** Do the copying, which should be synchronized to just one thread. */
-    private synchronized void copyFile(Path source, Path target) throws IOException {
+    private synchronized void moveFile(Path source, Path target) throws IOException {
         Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    /**
+     * Indicates whether it's been long enough that we should back up the file.
+     *
+     * If the answer is true, then this method also resets the timer, so when it
+     * returns true we should definitely back up.
+     */
+    private synchronized boolean isBackupDue() {
+        long now = System.currentTimeMillis();
+        if (now - lastBackupTime > BACKUP_INTERVAL) {
+            lastBackupTime = now;
+            return true;
+        }
+        return false;
+    }
+
+    private synchronized void makeBackup(byte[] bytes) throws IOException {
+        // Choose a name based on the current time
+        LocalDateTime now = LocalDateTime.now();
+        String fileName = getFileSafeTitle() + "-backup-" + now.toString() + ".fht";
+
+        // Get the backup directory
+        Path backupDirectory = directory.resolve(BACKUP_DIRECTORY);
+        if (!Files.isDirectory(backupDirectory)) {
+            Files.createDirectories(backupDirectory);
+        }
+
+        // Create the backup file
+        Path backupFile = backupDirectory.resolve(fileName);
+        Files.write(backupFile, bytes);
+        reportInfo("Assignment backed up to " + backupFile);
     }
 
     /**
