@@ -30,21 +30,23 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
      */
     public static PhraseBox create(Phrase phrase, Consumer<String> onInsertPhrase) {
         var box = new PhraseBox(phrase);
-
-        // Set up some components
-        box.setLayout(new BorderLayout());
-        box.setupInsertButton(onInsertPhrase);
-        box.setupPhraseTextArea();
-        box.setupUsageCountLabel();
-
-        // Arrange for viewing
-        box.setVisible(true);
-
+        box.setup(onInsertPhrase);
         return box;
     }
 
-    private PhraseBox(Phrase phrase) {
+    protected PhraseBox(Phrase phrase) {
         this.phrase = phrase;
+    }
+
+    protected void setup(Consumer<String> onInsertPhrase) {
+        // Set up some components
+        setLayout(new BorderLayout());
+        setupInsertButton(onInsertPhrase);
+        setupPhraseTextArea();
+        setupUsageCountLabel();
+
+        // Arrange for viewing
+        setVisible(true);
     }
 
     /**

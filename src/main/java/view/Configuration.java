@@ -26,6 +26,13 @@ public abstract class Configuration {
         return getSizedFont(2);
     }
 
+    /**
+     * Return a tiny font
+     */
+    public static Font getTinyFont() {
+        return getSizedFont(0.5f);
+    }
+
     private static Font getSizedFont(float scale) {
         Font baseFont = UIManager.getFont("Label.font");
         Font titleFont = baseFont.deriveFont(Font.BOLD, baseFont.getSize() * scale);

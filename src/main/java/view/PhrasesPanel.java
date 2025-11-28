@@ -57,7 +57,12 @@ public class PhrasesPanel extends VerticalScrollablePanel {
      */
     public void addPhrase(Phrase phrase) {
         // Create the new box
-        PhraseBox phraseBox = PhraseBox.create(phrase, onInsertPhrase);
+        PhraseBox phraseBox;
+        if (phraseType == PhraseType.FREQUENTLY_USED) {
+            phraseBox = PhraseBox.create(phrase, onInsertPhrase);
+        } else {
+            phraseBox = CustomPhraseBox.create(phrase, onInsertPhrase);
+        }
 
         // Insert it in the correct place in the list
         phraseBoxes.add(phraseBox);
