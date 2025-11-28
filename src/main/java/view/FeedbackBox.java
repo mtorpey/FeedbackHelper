@@ -26,6 +26,8 @@ public class FeedbackBox extends JPanel {
     private static final String NEWLINE = "\n";
     private static final String EDIT_SYMBOL = "✎";
     private static final String FINISH_SYMBOL = "✔";
+    private static final String EDIT_TOOLTIP = "Edit the title of this section.";
+    private static final String FINISH_TOOLTIP = "Finish editing this title.";
 
     // Swing instances
     private JPanel headingPanel;
@@ -121,6 +123,7 @@ public class FeedbackBox extends JPanel {
         // Set heading font
         headingField.setFont(Configuration.getSubtitleFont());
         headingButton.setFont(Configuration.getSubtitleFont());
+        headingButton.setToolTipText(EDIT_TOOLTIP);
 
         // Add to the panel
         this.headingPanel.add(this.headingField, BorderLayout.WEST);
@@ -135,11 +138,13 @@ public class FeedbackBox extends JPanel {
 
             // Set editable
             if (state) {
-                headingButton.setText(FeedbackBox.FINISH_SYMBOL);
+                headingButton.setText(FINISH_SYMBOL);
+                headingButton.setToolTipText(FINISH_TOOLTIP);
                 headingField.setBorder(BorderCreator.textAreaBorder());
             } else {
                 // Stop editing
-                headingButton.setText(FeedbackBox.EDIT_SYMBOL);
+                headingButton.setText(EDIT_SYMBOL);
+                headingButton.setToolTipText(EDIT_TOOLTIP);
                 headingField.setBorder(BorderCreator.emptyBorderSmall());
             }
 
