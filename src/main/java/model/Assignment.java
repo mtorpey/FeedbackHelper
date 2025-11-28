@@ -292,7 +292,9 @@ public class Assignment implements Serializable {
         try {
             exportFeedback();
             exportGrades();
-            reportInfo("Exported feedback and grades to " + createFeedbackOutputDirectory());
+            Path outputDirectory = createFeedbackOutputDirectory();
+            reportInfo("Exported feedback and grades to " + outputDirectory);
+            notifyListeners(l -> l.handleExported(outputDirectory));
         } catch (IOException e) {
             reportError("Error exporting feedback and grades.", e);
         }

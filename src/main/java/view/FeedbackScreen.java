@@ -1,10 +1,14 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -516,6 +520,19 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
     @Override
     public void handleSaveThread(Thread saveThread) {
         SwingUtilities.invokeLater(() -> saveThreads.add(saveThread));
+    }
+
+    @Override
+    public void handleExported(Path outputDirectory) {
+        // Try to open the file manager to show the exported files
+        if (Files.isDirectory(outputDirectory) && Desktop.isDesktopSupported()) {
+            var desktop = Desktop.getDesktop();
+            try {
+                desktop.open(outputDirectory.toFile());
+            } catch (IOException e) {
+                handleError("Failed to open file manager", e);
+            }
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package model;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public interface AssignmentListener {
@@ -39,6 +40,8 @@ public interface AssignmentListener {
     void handleCustomPhraseAdded(String heading, Phrase phrase);
 
     void handleSaveThread(Thread saveThread);
+
+    void handleExported(Path outputDirectory);
 
     void handleInfo(String message);
 
