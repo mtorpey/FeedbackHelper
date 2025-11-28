@@ -28,6 +28,7 @@ public class AppView {
 
     // Instance variable
     private final AppController controller;
+    private HomeScreen homeScreen;
 
     /**
      * Create and return a new object of this class, including setup.
@@ -52,12 +53,18 @@ public class AppView {
     /**
      * Start the app at the homescreen, without a file already provided.
      */
-    public void start() {
-        HomeScreen.create(controller);
+    public synchronized void start() {
+        homeScreen = HomeScreen.create(controller);
+        System.out.println("Finished AppView::start");
     }
 
     /** Start the app with a pre-specified file to open, skipping the home screen. */
-    public void startWithFile(Path fhtFile) {
+    public synchronized void startWithFile(Path fhtFile) {
+        // If home screen is open, kill it
+        if (homeScreen != null) {
+            homeScreen.dispose();
+        }
+
         // Try to load the assignment
         try {
             controller.loadAssignment(fhtFile);
