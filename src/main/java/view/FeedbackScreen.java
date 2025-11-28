@@ -417,9 +417,6 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
      * @param heading The heading of the section we have selected.
      */
     private void switchSection(String heading) {
-        // Save work so far
-        saveAssignmentForCurrentStudent();
-
         // Change to the new heading
         currentHeading = heading;
 
@@ -503,7 +500,8 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
             if (currentHeading == heading) {
                 phrasesSection.addCustomPhraseToPanel(phrase);
             } else {
-                handleError("Custom phrase added for another section", new Exception("This should never happen."));
+                Exception e = new Exception("This should never happen.");
+                e.printStackTrace();
             }
         });
     }
