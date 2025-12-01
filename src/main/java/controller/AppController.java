@@ -81,6 +81,11 @@ public class AppController {
         return assignment;
     }
 
+    /** Whether this controller has an assignment it is working on yet. */
+    public boolean hasAssignment() {
+        return assignment != null;
+    }
+
     /**
      * Save the assignment to disk.
      */

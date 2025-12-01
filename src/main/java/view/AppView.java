@@ -8,6 +8,7 @@ import javax.swing.InputMap;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.DefaultEditorKit;
@@ -53,35 +54,49 @@ public class AppView {
     /**
      * Start the app at the homescreen, without a file already provided.
      */
-    public synchronized void start() {
-        homeScreen = HomeScreen.create(controller);
-        System.out.println("Application started without a file open");
+    public void start() {
+        SwingUtilities.invokeLater(() -> {
+            homeScreen = HomeScreen.create(controller);
+            System.out.println("Application started without a file open");
+        });
     }
 
     /** Start the app with a pre-specified file to open, skipping the home screen. */
-    public synchronized void startWithFile(Path fhtFile) {
-        // If home screen is open, kill it
-        if (homeScreen != null) {
-            homeScreen.dispose();
-        }
+    public void startWithFile(Path fhtFile) {
+        SwingUtilities.invokeLater(() -> {
+            // If we already have an assignment, do nothing.
+            if (controller.hasAssignment()) {
+                showError("An assignment is already open, and we cannot load another.");
+                return;
+            }
 
-        // Try to load the assignment
-        try {
-            controller.loadAssignment(fhtFile);
-            FeedbackScreen.create(controller);
-        } catch (Exception exception) {
-            JFrame parent = new JFrame();
-            LogoIcon.applyIcon(parent);
-            JOptionPane.showMessageDialog(
-                parent,
-                exception.toString(),
-                "Problem loading assignment",
-                JOptionPane.ERROR_MESSAGE
-            );
-            exception.printStackTrace();
-            parent.dispose();
-        }
-        System.out.println("Application started with file " + fhtFile);
+            // If home screen is open, kill it
+            if (homeScreen != null) {
+                homeScreen.dispose();
+            }
+
+            // Try to load the assignment
+            try {
+                controller.loadAssignment(fhtFile);
+                FeedbackScreen.create(controller);
+            } catch (Exception exception) {
+                showError("Problem loading assignment: " + exception.toString());
+                exception.printStackTrace();
+            }
+            System.out.println("Application started with file " + fhtFile);
+        });
+    }
+
+    private static void showError(String message) {
+        JFrame parent = new JFrame();
+        LogoIcon.applyIcon(parent);
+        JOptionPane.showMessageDialog(
+            parent,
+            message,
+            "Error",
+            JOptionPane.ERROR_MESSAGE
+        );
+        parent.dispose();
     }
 
     /**

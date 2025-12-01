@@ -24,6 +24,7 @@ public class FeedbackHelperTool {
 
         // Handle filename passed by desktop (MacOS)
         try {
+            // This might delete the home screen, hence the use of SwingUtilities::invokeLater in AppView.
             Desktop.getDesktop().setOpenFileHandler(e -> view.startWithFile(Path.of(e.getSearchTerm())));
             System.out.println("Created an open file handler (for MacOS)");
         } catch (UnsupportedOperationException e) {
