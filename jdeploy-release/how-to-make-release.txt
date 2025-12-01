@@ -1,0 +1,19 @@
+- Update version in pom.xml
+- Update version in jdeploy-release/package.json
+- mvn clean package
+- Move complete.jar from target to jdeploy-release
+- Delete old jar from jdeploy-release if present
+- Open FeedbackHelper project in jDeploy GUI
+  - Update JAR file location
+  - Fill in Repository (it seems to forget)
+  - In Publish Settings, toggle npm releases on and off.
+  - In Publish Settings, toggle Github releases off and on.
+  - Click Save
+- git commit with a title like "Pre-release 5.0-beta.5" or "Release 5.0"
+- git push
+  - Click Publish
+- Edit the release on Github
+  - Add wording "Or download the [executable jar](https://github.com/mtorpey/FeedbackHelper/releases/download/5.0-beta.3/FeedbackHelper-5.0-beta.3-complete.jar) (requires Java 17+ to be installed on your system)." with updated version number.
+  - Attach complete jar.
+  - Tick "Set as a pre-release" if appropriate.
+  
