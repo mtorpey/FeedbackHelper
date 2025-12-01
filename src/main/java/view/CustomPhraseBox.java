@@ -18,7 +18,11 @@ public class CustomPhraseBox extends PhraseBox {
      * @param phrase     The phrase to display.
      * @param onInsertPhrase Callback for when the user wishes to insert a phrase.
      */
-    public static CustomPhraseBox create(Phrase phrase, Consumer<String> onInsertPhrase, Consumer<String> onDeleteCustomPhrase) {
+    public static CustomPhraseBox create(
+        Phrase phrase,
+        Consumer<String> onInsertPhrase,
+        Consumer<String> onDeleteCustomPhrase
+    ) {
         var box = new CustomPhraseBox(phrase);
         box.setup(onInsertPhrase);
         box.setupDeleteButton(onDeleteCustomPhrase);
@@ -31,7 +35,7 @@ public class CustomPhraseBox extends PhraseBox {
         deleteButton.addActionListener(e -> onDeleteCustomPhrase.accept(getPhraseText()));
         add(deleteButton, BorderLayout.LINE_END);
     }
-    
+
     private CustomPhraseBox(Phrase phrase) {
         super(phrase);
     }

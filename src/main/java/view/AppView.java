@@ -90,12 +90,7 @@ public class AppView {
     private static void showError(String message) {
         JFrame parent = new JFrame();
         LogoIcon.applyIcon(parent);
-        JOptionPane.showMessageDialog(
-            parent,
-            message,
-            "Error",
-            JOptionPane.ERROR_MESSAGE
-        );
+        JOptionPane.showMessageDialog(parent, message, "Error", JOptionPane.ERROR_MESSAGE);
         parent.dispose();
     }
 

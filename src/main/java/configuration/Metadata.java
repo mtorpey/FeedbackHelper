@@ -5,8 +5,9 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class Metadata {
+
     private static final String METADATA_PATH = "/META-INF/maven/uk.myoung/FeedbackHelper/pom.properties";
-    
+
     public static String getVersion() {
         Properties p = new Properties();
         InputStream is = Metadata.class.getResourceAsStream(METADATA_PATH);

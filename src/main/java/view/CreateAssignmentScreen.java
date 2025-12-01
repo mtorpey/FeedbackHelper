@@ -149,7 +149,8 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the assignment title controls.
      */
     private void setupAssignmentTitleControls() {
-        String tooltip = "A name that identifies this assignment, used for the name of the save file and export directory.";
+        String tooltip =
+            "A name that identifies this assignment, used for the name of the save file and export directory.";
         addLabelToConfigForm("Assignment title:", tooltip);
         assignmentTitleField = new JTextField("CS5000-P1");
         assignmentTitleField.setToolTipText(tooltip);
@@ -160,7 +161,8 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the assignment directory controls.
      */
     private void setupAssignmentDirectoryControls() {
-        String tooltip = "The directory where the save file and exported feedback and grades will be placed.\nIf this directory contains the student submissions, the tool will attempt to use this for the list of students below.";
+        String tooltip =
+            "The directory where the save file and exported feedback and grades will be placed.\nIf this directory contains the student submissions, the tool will attempt to use this for the list of students below.";
         addLabelToConfigForm("Assignment directory:", tooltip);
 
         // Text field
@@ -180,7 +182,7 @@ public class CreateAssignmentScreen extends JFrame {
                     "Submit"
                 ).toString()
             )
-            );
+        );
         assignmentDirectoryChooser.setToolTipText(tooltip);
         addToConfigForm(assignmentDirectoryChooser);
     }
@@ -242,7 +244,6 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup heading line spacing controls.
      */
     private void setupHeadingLineSpacingControls() {
-        
         String tooltip = "Number of blank lines inserted between sections in exported feedback documents.";
         addLabelToConfigForm("Line spacing between sections:", tooltip);
         spacingChooser = new JComboBox<>(new Integer[] { 1, 2, 3 });
@@ -254,8 +255,7 @@ public class CreateAssignmentScreen extends JFrame {
      * Setup the student list controls.
      */
     private void setupStudentListControls() {
-        String tooltip =
-            """
+        String tooltip = """
             Text file containing all the student IDs for this assignment, separated by commas or whitespace.
             MMS provides a suitable file for this: see "Download a template file to fill here" on MMS.
             If no file is selected, the tool will attempt to guess the IDs from the assignment directory (above).""";
@@ -284,7 +284,8 @@ public class CreateAssignmentScreen extends JFrame {
 
     /** Setup the indicator for the expected list of students that will be imported. */
     private void setupStudentListIndicator() {
-        String tooltip = "This shows the student IDs that will be used, based on 'Assignment directory' and 'Student list file' above.";
+        String tooltip =
+            "This shows the student IDs that will be used, based on 'Assignment directory' and 'Student list file' above.";
 
         // Add the indicator to the panel
         studentListIndicator = new JLabel("", JLabel.CENTER);

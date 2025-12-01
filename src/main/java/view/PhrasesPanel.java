@@ -25,7 +25,11 @@ public class PhrasesPanel extends VerticalScrollablePanel {
      * @param phraseType The type of phrases to show on the panel.
      * @param onInsertPhrase Callback for when the user wishes to insert a phrase.
      */
-    public static PhrasesPanel create(PhraseType phraseType, Consumer<String> onInsertPhrase, Consumer<String> onDeleteCustomPhrase) {
+    public static PhrasesPanel create(
+        PhraseType phraseType,
+        Consumer<String> onInsertPhrase,
+        Consumer<String> onDeleteCustomPhrase
+    ) {
         // Create panel and data structure
         var panel = new PhrasesPanel(phraseType, onInsertPhrase, onDeleteCustomPhrase);
         panel.phraseBoxes = new LinkedList<PhraseBox>();
@@ -37,7 +41,11 @@ public class PhrasesPanel extends VerticalScrollablePanel {
         return panel;
     }
 
-    private PhrasesPanel(PhraseType phraseType, Consumer<String> onInsertPhrase, Consumer<String> onDeleteCustomPhrase) {
+    private PhrasesPanel(
+        PhraseType phraseType,
+        Consumer<String> onInsertPhrase,
+        Consumer<String> onDeleteCustomPhrase
+    ) {
         this.phraseType = phraseType;
         this.onInsertPhrase = onInsertPhrase;
         this.onDeleteCustomPhrase = onDeleteCustomPhrase;

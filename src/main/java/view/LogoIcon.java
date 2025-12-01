@@ -39,7 +39,7 @@ public class LogoIcon {
         }
         return new JLabel("FeedbackHelper");
     }
-    
+
     public static void applyIcon(JFrame frame) {
         try {
             // Set the icon

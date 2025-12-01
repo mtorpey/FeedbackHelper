@@ -264,8 +264,16 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         this.phrasesSection = PhrasesSection.create();
 
         // Create panels
-        PhrasesPanel customPhrasesPanel = PhrasesPanel.create(PhraseType.CUSTOM, this::insertPhrase, this::deleteCustomPhrase);
-        PhrasesPanel frequentlyUsedPhrasesPanel = PhrasesPanel.create(PhraseType.FREQUENTLY_USED, this::insertPhrase, null);
+        PhrasesPanel customPhrasesPanel = PhrasesPanel.create(
+            PhraseType.CUSTOM,
+            this::insertPhrase,
+            this::deleteCustomPhrase
+        );
+        PhrasesPanel frequentlyUsedPhrasesPanel = PhrasesPanel.create(
+            PhraseType.FREQUENTLY_USED,
+            this::insertPhrase,
+            null
+        );
 
         // Add panels
         this.phrasesSection.addPhrasesTab(customPhrasesPanel, text -> controller.addCustomPhrase(currentHeading, text));

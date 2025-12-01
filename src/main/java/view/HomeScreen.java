@@ -43,9 +43,9 @@ public class HomeScreen extends JFrame {
         // Warn about beta
         JOptionPane.showMessageDialog(
             homeScreen,
-            "This is a pre-release (version "
-            + Metadata.getVersion()
-            + ") and has not been thoroughly tested. Back up often using the Export option and consider copying output to another directory just in case.",
+            "This is a pre-release (version " +
+                Metadata.getVersion() +
+                ") and has not been thoroughly tested. Back up often using the Export option and consider copying output to another directory just in case.",
             "Warning",
             JOptionPane.WARNING_MESSAGE
         );
@@ -103,13 +103,15 @@ public class HomeScreen extends JFrame {
      */
     public void createDescriptionArea() {
         JTextArea description = new JTextArea();
-        description.setText("Welcome to FeedbackHelper (version " + Metadata.getVersion() +
-            """
-            ).
+        description.setText(
+            "Welcome to FeedbackHelper (version " +
+                Metadata.getVersion() +
+                """
+                ).
 
-            To get started with creating feedback documents click the 'Start New Assignment' button. You will then be prompted for some details to set up the project.
+                To get started with creating feedback documents click the 'Start New Assignment' button. You will then be prompted for some details to set up the project.
 
-            To resume work on an existing assignment, click the 'Load Assignment' button and select your '.fht' file."""
+                To resume work on an existing assignment, click the 'Load Assignment' button and select your '.fht' file."""
         );
         description.setEditable(false);
         description.setFocusable(false);
