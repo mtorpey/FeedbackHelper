@@ -40,15 +40,15 @@ public class HomeScreen extends JFrame {
         // Set icon
         LogoIcon.applyIcon(homeScreen);
 
-        // Warn about beta
-        JOptionPane.showMessageDialog(
-            homeScreen,
-            "This is a pre-release (version " +
-                Metadata.getVersion() +
-                ") and has not been thoroughly tested. Back up often using the Export option and consider copying output to another directory just in case.",
-            "Warning",
-            JOptionPane.WARNING_MESSAGE
-        );
+        // Warn about beta (enable for beta releases)
+        // JOptionPane.showMessageDialog(
+        //     homeScreen,
+        //     "This is a pre-release (version " +
+        //         Metadata.getVersion() +
+        //         ") and has not been thoroughly tested. Back up often using the Export option and consider copying output to another directory just in case.",
+        //     "Warning",
+        //     JOptionPane.WARNING_MESSAGE
+        // );
 
         // Setup the components and display the screen
         homeScreen.setLayout(new BorderLayout(SPACING, SPACING));
