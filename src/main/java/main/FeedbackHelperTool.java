@@ -22,21 +22,23 @@ public class FeedbackHelperTool {
         AppController controller = new AppController();
         AppView view = AppView.create(controller);
 
-        // Handle filename passed by desktop (MacOS)
+        // Start appropriately for the OS and supplied file (if any)
         try {
+            // Handle filename passed by desktop (MacOS)
+            Desktop.getDesktop().setOpenFileHandler(e -> view.startWithFile(e.getFiles().get(0).toPath()));
             // This might delete the home screen, hence the use of SwingUtilities::invokeLater in AppView.
-            Desktop.getDesktop().setOpenFileHandler(e -> view.startWithFile(Path.of(e.getSearchTerm())));
+            view.start();
             System.out.println("Created an open file handler (for MacOS)");
         } catch (UnsupportedOperationException e) {
+            // Handle filename passed by command-line args (Linux/Windows)
             System.out.println("Not setting an open file handler (not MacOS)");
+            if (args.length > 0) {
+                Path fhtFile = Path.of(args[0]);
+                view.startWithFile(fhtFile);
+            } else {
+                view.start();
+            }
         }
 
-        // Handle filename passed by command-line args (Linux/Windows)
-        if (args.length > 0) {
-            Path fhtFile = Path.of(args[0]);
-            view.startWithFile(fhtFile);
-        } else {
-            view.start();
-        }
     }
 }
