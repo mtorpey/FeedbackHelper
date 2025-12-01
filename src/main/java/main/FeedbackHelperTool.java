@@ -33,12 +33,13 @@ public class FeedbackHelperTool {
             // Handle filename passed by command-line args (Linux/Windows)
             System.out.println("Not setting an open file handler (not MacOS)");
             if (args.length > 0) {
-                Path fhtFile = Path.of(args[0]);
-                view.startWithFile(fhtFile);
+                String fhtName = args[0].startsWith("file:") ? args[0].substring("file:".length()) : args[0];
+                Path fhtPath = Path.of(fhtName);
+                System.out.println("Attempting to load file at " + fhtPath.toAbsolutePath());
+                view.startWithFile(fhtPath);
             } else {
                 view.start();
             }
         }
-
     }
 }
