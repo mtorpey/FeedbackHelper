@@ -24,14 +24,13 @@ import configuration.Metadata;
  */
 public class AboutDialog extends JDialog {
 
-    public static final String DEVELOPER_INFO =
-        "Feedback Helper was developed by Bhuvan Bezawada as part of a CS5099 project at the University of St Andrews.";
+    public static final String DEVELOPER_INFO = "by Michael Young & Bhuvan Bezawada";
 
     public static final String GOAL_INFO =
         "The goal of this tool is to help markers create feedback documents more efficiently.";
 
     public static final String CONTRIBUTOR_INFO =
-        "Later contributions by Michael Young, Johannes Zelger, and Oluwanifemi Fadare.";
+        "With contributions by Johannes Zelger, Oluwanifemi Fadare, and Yichen Cao.";
 
     public static final String ABOUT_INFO =
         "<html><br>" + DEVELOPER_INFO + "<br>" + GOAL_INFO + "<br><br>" + CONTRIBUTOR_INFO + "</html>";
