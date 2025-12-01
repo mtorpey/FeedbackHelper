@@ -5,7 +5,7 @@
     "main": "index.js",
     "preferGlobal": true,
     "repository": "",
-    "version": "5.0-beta.5",
+    "version": "5.0-beta.6",
     "jdeploy": {
         "jdk": false,
         "fallbackToUniversal": false,
@@ -22,7 +22,7 @@
             "custom": true,
             "mimetype": "application/java-serialized-object"
         }],
-        "jar": "FeedbackHelper-5.0-beta.5-complete.jar",
+        "jar": "FeedbackHelper-5.0-beta.6-complete.jar",
         "javafx": false,
         "title": "FeedbackHelper",
         "downloadPage": {"platforms": ["default"]},
