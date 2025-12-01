@@ -1,5 +1,49 @@
 This file describes changes to FeedbackHelper since the initial release.
 
+5.0 (2025-12-01)
+  - Major reworking of internals, conforming more cleanly to MVC pattern and modern Java standards.
+  - Target Java version changed to 17.
+  - New software deployment system using jDeploy, simplifying installation and allowing auto-updates.
+  - Removed dependencies:
+    - nitrite database
+    - json-simple
+    - slf4j
+  - Functionality improvements:
+    - Custom phrases are now per-section.
+    - Custom phrases can now be deleted.
+    - Assignments can be created with no students.
+    - Student IDs other than 9-digit numerics can be used.
+    - Student list files are less strict, and compatible with MMS templates.
+    - Saving is done to a single ".fht" file instead of 3 database files.
+    - Backups are created every 15 minutes.
+    - Exported grades are sorted by ID (Yichen).
+  - Wide range of UI improvements:
+    - Resizing behaviour and use of space improved across the UI.
+    - UI scaling added (requires restart).
+    - Preview panel replaced with concise list of students showing grade and feedback length.
+    - Phrases are not truncated in phrase panel.
+    - New "FH" logo icon added instead of default Java logo.
+    - Status bar added to bottom of feedback screen.
+    - Redesigned "Create Assignment" screen with more intuitive workflow.
+    - FlatLaf Light theme set as default.
+    - Errors are shown more consistently via popups.
+    - Exporting automatically opens the file location in the desktop file manager.
+    - Bullet points are added and removed more intelligently.
+    - Unicode bullet symbol now allowed for line marker.
+    - Grades are entered with a spinner control.
+    - Removal of some redundant "confirm" or "save" buttons (Yichen).
+    - Redundant "Insights" tab removed.
+  - Other usability improvements:
+    - FHT files can be opened directly in the desktop using file associations.
+    - Last opened assignment is shown automatically on choosing Load Assignment.
+    - Autosave is more frequent and no longer blocks UI actions.
+    - New windows are centered properly on creation.
+    - Mac copy-paste using Cmd+XCV added.
+  - Bug fixes:
+    - Leading 0 is not trimmed from student IDs (Yichen).
+    - Asterisk line marker no longer prevents phrase recognition.
+    - Many others.
+
 4.0 (2024-02-22)
   - New option to add students to an assignment after starting (Femi).
   - Assignment files are now portable (can be loaded after being moved on disk) (Femi).

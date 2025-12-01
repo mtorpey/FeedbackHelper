@@ -38,5 +38,7 @@ Since 2021, the tool has been developed by Michael Young, with additional contri
 
 In late 2025, a major reworking was done (version 5.0) that substantially altered every part of the codebase, increasing flexibility and maintainability and adding several new features.
 
+See the `CHANGES` file for a full history of changes.
+
 ## Copyright
 Copyright 2021–2025 by Michael Young, Bhuvan Bezawada and contributors. See the `LICENSE` file.
