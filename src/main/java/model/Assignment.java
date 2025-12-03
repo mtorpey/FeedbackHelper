@@ -461,7 +461,7 @@ public class Assignment implements Serializable {
         List<Phrase> phrasesForHeading = phraseCounts.get(heading);
 
         // Handle phrases that were deleted
-        Set<String> removals = Utilities.getRemovalsFromSet(oldPhrases, newPhrases);
+        Set<String> removals = Utilities.getRemovals(oldPhrases, newPhrases);
         for (Phrase phrase : phrasesForHeading) {
             if (removals.contains(phrase.getPhraseAsString())) {
                 phrase.decrementUsageCount();
@@ -471,7 +471,7 @@ public class Assignment implements Serializable {
         removeZeroUsePhrases(heading);
 
         // Handle existing phrases that were added
-        Set<String> additions = Utilities.getAdditionsToSet(oldPhrases, newPhrases);
+        Set<String> additions = Utilities.getAdditions(oldPhrases, newPhrases);
         for (Phrase phrase : phrasesForHeading) {
             String text = phrase.getPhraseAsString();
             if (additions.contains(text)) {

@@ -7,7 +7,9 @@ import java.util.Set;
 /**
  * Utilities Class.
  */
-public class Utilities {
+public final class Utilities {
+
+    private Utilities() {}
 
     /**
      * Get a set of additions when comparing an old set to a new set.
@@ -17,7 +19,7 @@ public class Utilities {
      * @param <T> The type of the data in the sets.
      * @return The additions to the old set.
      */
-    public static <T> Set<T> getAdditionsToSet(Collection<T> oldSet, Collection<T> newSet) {
+    public static <T> Set<T> getAdditions(Collection<T> oldSet, Collection<T> newSet) {
         Set<T> oldSetCopy = new HashSet<>(oldSet);
         Set<T> newSetCopy = new HashSet<>(newSet);
         newSetCopy.removeAll(oldSetCopy);
@@ -32,11 +34,8 @@ public class Utilities {
      * @param <T> The type of the data in the sets.
      * @return The removals from the old set.
      */
-    public static <T> Set<T> getRemovalsFromSet(Collection<T> oldSet, Collection<T> newSet) {
-        Set<T> oldSetCopy = new HashSet<>(oldSet);
-        Set<T> newSetCopy = new HashSet<>(newSet);
-        oldSetCopy.removeAll(newSetCopy);
-        return oldSetCopy;
+    public static <T> Set<T> getRemovals(Collection<T> oldSet, Collection<T> newSet) {
+        return getAdditions(newSet, oldSet);
     }
 
     /**
