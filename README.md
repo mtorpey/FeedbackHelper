@@ -7,12 +7,12 @@ FeedbackHelper is a tool for efficiently creating bullet-pointed feedback on stu
 The tool was developed at the University of St Andrews, and exports feedback and grade files suitable for bulk upload to [MMS](https://mms.st-andrews.ac.uk/mms/).
 
 ## Installation
-To install FeedbackHelper, go to the [⬇️ Downloads page](https://www.jdeploy.com/gh/mtorpey/FeedbackHelper), download the installer for your operating system, and run it. You will be given the option of allowing automatic updates, which will mean you always have the latest version installed. This is the recommended method.
+To install FeedbackHelper, go to the [⬇️ Downloads page](https://www.jdeploy.com/gh/mtorpey/FeedbackHelper), download the installer for your operating system, and run it. You will be given the option of allowing automatic updates, which will mean you always have the latest version installed. This is the recommended method.
 
-Alternatively, you can download the tool as an executable JAR file by going to the [Releases page](https://github.com/mtorpey/FeedbackHelper/releases) here on GitHub and selecting the file `FeedbackHelper-<version>-complete.jar` under the assets for the latest release. You'll need to make sure Java 17+ is installed on your computer. You can run the JAR file using `java -jar <filename>` on the command line, or possibly by double-clicking the JAR in your desktop environment. This method doesn't allow automatic updates, file associations or other helpful OS integrations.
+Alternatively, you can download the tool as an executable JAR file by going to the [Releases page](https://github.com/mtorpey/FeedbackHelper/releases) on GitHub and selecting the file `FeedbackHelper-<version>-complete.jar` under the assets for the latest release. You'll need to make sure Java 17+ is installed on your computer. You can run the JAR file using `java -jar <filename>` on the command line, or possibly by double-clicking the JAR in your desktop environment. This method doesn't allow automatic updates, file associations or other helpful OS integrations.
 
 ## Reporting problems
-If you experience any problems with FeedbackHelper, please report them using the [❕ Issue tracker](https://github.com/mtorpey/FeedbackHelper/issues) here on GitHub. Or if you're in St Andrews, send me an email or knock on my office door.
+If you experience any problems with FeedbackHelper, please report them using the [🚩 Issue tracker](https://github.com/mtorpey/FeedbackHelper/issues) on GitHub. Or if you're in St Andrews, send me an email or knock on my office door.
 
 ## Compiling from source (for developers)
 If you want to build this from source for some reason, for example if you want to contribute some code, you'll need to make sure [Maven](https://maven.apache.org/install.html) is installed on your machine.
@@ -29,7 +29,7 @@ Or to create an executable jar, do the following:
 - You can then run the file with `java -jar target/FeedbackHelper-<version>-complete.jar`.
 
 ## History
-FeedbackHelper was originally written by Bhuvan Bezawada as part of a Masters project at the School of Computer Science, University of St Andrews, under the supervision of Michael Young. The original version 1.0 written for that project is still available at <https://github.com/BhuvanBezawada/CS5099-Project>.
+FeedbackHelper was originally written by Bhuvan Bezawada as part of a Masters project at the School of Computer Science, University of St Andrews, under the supervision of Michael Young. The original version 1.0 written for that project is still available [here](https://github.com/BhuvanBezawada/CS5099-Project).
 
 Since 2021, the tool has been developed by Michael Young, with additional contributions from:
 - Johannes Zelger
@@ -38,7 +38,7 @@ Since 2021, the tool has been developed by Michael Young, with additional contri
 
 In late 2025, a major reworking was done (version 5.0) that substantially altered every part of the codebase, increasing flexibility and maintainability and adding several new features.
 
-See the `CHANGES` file for a full history of changes.
+See the [CHANGES](https://github.com/mtorpey/FeedbackHelper/blob/main/CHANGES) file for a full history of changes.
 
 ## Copyright
-Copyright 2021–2025 by Michael Young, Bhuvan Bezawada and contributors. See the `LICENSE` file.
+Copyright 2021–2025 by Michael Young, Bhuvan Bezawada and contributors. See the [LICENSE](https://github.com/mtorpey/FeedbackHelper/blob/main/LICENSE) file.
