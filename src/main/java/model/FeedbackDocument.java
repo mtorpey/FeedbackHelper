@@ -64,6 +64,9 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      * @param contents The data associated with the heading.
      */
     public void setSectionContents(String heading, String contents) {
+        if (!headings.contains(heading)) {
+            throw new IllegalArgumentException("Invalid heading '" + heading + "'");
+        }
         this.sectionContents.put(heading, contents);
     }
 
@@ -73,7 +76,10 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
      * @param heading The heading to get the data for.
      */
     public String getSectionContents(String heading) {
-        return this.sectionContents.get(heading);
+        if (!headings.contains(heading)) {
+            throw new IllegalArgumentException("Invalid heading '" + heading + "'");
+        }
+        return sectionContents.get(heading);
     }
 
     /** Get the total number of characters in this document. */
