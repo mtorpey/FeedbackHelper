@@ -132,12 +132,11 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
                 writer.write(underlineStyle.repeat(fullHeading.length()));
 
                 // Data
-                writer.newLine();
                 String contents = getSectionContents(heading);
-                String[] lines = contents.split("\n");
-                String lineMarker = style.lineMarker();
-                for (String line : lines) {
-                    if (!line.trim().equals(lineMarker)) {
+                if (!contents.isBlank()) { // Skip empty sections altogether
+                    writer.newLine();
+                    String[] lines = contents.split("\n");
+                    for (String line : lines) {
                         writer.write(line);
                         writer.newLine();
                     }
