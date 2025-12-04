@@ -106,12 +106,11 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
     }
 
     /**
-     * Set the usage count of the phrase.
+     * Set the usage count of the phrase in the view.
      *
      * @param usageCount The usage count of the phrase.
      */
     public void setUsageCount(long usageCount) {
-        this.phrase.setUsageCount(usageCount);
         this.usageCountLabel.setText(String.valueOf(usageCount));
 
         // Refresh the UI

@@ -51,15 +51,6 @@ public class Phrase implements Comparable<Phrase> {
     }
 
     /**
-     * Set the usage count of the phrase.
-     *
-     * @param usageCount The usage count of the phrase.
-     */
-    public void setUsageCount(long usageCount) {
-        this.usageCount = usageCount;
-    }
-
-    /**
      * Increment the usage count by 1.
      */
     public void incrementUsageCount() {
