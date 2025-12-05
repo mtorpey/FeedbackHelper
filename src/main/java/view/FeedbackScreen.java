@@ -13,7 +13,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -317,12 +319,9 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         preferencesMenu.add(themeMenu);
 
         // Set UI scaling
-        JMenu scaleMenu = new JMenu("Scale factor (requires restart)");
-        JSpinner scaleSpinner = new JSpinner(new SpinnerNumberModel(UserPreferences.getScale(), 0.25, 4.0, 0.05));
-        scaleSpinner.setEditor(new JSpinner.NumberEditor(scaleSpinner, "0%"));
-        scaleSpinner.addChangeListener(e -> UserPreferences.setScale((float) (double) scaleSpinner.getValue()));
-        scaleMenu.add(scaleSpinner);
-        preferencesMenu.add(scaleMenu);
+        JMenuItem zoomOption = new JMenuItem("Zoom level");
+        zoomOption.addActionListener(e -> showZoomDialog());
+        preferencesMenu.add(zoomOption);
 
         return preferencesMenu;
     }
@@ -341,6 +340,22 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
             handleError("Error setting theme", e);
         }
         SwingUtilities.updateComponentTreeUI(this);
+    }
+
+    private void showZoomDialog() {
+        JOptionPane zoomPane = new JOptionPane("Select zoom level:", JOptionPane.PLAIN_MESSAGE);
+        
+        JSpinner scaleSpinner = new JSpinner(new SpinnerNumberModel(UserPreferences.getScale(), 0.25, 4.0, 0.05));
+        scaleSpinner.setEditor(new JSpinner.NumberEditor(scaleSpinner, "0%"));
+        scaleSpinner.addChangeListener(e -> UserPreferences.setScale((float) (double) scaleSpinner.getValue()));
+
+        zoomPane.add(scaleSpinner, 1);  // Insert between prompt and submit button
+        zoomPane.add(new JLabel("Requires restart to take effect."), 2);
+
+        JDialog zoomDialog = zoomPane.createDialog(this, "Zoom level");
+        zoomDialog.pack();
+        zoomDialog.setVisible(true);
+        setLocationRelativeTo(null);
     }
 
     private void exitProgram() {
