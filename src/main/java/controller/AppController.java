@@ -10,6 +10,7 @@ import java.util.TreeMap;
 import configuration.UserPreferences;
 import model.Assignment;
 import model.AssignmentListener;
+import model.FeedbackStyle;
 import model.StudentId;
 import visualisation.Visualisations;
 
@@ -41,32 +42,24 @@ public class AppController {
      * @param headings The headings of the feedback document.
      * @param studentListFile The student list file.
      * @param directory The directory location to save assignment related documents.
+     * @param headingStyle   The heading style.
+     * @param underlineStyle The heading underline style.
+     * @param lineSpacing    The line spacing after each section.
+     * @param lineMarker     The line marker for each new line.
      * @return The Assignment object that was created.
      */
-    public Assignment createAssignment(String title, String headings, Path studentListFile, Path directory)
+    public Assignment createAssignment(String title, String headings, Path studentListFile, Path directory, String headingStyle, String underlineStyle, int lineSpacing, String lineMarker)
         throws IOException {
         if (assignment != null) {
             throw new RuntimeException("Cannot create new assignment when one already exists.");
         }
-        this.assignment = new Assignment(title, headings, studentListFile, directory);
-        assignment.save();
+        FeedbackStyle feedbackStyle = new FeedbackStyle(headingStyle, underlineStyle, lineSpacing, lineMarker);
+        assignment = new Assignment(title, headings, studentListFile, directory, feedbackStyle);
 
         // Since this was successful, remember it as the default for next load
         UserPreferences.setLastOpenedAssignment(directory);
 
         return this.assignment;
-    }
-
-    /**
-     * Set the style preferences for an assignment's exports.
-     *
-     * @param headingStyle   The heading style.
-     * @param underlineStyle The heading underline style.
-     * @param lineSpacing    The line spacing after each section.
-     * @param lineMarker     The line marker for each new line.
-     */
-    public void setFeedbackStyle(String headingStyle, String underlineStyle, int lineSpacing, String lineMarker) {
-        assignment.setFeedbackStyle(headingStyle, underlineStyle, lineSpacing, lineMarker);
     }
 
     /**

@@ -69,8 +69,9 @@ public class Assignment implements Serializable {
      * @param headings The headings of the feedback document, newline-separated.
      * @param studentListFile The student list file, which may be null.
      * @param directory The directory location to save assignment related documents.
+     * @param feedbackStyle The style used for feedback documents.
      */
-    public Assignment(String title, String headings, Path studentListFile, Path directory)
+    public Assignment(String title, String headings, Path studentListFile, Path directory, FeedbackStyle feedbackStyle)
         throws NotDirectoryException, IOException {
         // Initialise data structures
         this.feedbackDocuments = new TreeMap<>();
@@ -83,6 +84,7 @@ public class Assignment implements Serializable {
         setHeadings(headings);
         setStudentIds(studentListFile, directory);
         setDirectory(directory);
+        this.feedbackStyle = feedbackStyle;
 
         // Create the assignment directory if it does not exist
         if (!Files.exists(directory)) {
@@ -121,19 +123,6 @@ public class Assignment implements Serializable {
     /** Add the listener to this assignment, so it will be notified of changes. */
     public void addListener(AssignmentListener listener) {
         listeners.add(listener);
-    }
-
-    /**
-     * Set the style preferences for the assignment.
-     *
-     * @param headingStyle   The heading style
-     * @param underlineStyle The heading underline style
-     * @param lineSpacing    The line spacing after each section
-     * @param lineMarker     The line marker for each new line
-     */
-
-    public void setFeedbackStyle(String headingStyle, String underlineStyle, int lineSpacing, String lineMarker) {
-        this.feedbackStyle = new FeedbackStyle(headingStyle, underlineStyle, lineSpacing, lineMarker);
     }
 
     /** Set the assignment directory, where files will be saved and exported. */
@@ -279,8 +268,14 @@ public class Assignment implements Serializable {
                 }
             });
             saveThread.start();
-            notifyListeners(l -> l.handleSaveThread(saveThread));
-        } catch (IOException e) {
+
+            // Wait for the thread to finish, or hand responsibility to a listener
+            if (listeners.isEmpty()) {
+                saveThread.join();
+            } else {
+                notifyListeners(l -> l.handleSaveThread(saveThread));
+            }
+        } catch (IOException | InterruptedException e) {
             reportError("Error saving assignment", e);
         }
     }

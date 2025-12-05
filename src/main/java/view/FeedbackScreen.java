@@ -79,6 +79,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
         // Subscribe to model for changes, and store a reference to it for querying.
         screen.assignment = controller.registerWithModel(screen);
+        controller.saveAssignment();
 
         // Setup components
         screen.setup();

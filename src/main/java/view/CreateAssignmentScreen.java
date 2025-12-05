@@ -428,14 +428,16 @@ public class CreateAssignmentScreen extends JFrame {
 
         // Create the assignment
         try {
-            controller.createAssignment(assignmentTitle, assignmentHeadings, studentListFile, assignmentDirectory);
-            controller.setFeedbackStyle(
-                HEADING_STYLES.get(headingStyle),
-                UNDERLINE_STYLES.get(headingUnderlineStyle),
-                lineSpacing,
-                lineMarker
+            controller.createAssignment(
+                    assignmentTitle,
+                    assignmentHeadings,
+                    studentListFile,
+                    assignmentDirectory,
+                    HEADING_STYLES.get(headingStyle),
+                    UNDERLINE_STYLES.get(headingUnderlineStyle),
+                    lineSpacing,
+                    lineMarker
             );
-            controller.saveAssignment();
 
             // Create the feedback screen
             FeedbackScreen.create(controller);
