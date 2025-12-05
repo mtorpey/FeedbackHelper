@@ -1,5 +1,9 @@
 This file describes changes to FeedbackHelper since the initial release.
 
+5.1 (2025-12-05)
+  - Change zoom level input method to a dialog box.
+  - Exported feedback documents now have fewer blank lines.
+
 5.0 (2025-12-01)
   - Major reworking of internals, conforming more cleanly to MVC pattern and modern Java standards.
   - Target Java version changed to 17.

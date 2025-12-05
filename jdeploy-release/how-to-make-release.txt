@@ -1,3 +1,4 @@
+- Fill in CHANGES file
 - Update version in pom.xml
 - Update version in jdeploy-release/package.json
 - mvn clean package
