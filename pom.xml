@@ -17,9 +17,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>tech.tablesaw</groupId>
-      <artifactId>tablesaw-jsplot</artifactId>
-      <version>0.44.4</version>
+      <groupId>org.jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+      <version>1.5.6</version>
     </dependency>
 
     <dependency>

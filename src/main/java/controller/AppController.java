@@ -149,21 +149,12 @@ public class AppController {
      * @param assignment The assignment grades to visualise.
      */
     public void visualiseGrades() {
-        List<Double> grades = assignment.getGradesList();
-
-        // Create a linked hashmap of grades and their counts
-        SortedMap<Double, Integer> gradeAndNumber = new TreeMap<Double, Integer>();
-        for (double i = 0.0; i <= 20.0; i += 0.5) {
-            gradeAndNumber.put(i, 0);
-        }
-
-        // Count the number of students that got each grade
-        grades.forEach(grade -> {
-            grade = Math.round(grade * 2) / 2.0; // Round to 0.5
-            gradeAndNumber.put(grade, gradeAndNumber.get(grade) + 1);
-        });
-
-        Visualisations.createBarChart(gradeAndNumber);
+        double[] grades = assignment.getGradesList()
+            .stream()
+            .mapToDouble(Double::doubleValue)
+            .toArray();
+        
+        Visualisations.createBarChart(grades);
     }
 
     /* PHRASE MANAGEMENT METHODS */

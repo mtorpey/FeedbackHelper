@@ -2,39 +2,70 @@ package visualisation;
 
 import java.util.SortedMap;
 
-import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.api.StringColumn;
-import tech.tablesaw.api.Table;
-import tech.tablesaw.plotly.Plot;
-import tech.tablesaw.plotly.api.VerticalBarPlot;
+import javax.swing.JFrame;
+
+import org.jfree.chart.*;
+import org.jfree.chart.axis.*;
+import org.jfree.chart.plot.*;
+import org.jfree.data.statistics.*;
+
+import configuration.UserPreferences;
 
 /**
  * Visualisation Class.
  */
 public class Visualisations {
+    private final static double[] ST_ANDREWS_CLASS_BOUNDARIES = {0, 4, 7, 10.5, 13.5, 16.5, 20};
 
     /**
      * Create a bar chart of the grades.
      *
-     * @param gradeValues An ordered list of the grade values to plot.
+     * @param grades All the grades achieved on this assignment.
      */
-    public static void createBarChart(SortedMap<Double, Integer> gradeValues) {
-        // Create a data table
-        Table dataTable = Table.create("dataTable");
+    public static void createBarChart(double[] grades) {
+        SimpleHistogramDataset dataset = new SimpleHistogramDataset(0);
 
-        // Create the x-axis labels of grades
-        StringColumn gradesLabels = StringColumn.create("gradeLabels");
-        for (double value : gradeValues.keySet()) {
-            gradesLabels.append(String.valueOf(value));
+        for (int i = 0; i < ST_ANDREWS_CLASS_BOUNDARIES.length - 1; i++) {
+            double lower = ST_ANDREWS_CLASS_BOUNDARIES[i];
+            double upper = ST_ANDREWS_CLASS_BOUNDARIES[i + 1];
+            boolean includeLower = (i == 0); // exclusive below (except first bucket)
+            boolean includeUpper = true; // inclusive above
+            dataset.addBin(new SimpleHistogramBin(lower, upper, includeLower, includeUpper));
         }
 
-        // Store the data points
-        DoubleColumn grades = DoubleColumn.create("gradeValues", gradeValues.values());
+        dataset.addObservations(grades);
 
-        // Plot x against y
-        dataTable.addColumns(gradesLabels, grades);
+        // Create the chart
+        JFreeChart chart = ChartFactory.createHistogram(
+            "Grade distribution",
+            "Grade",
+            "Number of students",
+            dataset,
+            PlotOrientation.VERTICAL,
+            false,
+            false,
+            false
+        );
+        var plot = chart.getXYPlot();
 
-        // Display the visualisation
-        Plot.show(VerticalBarPlot.create("Grade distribution", dataTable, "gradeLabels", "gradeValues"));
+        var x = (NumberAxis) plot.getDomainAxis();
+        x.setRange(0, 20);
+
+        var y = plot.getRangeAxis();
+        y.setLowerBound(0);
+        y.setStandardTickUnits(new NumberTickUnitSource(true));
+
+        if (UserPreferences.isDarkThemeSelected()) {
+            StandardChartTheme.createDarknessTheme().apply(chart);
+        }
+        
+        ChartPanel panel = new ChartPanel(chart);
+
+        // Display in a frame
+        JFrame frame = new JFrame("Grade distribution");
+        frame.add(panel);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 }

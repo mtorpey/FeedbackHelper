@@ -23,6 +23,10 @@ public abstract class UserPreferences {
         prefs.put(THEME, name);
     }
 
+    public static boolean isDarkThemeSelected() {
+        return getTheme().equals("com.formdev.flatlaf.FlatDarkLaf");
+    }
+
     public static Path getLastOpenedAssignmentPath() {
         String pathStr = prefs.get(LAST_OPENED_ASSIGNMENT_PATH, null);
         return pathStr == null ? null : Path.of(pathStr);
