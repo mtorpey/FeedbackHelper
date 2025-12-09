@@ -217,8 +217,8 @@ public class Assignment implements Serializable {
             return files
                 .map(Path::getFileName)
                 .map(Path::toString)
-                .filter(name -> name.matches(StudentId.ST_ANDREWS_PATTERN + "(\\..*)?"))
-                .map(name -> new StudentId(name.split("\\.")[0]))
+                .filter(name -> name.matches(StudentId.ST_ANDREWS_PATTERN + "(\\D.*)?"))
+                .map(name -> new StudentId(name.substring(0, 9)))
                 .collect(Collectors.toList());
         } catch (IOException e) {
             // problem searching directory, so none found
