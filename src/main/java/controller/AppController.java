@@ -153,8 +153,7 @@ public class AppController {
             .stream()
             .mapToDouble(Double::doubleValue)
             .toArray();
-        
-        Visualisations.createBarChart(grades);
+        Visualisations.showGradeDistribution(assignment.getTitle(), grades);
     }
 
     /* PHRASE MANAGEMENT METHODS */
