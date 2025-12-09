@@ -29,7 +29,9 @@ public abstract class UserPreferences {
     }
 
     public static void setLastOpenedAssignment(Path assignmentFile) {
-        prefs.put(LAST_OPENED_ASSIGNMENT_PATH, assignmentFile.toAbsolutePath().toString());
+        if (assignmentFile != null) {
+            prefs.put(LAST_OPENED_ASSIGNMENT_PATH, assignmentFile.toAbsolutePath().toString());
+        }
     }
 
     public static void addPreferenceChangeListener(PreferenceChangeListener listener) {
