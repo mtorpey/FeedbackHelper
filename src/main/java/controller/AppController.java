@@ -12,7 +12,7 @@ import model.Assignment;
 import model.AssignmentListener;
 import model.FeedbackStyle;
 import model.StudentId;
-import visualisation.Visualisations;
+import visualisation.GradeChart;
 
 /**
  * App Controller Class.
@@ -153,7 +153,7 @@ public class AppController {
             .stream()
             .mapToDouble(Double::doubleValue)
             .toArray();
-        Visualisations.showGradeDistribution(assignment.getTitle(), grades);
+        GradeChart.showGradeDistribution(assignment.getTitle(), grades);
     }
 
     /* PHRASE MANAGEMENT METHODS */

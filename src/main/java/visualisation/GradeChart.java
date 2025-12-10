@@ -19,7 +19,7 @@ import configuration.UserPreferences;
 /**
  * Visualisation Class.
  */
-public class Visualisations {
+public class GradeChart {
     private static final double PADDING = 0.1;
     private static final double MINIMUM_GRADE = 0.0;
     private static final double MAXIMUM_GRADE = 20.0;
