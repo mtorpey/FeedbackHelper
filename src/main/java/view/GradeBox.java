@@ -1,5 +1,6 @@
 package view;
 
+import java.text.ParseException;
 import java.util.function.Consumer;
 
 import javax.swing.JLabel;
@@ -62,8 +63,15 @@ public class GradeBox extends JPanel {
      * @return The grade value.
      */
     public double getGrade() throws NumberFormatException {
+        try {
+            chooser.commitEdit();
+        } catch (ParseException e) {
+            // Reset to a known value
+        }
+
         // Get the string version of the grade
-        double grade = (double) this.chooser.getValue();
+        double grade = (double) chooser.getValue();
+        setGrade(grade); // in case an invalid value is in the cell
 
         // Parse string into a valid double
         if (grade < MINIMUM || grade > MAXIMUM) {
