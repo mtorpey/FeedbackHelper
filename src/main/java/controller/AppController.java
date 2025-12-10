@@ -12,7 +12,6 @@ import model.Assignment;
 import model.AssignmentListener;
 import model.FeedbackStyle;
 import model.StudentId;
-import visualisation.GradeChart;
 
 /**
  * App Controller Class.
@@ -141,19 +140,6 @@ public class AppController {
      */
     public void exportFeedbackAndGrades() {
         assignment.export();
-    }
-
-    /**
-     * Create a bar chart visualisation of the grades.
-     *
-     * @param assignment The assignment grades to visualise.
-     */
-    public void visualiseGrades() {
-        double[] grades = assignment.getGradesList()
-            .stream()
-            .mapToDouble(Double::doubleValue)
-            .toArray();
-        GradeChart.showGradeDistribution(assignment.getTitle(), grades);
     }
 
     /* PHRASE MANAGEMENT METHODS */

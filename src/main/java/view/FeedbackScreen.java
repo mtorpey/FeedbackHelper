@@ -169,7 +169,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         exportDocsOption.addActionListener(e -> controller.exportFeedbackAndGrades());
 
         // Visualise grades option
-        visGradesOption.addActionListener(e -> controller.visualiseGrades());
+        visGradesOption.addActionListener(e -> visualiseGrades());
 
         // Exit program option
         exitOption.addActionListener(e -> exitProgram());
@@ -356,6 +356,19 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         zoomDialog.pack();
         zoomDialog.setVisible(true);
         setLocationRelativeTo(null);
+    }
+
+    /**
+     * Create a bar chart visualisation of the grades.
+     *
+     * @param assignment The assignment grades to visualise.
+     */
+    private void visualiseGrades() {
+        double[] grades = assignment.getGradesList()
+            .stream()
+            .mapToDouble(Double::doubleValue)
+            .toArray();
+        GradeChart.showGradeDistribution(assignment.getTitle(), grades);
     }
 
     private void exitProgram() {

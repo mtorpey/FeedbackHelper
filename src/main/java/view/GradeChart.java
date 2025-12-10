@@ -1,4 +1,4 @@
-package visualisation;
+package view;
 
 import java.awt.Dimension;
 import java.util.Arrays;
@@ -17,7 +17,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import configuration.UserPreferences;
 
 /**
- * Visualisation Class.
+ * Methods for displaying the assignment's grade distribution as a bar chart.
  */
 public class GradeChart {
     private static final double PADDING = 0.1;
