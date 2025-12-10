@@ -108,10 +108,13 @@ public class GradeChart {
         x.setLowerMargin(outerMargin);
         x.setUpperMargin(outerMargin);
         x.setCategoryMargin(PADDING);
+        x.setTickMarksVisible(false);
+        x.setAxisLineVisible(false);
 
         // Show frequencies as integers
         var y = plot.getRangeAxis();
         y.setStandardTickUnits(new NumberTickUnitSource(true));
+        y.setAxisLineVisible(false);
 
         // Use dark theme if appropriate
         if (UserPreferences.isDarkThemeSelected()) {
