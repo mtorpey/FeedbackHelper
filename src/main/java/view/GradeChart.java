@@ -9,7 +9,10 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberTickUnitSource;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -102,8 +105,8 @@ public class GradeChart {
         );
 
         // Improve appearance
-        var plot = chart.getCategoryPlot();
-        var x = plot.getDomainAxis();
+        CategoryPlot plot = chart.getCategoryPlot();
+        CategoryAxis x = plot.getDomainAxis();
         double outerMargin = 2 * PADDING / dataset.getColumnCount();
         x.setLowerMargin(outerMargin);
         x.setUpperMargin(outerMargin);
@@ -112,7 +115,7 @@ public class GradeChart {
         x.setAxisLineVisible(false);
 
         // Show frequencies as integers
-        var y = plot.getRangeAxis();
+        ValueAxis y = plot.getRangeAxis();
         y.setStandardTickUnits(new NumberTickUnitSource(true));
         y.setAxisLineVisible(false);
 
