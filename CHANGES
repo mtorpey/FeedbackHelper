@@ -1,5 +1,11 @@
 This file describes changes to FeedbackHelper since the initial release.
 
+5.2 (2025-12-15)
+  - New grade visualisation system using JFreeChart instead of Tablesaw.
+  - Feedback boxes are no longer modified when alt-tabbing to other apps.
+  - Searching for submissions in directory is more permissive.
+  - Bug fix: grade chooser no longer updates wrong student.
+
 5.1 (2025-12-05)
   - Change zoom level input method to a dialog box.
   - Exported feedback documents now have fewer blank lines.

@@ -5,7 +5,7 @@
     "main": "index.js",
     "preferGlobal": true,
     "repository": "",
-    "version": "5.1",
+    "version": "5.2",
     "jdeploy": {
         "jdk": false,
         "fallbackToUniversal": false,
@@ -22,7 +22,7 @@
             "custom": true,
             "mimetype": "application/java-serialized-object"
         }],
-        "jar": "FeedbackHelper-5.1-complete.jar",
+        "jar": "FeedbackHelper-5.2-complete.jar",
         "javafx": false,
         "title": "FeedbackHelper",
         "downloadPage": {"platforms": ["default"]},
