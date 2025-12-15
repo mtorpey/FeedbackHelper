@@ -12,7 +12,7 @@ import model.StudentId;
 public class MockListener implements AssignmentListener {
 
     private record Event(String type, String message) {}
-    
+
     private Collection<Thread> threads;
     private List<Event> events;
 
@@ -95,5 +95,4 @@ public class MockListener implements AssignmentListener {
     public void handleError(String description, Exception exception) {
         events.add(new Event("Error", description));
     }
-
 }

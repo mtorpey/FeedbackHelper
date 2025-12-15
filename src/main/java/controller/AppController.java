@@ -47,8 +47,16 @@ public class AppController {
      * @param lineMarker     The line marker for each new line.
      * @return The Assignment object that was created.
      */
-    public Assignment createAssignment(String title, String headings, Path studentListFile, Path directory, String headingStyle, String underlineStyle, int lineSpacing, String lineMarker)
-        throws IOException {
+    public Assignment createAssignment(
+        String title,
+        String headings,
+        Path studentListFile,
+        Path directory,
+        String headingStyle,
+        String underlineStyle,
+        int lineSpacing,
+        String lineMarker
+    ) throws IOException {
         if (assignment != null) {
             throw new RuntimeException("Cannot create new assignment when one already exists.");
         }

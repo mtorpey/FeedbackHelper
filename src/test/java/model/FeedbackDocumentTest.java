@@ -109,20 +109,20 @@ class FeedbackDocumentTest {
         doc.setSectionContents("Code", EXAMPLE_TEXT);
         doc.export(exportDirectory, STYLE);
         String expectedContents = """
-                # Code
+            # Code
 
-                - Could do with improvement.
-                - I like the bit about frogs.
-                - Try to make your point more concisely.
-
-
-                # Report quality
+            - Could do with improvement.
+            - I like the bit about frogs.
+            - Try to make your point more concisely.
 
 
-                # Overall
+            # Report quality
 
 
-                """;
+            # Overall
+
+
+            """;
         Path expectedFile = exportDirectory.resolve(STUDENT_ID + ".txt");
         String fileText = Files.readString(expectedFile);
         assertEquals(expectedContents, fileText);

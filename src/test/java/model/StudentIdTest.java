@@ -7,18 +7,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
- 
+
 class StudentIdTest {
- 
+
     @ParameterizedTest
-    @ValueSource(strings = {"210001234", "090003445", "mct26", "Pg-acl", "_abc#!", "m?ch4^l{undergrad}"})
+    @ValueSource(strings = { "210001234", "090003445", "mct26", "Pg-acl", "_abc#!", "m?ch4^l{undergrad}" })
     void createGood(String text) {
         StudentId studentId = new StudentId(text);
         assertEquals(text, studentId.toString());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "", "Michael Young", " ", "a\\b", "\"james\"", "'finn'", "曹操", "🕴️"})
+    @ValueSource(strings = { "", "Michael Young", " ", "a\\b", "\"james\"", "'finn'", "曹操", "🕴️" })
     void createBad(String text) {
         assertThrows(IllegalArgumentException.class, () -> new StudentId(text));
     }

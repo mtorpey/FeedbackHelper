@@ -344,12 +344,12 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
     private void showZoomDialog() {
         JOptionPane zoomPane = new JOptionPane("Select zoom level:", JOptionPane.PLAIN_MESSAGE);
-        
+
         JSpinner scaleSpinner = new JSpinner(new SpinnerNumberModel(UserPreferences.getScale(), 0.25, 4.0, 0.05));
         scaleSpinner.setEditor(new JSpinner.NumberEditor(scaleSpinner, "0%"));
         scaleSpinner.addChangeListener(e -> UserPreferences.setScale((float) (double) scaleSpinner.getValue()));
 
-        zoomPane.add(scaleSpinner, 1);  // Insert between prompt and submit button
+        zoomPane.add(scaleSpinner, 1); // Insert between prompt and submit button
         zoomPane.add(new JLabel("Requires restart to take effect."), 2);
 
         JDialog zoomDialog = zoomPane.createDialog(this, "Zoom level");
@@ -364,10 +364,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
      * @param assignment The assignment grades to visualise.
      */
     private void visualiseGrades() {
-        double[] grades = assignment.getGradesList()
-            .stream()
-            .mapToDouble(Double::doubleValue)
-            .toArray();
+        double[] grades = assignment.getGradesList().stream().mapToDouble(Double::doubleValue).toArray();
         GradeChart.showGradeDistribution(assignment.getTitle(), grades);
     }
 

@@ -7,16 +7,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
- 
+
 class PhraseTest {
 
-    final static String COMMENT_A = "I like the style of the code.";
-    final static String COMMENT_B = "Please add more comments.";
+    static final String COMMENT_A = "I like the style of the code.";
+    static final String COMMENT_B = "Please add more comments.";
     Phrase phraseA, phraseB, phraseACopy;
 
     @BeforeEach
     void setupPhrases() {
-        phraseA = new Phrase(COMMENT_A, 42); 
+        phraseA = new Phrase(COMMENT_A, 42);
         phraseACopy = new Phrase(COMMENT_A, 42);
         phraseB = new Phrase(COMMENT_B); // usage count 1
     }

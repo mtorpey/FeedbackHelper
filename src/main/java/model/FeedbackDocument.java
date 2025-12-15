@@ -133,7 +133,8 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
 
                 // Data
                 String contents = getSectionContents(heading);
-                if (!contents.isBlank()) { // Skip empty sections altogether
+                if (!contents.isBlank()) {
+                    // Skip empty sections altogether
                     writer.newLine();
                     String[] lines = contents.split("\n");
                     for (String line : lines) {

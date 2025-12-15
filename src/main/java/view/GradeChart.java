@@ -23,6 +23,7 @@ import configuration.UserPreferences;
  * Methods for displaying the assignment's grade distribution as a bar chart.
  */
 public class GradeChart {
+
     private static final double PADDING = 0.1;
     private static final double MINIMUM_GRADE = 0.0;
     private static final double MAXIMUM_GRADE = 20.0;
@@ -45,7 +46,7 @@ public class GradeChart {
         // Arrange in a panel and increase width to show all labels
         ChartPanel panel = new ChartPanel(chart);
         Dimension preferred = panel.getPreferredSize();
-        panel.setPreferredSize(new Dimension(preferred.width * 5 / 4, preferred.height));
+        panel.setPreferredSize(new Dimension((preferred.width * 5) / 4, preferred.height));
 
         // Display in a new window
         JFrame frame = new JFrame("Grade distribution");
@@ -75,7 +76,7 @@ public class GradeChart {
                 dataset.incrementValue(1, series, gradeString(grade));
             }
         }
-        
+
         return dataset;
     }
 
@@ -107,7 +108,7 @@ public class GradeChart {
         // Improve appearance
         CategoryPlot plot = chart.getCategoryPlot();
         CategoryAxis x = plot.getDomainAxis();
-        double outerMargin = 2 * PADDING / dataset.getColumnCount();
+        double outerMargin = (2 * PADDING) / dataset.getColumnCount();
         x.setLowerMargin(outerMargin);
         x.setUpperMargin(outerMargin);
         x.setCategoryMargin(PADDING);

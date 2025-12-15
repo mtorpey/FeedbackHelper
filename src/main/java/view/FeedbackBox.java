@@ -217,7 +217,6 @@ public class FeedbackBox extends JPanel {
         // Set the caret colour (in some themes it might be hard to see)
         textArea.setCaretColor(textArea.getForeground());
 
-
         // Listen for enter press
         this.textArea.addKeyListener(
             new KeyAdapter() {
@@ -240,7 +239,7 @@ public class FeedbackBox extends JPanel {
                 }
 
                 @Override
-                public void focusLost(FocusEvent e) { }
+                public void focusLost(FocusEvent e) {}
             }
         );
     }

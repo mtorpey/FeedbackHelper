@@ -63,6 +63,7 @@ class AppControllerTest {
 
     @Nested
     class WithAssignmentCreated {
+
         // Test variables
         List<String> headings;
         List<StudentId> students;
@@ -86,7 +87,7 @@ class AppControllerTest {
             controller.createAssignment(TITLE, HEADINGS_LIST, studentListFile, assignmentDirectory, "", "=", 1, "•");
 
             // Register a listener for receiving changes
-            controller.registerWithModel(assignmentListener);  // triggers a save
+            controller.registerWithModel(assignmentListener); // triggers a save
         }
 
         @AfterEach
@@ -94,18 +95,22 @@ class AppControllerTest {
             assignmentListener.joinAllThreads();
             Files.deleteIfExists(studentListFile);
             // Delete recursively
-            Files.walkFileTree(assignmentDirectory, new SimpleFileVisitor<Path>() {
+            Files.walkFileTree(
+                assignmentDirectory,
+                new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                         Files.delete(file);
                         return FileVisitResult.CONTINUE;
                     }
+
                     @Override
                     public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
                         Files.delete(dir);
                         return FileVisitResult.CONTINUE;
                     }
-                });
+                }
+            );
         }
 
         @Test
@@ -123,9 +128,8 @@ class AppControllerTest {
 
         @Test
         void cannotCreateSecondAssignment() {
-            assertThrows(
-                RuntimeException.class,
-                () -> controller.createAssignment(TITLE, HEADINGS_LIST, studentListFile, assignmentDirectory, "", "=", 1, "•")
+            assertThrows(RuntimeException.class, () ->
+                controller.createAssignment(TITLE, HEADINGS_LIST, studentListFile, assignmentDirectory, "", "=", 1, "•")
             );
         }
     }
