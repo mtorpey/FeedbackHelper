@@ -454,6 +454,14 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
      * @param heading The heading of the section we have selected.
      */
     private void switchSection(String heading) {
+        // Skip if this section already open
+        if (heading.equals(currentHeading)) {
+            return;
+        }
+
+        // Inform the editor panel
+        editorPanel.switchSection(currentHeading, heading);
+
         // Change to the new heading
         currentHeading = heading;
 

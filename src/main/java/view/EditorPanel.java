@@ -239,4 +239,11 @@ public class EditorPanel extends VerticalScrollablePanel {
     public void trimFeedbackBoxes() {
         feedbackBoxes.forEach(FeedbackBox::trimText);
     }
+
+    public void switchSection(String oldHeading, String newHeading) {
+        if (oldHeading != null) {
+            headingAndFeedbackBox.get(oldHeading).switchAway();
+        }
+        headingAndFeedbackBox.get(newHeading).switchTo();
+    }
 }

@@ -214,6 +214,9 @@ public class FeedbackBox extends JPanel {
         this.textArea.setWrapStyleWord(true);
         this.textArea.setMinimumSize(new Dimension(0, 0));
         this.textArea.setBorder(BorderCreator.textAreaBorder());
+        // Set the caret colour (in some themes it might be hard to see)
+        textArea.setCaretColor(textArea.getForeground());
+
 
         // Listen for enter press
         this.textArea.addKeyListener(
@@ -233,25 +236,11 @@ public class FeedbackBox extends JPanel {
             new FocusListener() {
                 @Override
                 public void focusGained(FocusEvent e) {
-                    // Callback that we switch sections
                     onSwitchSection.accept(heading);
-
-                    // Set the caret colour (in some themes it might be hard to see)
-                    textArea.setCaretColor(textArea.getForeground());
-
-                    // Check if we need to insert a new line
-                    String text = textArea.getText();
-                    boolean atEnd = textArea.getCaretPosition() == text.length();
-                    if (text.isEmpty() || (!text.endsWith(lineMarker) && atEnd)) {
-                        insertLineMarkerForNewLine();
-                    }
                 }
 
                 @Override
-                public void focusLost(FocusEvent e) {
-                    trimText();
-                    updateFeedback();
-                }
+                public void focusLost(FocusEvent e) { }
             }
         );
     }
@@ -260,6 +249,22 @@ public class FeedbackBox extends JPanel {
         textArea.setEditable(true);
         textArea.setFocusable(true);
         repaint();
+    }
+
+    /** Called by view when the user switches from this box to another one. */
+    public void switchAway() {
+        trimText();
+        updateFeedback();
+    }
+
+    /** Called by view when the user switches from another box to this one. */
+    public void switchTo() {
+        // Check if we need to insert a new line
+        String text = textArea.getText();
+        boolean atEnd = textArea.getCaretPosition() == text.length();
+        if (text.isEmpty() || (!text.endsWith(lineMarker) && atEnd)) {
+            insertLineMarkerForNewLine();
+        }
     }
 
     /** Send the current feedback to the model. */
