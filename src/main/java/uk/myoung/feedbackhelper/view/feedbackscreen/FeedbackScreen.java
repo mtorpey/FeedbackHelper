@@ -31,8 +31,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import uk.myoung.feedbackhelper.controller.AppController;
 import uk.myoung.feedbackhelper.infrastructure.UserPreferences;
-import uk.myoung.feedbackhelper.model.Assignment;
 import uk.myoung.feedbackhelper.model.AssignmentListener;
+import uk.myoung.feedbackhelper.model.AssignmentReadOnly;
 import uk.myoung.feedbackhelper.model.Phrase;
 import uk.myoung.feedbackhelper.model.StudentId;
 import uk.myoung.feedbackhelper.view.AboutDialog;
@@ -50,7 +50,7 @@ import uk.myoung.feedbackhelper.view.visualization.GradeChart;
 public class FeedbackScreen extends JFrame implements AssignmentListener {
 
     // References to other parts of program
-    private Assignment assignment;
+    private AssignmentReadOnly assignment;
     private final AppController controller;
     private Collection<Thread> saveThreads;
 

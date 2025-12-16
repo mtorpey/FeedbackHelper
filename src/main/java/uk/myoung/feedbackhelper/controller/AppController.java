@@ -7,6 +7,7 @@ import java.util.Map;
 import uk.myoung.feedbackhelper.infrastructure.UserPreferences;
 import uk.myoung.feedbackhelper.model.Assignment;
 import uk.myoung.feedbackhelper.model.AssignmentListener;
+import uk.myoung.feedbackhelper.model.AssignmentReadOnly;
 import uk.myoung.feedbackhelper.model.FeedbackStyle;
 import uk.myoung.feedbackhelper.model.StudentId;
 
@@ -24,7 +25,7 @@ public class AppController {
      * @param listener The listener object to register with the model.
      * @return The model itself, so the view has a reference to it.
      */
-    public Assignment registerWithModel(AssignmentListener listener) {
+    public AssignmentReadOnly registerWithModel(AssignmentListener listener) {
         assignment.addListener(listener);
         return assignment;
     }
@@ -42,9 +43,8 @@ public class AppController {
      * @param underlineStyle The heading underline style.
      * @param lineSpacing    The line spacing after each section.
      * @param lineMarker     The line marker for each new line.
-     * @return The Assignment object that was created.
      */
-    public Assignment createAssignment(
+    public void createAssignment(
         String title,
         String headings,
         Path studentListFile,
@@ -62,20 +62,16 @@ public class AppController {
 
         // Since this was successful, remember it as the default for next load
         UserPreferences.setLastOpenedAssignment(directory);
-
-        return this.assignment;
     }
 
     /**
      * Load an assignment from an FHT file, set it as the model of this controller, and return it.
      */
-    public Assignment loadAssignment(Path fhtFile) throws IOException, ClassNotFoundException, ClassCastException {
+    public void loadAssignment(Path fhtFile) throws IOException, ClassNotFoundException, ClassCastException {
         this.assignment = Assignment.load(fhtFile);
 
         // Since this was successful, remember it as the default for next load
         UserPreferences.setLastOpenedAssignment(fhtFile);
-
-        return assignment;
     }
 
     /** Whether this controller has an assignment it is working on yet. */

@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 /**
  * Assignment Class.
  */
-public class Assignment implements Serializable {
+public class Assignment implements AssignmentReadOnly, Serializable {
 
     /**
      * Verification for deserialisation, which should change in releases with breaking changes.
@@ -617,44 +617,53 @@ public class Assignment implements Serializable {
      * The view's behaviour depends on this, so we expose it even though we
      * don't do so with the other members of FeedbackStyle.
      */
+    @Override
     public String getLineMarker() {
         return feedbackStyle.lineMarker();
     }
 
     /** Get the assignment title. */
+    @Override
     public String getTitle() {
         return title;
     }
 
     /** Get an unmodifiable list of the current headings used in this assignment. */
+    @Override
     public List<String> getHeadings() {
         return List.copyOf(headings);
     }
 
     /** Get a sorted, unmodifiable list of the students in this assignment. */
+    @Override
     public List<StudentId> getStudentIds() {
         return List.copyOf(feedbackDocuments.keySet());
     }
 
+    @Override
     public String getSectionContents(StudentId studentId, String heading) {
         return feedbackDocuments.get(studentId).getSectionContents(heading);
     }
 
     /** Get the total number of characters used in feedback for this student. */
+    @Override
     public long getFeedbackLength(StudentId studentId) {
         return feedbackDocuments.get(studentId).length();
     }
 
+    @Override
     public double getGrade(StudentId studentId) {
         return feedbackDocuments.get(studentId).getGrade();
     }
 
     /** Get an anonymised list of grades. */
+    @Override
     public List<Double> getGradesList() {
         return getFeedbackDocuments().stream().map(FeedbackDocument::getGrade).collect(Collectors.toList());
     }
 
     /** Get all the custom phrases for a heading, with their usage counts. */
+    @Override
     public List<Phrase> getCustomPhrases(String heading) {
         // Note: doing this lookup every time could be a bit expensive
         return customPhrases
@@ -665,6 +674,7 @@ public class Assignment implements Serializable {
     }
 
     /** Get all used phrases for a heading, with their usage counts, in order. */
+    @Override
     public List<Phrase> getPhrasesForHeading(String heading) {
         return phraseCounts.get(heading);
     }
