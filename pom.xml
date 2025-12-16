@@ -87,7 +87,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>main.FeedbackHelperTool</mainClass>
+              <mainClass>uk.myoung.feedbackhelper.FeedbackHelper</mainClass>
             </manifest>
           </archive>
         </configuration>
@@ -107,7 +107,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.6.2</version>
         <configuration>
-          <mainClass>main.FeedbackHelperTool</mainClass>
+          <mainClass>uk.myoung.feedbackhelper.FeedbackHelper</mainClass>
           <arguments>
           </arguments>
         </configuration>
