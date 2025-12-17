@@ -240,7 +240,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
             assignment.getTitle(),
             assignment.getHeadings(),
             assignment.getLineMarker(),
-            this::switchSection,
+            this::switchSectionIfNeeded,
             controller::editHeading,
             this::updateFeedbackSection,
             this::updateGrade
@@ -454,16 +454,22 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
     }
 
     /**
+     * Change the heading currently selected in the view, if not the same as the current one.
+     *
+     * @param heading The heading of the section we have selected.
+     */
+    private void switchSectionIfNeeded(String heading) {
+        if (!heading.equals(currentHeading)) {
+            switchSection(heading);
+        }
+    }
+
+    /**
      * Change the heading currently selected in the view.
      *
      * @param heading The heading of the section we have selected.
      */
     private void switchSection(String heading) {
-        // Skip if this section already open
-        if (heading.equals(currentHeading)) {
-            return;
-        }
-
         // Inform the editor panel
         editorPanel.switchSection(currentHeading, heading);
 

@@ -559,6 +559,7 @@ public class Assignment implements AssignmentReadOnly, Serializable {
     }
 
     public void deleteCustomPhrase(String heading, String phrase) {
+        System.out.println("Deleted phrase");
         customPhrases.get(heading).remove(phrase);
         notifyListeners(l -> l.handleCustomPhraseDeleted(heading, phrase));
     }
