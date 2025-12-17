@@ -26,18 +26,18 @@ import uk.myoung.feedbackhelper.view.style.LogoIcon;
  */
 public class AboutDialog extends JDialog {
 
-    public static final String DEVELOPER_INFO = "by Michael Young & Bhuvan Bezawada";
+    private static final String DEVELOPER_INFO = "by Michael Young & Bhuvan Bezawada";
 
-    public static final String GOAL_INFO =
+    private static final String GOAL_INFO =
         "The goal of this tool is to help markers create feedback documents more efficiently.";
 
-    public static final String CONTRIBUTOR_INFO =
+    private static final String CONTRIBUTOR_INFO =
         "With contributions by Johannes Zelger, Oluwanifemi Fadare, and Yichen Cao.";
 
-    public static final String ABOUT_INFO =
+    private static final String ABOUT_INFO =
         "<html><br>" + DEVELOPER_INFO + "<br>" + GOAL_INFO + "<br><br>" + CONTRIBUTOR_INFO + "</html>";
 
-    public static final String LINKS =
+    private static final String LINKS =
         "<html>Check out the <a href='https://github.com/mtorpey/FeedbackHelper'>Github repository</a> " +
         "or view the <a href='https://github.com/mtorpey/FeedbackHelper/issues'>issue tracker</a>.</html>";
 
