@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import uk.myoung.feedbackhelper.infrastructure.DesktopActions;
+
 /**
  * Feedback Document Class.
  */
@@ -118,7 +120,11 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
 
     /** Export feedback to a text document in the given directory. */
     public void export(Path directory, FeedbackStyle style) throws IOException {
+        // Find the location
         Path outFile = directory.resolve(getStudentId() + ".txt");
+
+        // Send to trash (safer than overwriting)
+        DesktopActions.moveToTrashIfExists(outFile);
 
         try (BufferedWriter writer = Files.newBufferedWriter(outFile)) {
             for (String heading : getHeadings()) {

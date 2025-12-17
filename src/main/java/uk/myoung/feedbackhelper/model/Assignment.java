@@ -32,6 +32,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import uk.myoung.feedbackhelper.infrastructure.DesktopActions;
+
 /**
  * Assignment Class.
  */
@@ -356,10 +358,14 @@ public class Assignment implements AssignmentReadOnly, Serializable {
      */
     public void export() {
         try {
+            // Do the export
             exportFeedback();
             exportGrades();
+
+            // Report to view
             Path outputDirectory = createFeedbackOutputDirectory();
-            reportInfo("Exported feedback and grades to " + outputDirectory);
+            String trashStatus = DesktopActions.canMoveToTrash() ? " (moved any old files to trash)" : "";
+            reportInfo("Exported feedback and grades to " + outputDirectory + trashStatus);
             notifyListeners(l -> l.handleExported(outputDirectory));
         } catch (IOException e) {
             reportError("Error exporting feedback and grades.", e);
@@ -376,6 +382,7 @@ public class Assignment implements AssignmentReadOnly, Serializable {
     private void exportGrades() throws IOException {
         Path outputDirectory = createFeedbackOutputDirectory();
         Path gradesFile = outputDirectory.resolve(GRADES_FILENAME);
+        DesktopActions.moveToTrashIfExists(gradesFile);
         try (BufferedWriter writer = Files.newBufferedWriter(gradesFile)) {
             for (FeedbackDocument document : getFeedbackDocuments()) {
                 writer.write(document.getStudentId() + "," + document.getGrade());
