@@ -41,6 +41,8 @@ public interface AssignmentListener {
 
     void handleCustomPhraseDeleted(String heading, String phrase);
 
+    void handleCustomPhraseReordered(String heading, int oldPos, int newPos);
+
     void handleSaveThread(Thread saveThread);
 
     void handleExported(Path outputDirectory);

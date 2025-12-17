@@ -161,4 +161,8 @@ public class AppController {
     public void deleteCustomPhrase(String heading, String phrase) {
         assignment.deleteCustomPhrase(heading, phrase);
     }
+
+    public void reorderCustomPhrase(String heading, String phrase, int movement) {
+        assignment.reorderCustomPhrase(heading, phrase, movement);
+    }
 }

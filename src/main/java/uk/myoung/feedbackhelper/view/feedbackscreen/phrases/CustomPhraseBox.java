@@ -1,6 +1,7 @@
 package uk.myoung.feedbackhelper.view.feedbackscreen.phrases;
 
 import java.awt.BorderLayout;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javax.swing.Box;
@@ -25,15 +26,16 @@ public class CustomPhraseBox extends PhraseBox {
     public static CustomPhraseBox create(
         Phrase phrase,
         Consumer<String> onInsertPhrase,
-        Consumer<String> onDeleteCustomPhrase
+        Consumer<String> onDeleteCustomPhrase,
+        BiConsumer<String, Integer> onReorderPhrase
     ) {
         var box = new CustomPhraseBox(phrase);
         box.setup(onInsertPhrase);
-        box.setupControls(onDeleteCustomPhrase);
+        box.setupControls(onDeleteCustomPhrase, onReorderPhrase);
         return box;
     }
 
-    private void setupControls(Consumer<String> onDeleteCustomPhrase) {
+    private void setupControls(Consumer<String> onDeleteCustomPhrase, BiConsumer<String, Integer> onReorderPhrase) {
         // Make controls panel
         JPanel controls = new JPanel();
         controls.setLayout(new BoxLayout(controls, BoxLayout.PAGE_AXIS));
@@ -43,6 +45,8 @@ public class CustomPhraseBox extends PhraseBox {
         JButton down = new JButton("🡣");
         up.setFont(Fonts.getTinyFont());
         down.setFont(Fonts.getTinyFont());
+        up.addActionListener(e -> onReorderPhrase.accept(getPhraseText(), -1));
+        down.addActionListener(e -> onReorderPhrase.accept(getPhraseText(), +1));
 
         // Make delete button
         JButton deleteButton = new JButton("❌");

@@ -2,6 +2,7 @@ package uk.myoung.feedbackhelper.view.feedbackscreen.phrases;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javax.swing.BoxLayout;
@@ -17,6 +18,7 @@ public class PhrasesPanel extends VerticalScrollablePanel {
     // Instance variables
     private Consumer<String> onInsertPhrase;
     private Consumer<String> onDeleteCustomPhrase;
+    private BiConsumer<String, Integer> onReorderCustomPhrase;
     private PhraseType phraseType;
     private List<PhraseBox> phraseBoxes;
 
@@ -29,10 +31,11 @@ public class PhrasesPanel extends VerticalScrollablePanel {
     public static PhrasesPanel create(
         PhraseType phraseType,
         Consumer<String> onInsertPhrase,
-        Consumer<String> onDeleteCustomPhrase
+        Consumer<String> onDeleteCustomPhrase,
+        BiConsumer<String, Integer> onReorderCustomPhrase
     ) {
         // Create panel and data structure
-        var panel = new PhrasesPanel(phraseType, onInsertPhrase, onDeleteCustomPhrase);
+        var panel = new PhrasesPanel(phraseType, onInsertPhrase, onDeleteCustomPhrase, onReorderCustomPhrase);
         panel.phraseBoxes = new LinkedList<PhraseBox>();
 
         // Set layout and visbility
@@ -45,11 +48,13 @@ public class PhrasesPanel extends VerticalScrollablePanel {
     private PhrasesPanel(
         PhraseType phraseType,
         Consumer<String> onInsertPhrase,
-        Consumer<String> onDeleteCustomPhrase
+        Consumer<String> onDeleteCustomPhrase,
+        BiConsumer<String, Integer> onReorderCustomPhrase
     ) {
         this.phraseType = phraseType;
         this.onInsertPhrase = onInsertPhrase;
         this.onDeleteCustomPhrase = onDeleteCustomPhrase;
+        this.onReorderCustomPhrase = onReorderCustomPhrase;
     }
 
     /**
@@ -72,7 +77,7 @@ public class PhrasesPanel extends VerticalScrollablePanel {
         if (phraseType == PhraseType.FREQUENTLY_USED) {
             phraseBox = PhraseBox.create(phrase, onInsertPhrase);
         } else {
-            phraseBox = CustomPhraseBox.create(phrase, onInsertPhrase, onDeleteCustomPhrase);
+            phraseBox = CustomPhraseBox.create(phrase, onInsertPhrase, onDeleteCustomPhrase, onReorderCustomPhrase);
         }
 
         // Insert it in the correct place in the list

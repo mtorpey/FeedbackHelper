@@ -278,11 +278,13 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         PhrasesPanel customPhrasesPanel = PhrasesPanel.create(
             PhraseType.CUSTOM,
             this::insertPhrase,
-            this::deleteCustomPhrase
+            this::deleteCustomPhrase,
+            this::reorderCustomPhrase
         );
         PhrasesPanel frequentlyUsedPhrasesPanel = PhrasesPanel.create(
             PhraseType.FREQUENTLY_USED,
             this::insertPhrase,
+            null,
             null
         );
 
@@ -501,6 +503,10 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         controller.deleteCustomPhrase(currentHeading, phrase);
     }
 
+    private void reorderCustomPhrase(String phrase, int movement) {
+        controller.reorderCustomPhrase(currentHeading, phrase, movement);
+    }
+
     private void scrollEditorPaneToTop() {
         SwingUtilities.invokeLater(() -> editorPanelScrollPane.getVerticalScrollBar().setValue(0));
     }
@@ -568,6 +574,13 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
     @Override
     public void handleCustomPhraseDeleted(String heading, String phrase) {
+        SwingUtilities.invokeLater(() -> {
+            switchSection(currentHeading);
+        });
+    }
+
+    @Override
+    public void handleCustomPhraseReordered(String heading, int oldPos, int newPos) {
         SwingUtilities.invokeLater(() -> {
             switchSection(currentHeading);
         });

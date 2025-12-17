@@ -559,9 +559,19 @@ public class Assignment implements AssignmentReadOnly, Serializable {
     }
 
     public void deleteCustomPhrase(String heading, String phrase) {
-        System.out.println("Deleted phrase");
         customPhrases.get(heading).remove(phrase);
         notifyListeners(l -> l.handleCustomPhraseDeleted(heading, phrase));
+    }
+
+    public void reorderCustomPhrase(String heading, String phrase, int movement) {
+        List<String> customPhrasesForSection = customPhrases.get(heading);
+        int oldPos = customPhrasesForSection.indexOf(phrase);
+        int newPos = oldPos + movement;
+        if (newPos >= 0 && newPos < customPhrasesForSection.size()) {
+            customPhrasesForSection.remove(oldPos);
+            customPhrasesForSection.add(newPos, phrase);
+            notifyListeners(l -> l.handleCustomPhraseReordered(heading, oldPos, newPos));
+        }
     }
 
     /** Get a Phrase object representing uses of the given text phrase in the given heading. */
