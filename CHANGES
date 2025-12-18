@@ -1,5 +1,10 @@
 This file describes changes to FeedbackHelper since the initial release.
 
+5.3 (2025-12-18)
+  - Allow reordering of custom phrases.
+  - When overwriting files during export, attempt to move old files to trash.
+  - Change package names to match Java conventions (internal).
+
 5.2 (2025-12-15)
   - New grade visualisation system using JFreeChart instead of Tablesaw.
   - Feedback boxes are no longer modified when alt-tabbing to other apps.
