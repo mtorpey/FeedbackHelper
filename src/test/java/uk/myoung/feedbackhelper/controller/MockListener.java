@@ -21,6 +21,18 @@ public class MockListener implements AssignmentListener {
         events = new ArrayList<>();
     }
 
+    private void addEvent(String type, String message) {
+        synchronized(events) {
+            events.add(new Event(type, message));
+        }
+    }
+
+    public boolean hasEvent(String typePattern, String messagePattern) {
+        synchronized(events) {
+            return events.stream().anyMatch(e -> e.type().matches(typePattern) && e.message().matches(messagePattern));
+        }
+    }
+
     public synchronized void joinAllThreads() throws InterruptedException {
         for (Thread thread : threads) {
             thread.join();
@@ -29,32 +41,27 @@ public class MockListener implements AssignmentListener {
 
     @Override
     public void handleHeadingsUpdated(List<String> headings) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleHeadingsUpdated'");
+        addEvent("headingsUpdated", String.join(",", headings));
     }
 
     @Override
     public void handleNewStudent(StudentId studentId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleNewStudent'");
+        addEvent("newStudent", studentId.id());
     }
 
     @Override
     public void handleGradeUpdate(StudentId studentId, double grade) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleGradeUpdate'");
+        addEvent("gradeUpdate", studentId.id() + "," + grade);
     }
 
     @Override
     public void handlePhraseAdded(String heading, Phrase phrase) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handlePhraseAdded'");
+        addEvent("phraseAdded", phrase.getPhraseAsString() + " to " + heading);
     }
 
     @Override
     public void handlePhraseDeleted(String heading, Phrase phrase) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handlePhraseDeleted'");
+        addEvent("phraseDeleted", phrase.getPhraseAsString() + " from " + heading);
     }
 
     @Override
@@ -65,14 +72,12 @@ public class MockListener implements AssignmentListener {
 
     @Override
     public void handleCustomPhraseAdded(String heading, Phrase phrase) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleCustomPhraseAdded'");
+        addEvent("customPhraseAdded", phrase.getPhraseAsString() + " to " + heading);
     }
 
     @Override
     public void handleCustomPhraseDeleted(String heading, String phrase) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleCustomPhraseDeleted'");
+        addEvent("customPhraseDeleted", phrase + " from " + heading);
     }
 
     @Override
@@ -82,17 +87,21 @@ public class MockListener implements AssignmentListener {
 
     @Override
     public void handleExported(Path outputDirectory) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleExported'");
+        addEvent("exported", "to " + outputDirectory);
+    }
+
+    @Override
+    public void handleCustomPhraseReordered(String heading, int oldPos, int newPos) {
+        addEvent("customPhraseReordered", "from " + oldPos + " to " + newPos + " in " + heading);
     }
 
     @Override
     public void handleInfo(String message) {
-        events.add(new Event("Info", message));
+        addEvent("Info", message);
     }
 
     @Override
     public void handleError(String description, Exception exception) {
-        events.add(new Event("Error", description));
+        addEvent("Error", description);
     }
 }
