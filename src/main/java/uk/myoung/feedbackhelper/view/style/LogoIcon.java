@@ -17,7 +17,7 @@ import javax.swing.SwingUtilities;
 
 import uk.myoung.feedbackhelper.view.feedbackscreen.FeedbackScreen;
 
-public class LogoIcon {
+public abstract class LogoIcon {
 
     private static final int SIZE = 512; // should scale down to smaller sizes nicely
     private static Image image;
