@@ -1,0 +1,150 @@
+@startuml
+
+skinparam linetype ortho
+
+package uk.myoung.feedbackhelper {
+
+    class FeedbackHelper
+
+    package model {
+        'class FeedbackStyle
+        'class StudentId
+        interface AssignmentListener
+        'class Phrase
+        'class Utilities
+        class FeedbackDocument    
+        interface AssignmentReadOnly    
+        class Assignment implements AssignmentReadOnly
+    }
+
+    'package infrastructure {
+    '    class ApplicationMetadata
+    '    abstract DesktopActions
+    '    abstract UserPreferences
+    '}
+
+    package controller {
+        class AppController
+    }
+
+    package view {
+        class AboutDialog
+        class VerticalScrollablePanel
+        class AppView
+
+        package startup {
+            class CreateAssignmentScreen
+            class HomeScreen
+        }
+
+        'package style {
+        '    abstract BorderCreator
+        '    abstract Fonts    
+        '    abstract LogoIcon
+        '}
+
+        package visualization {
+            class GradeChart
+        }
+
+        package feedbackscreen {
+            class StudentList
+            class StatusBar
+            class FeedbackScreen implements AssignmentListener
+
+            package phrases {
+                enum PhraseType    
+                class PhraseBox
+                class SearchBox 
+                class SearchBox.Listener
+                class PhrasesTab
+                class PhrasesPanel extends VerticalScrollablePanel    
+                class CustomPhraseBox extends PhraseBox
+                class PhraseEntryBox
+                class PhrasesSection implements SearchBox.Listener
+            }
+
+            package editor {
+                class GradeBox
+                class EditingPopupMenu
+                class EditorPanel extends VerticalScrollablePanel
+                class FeedbackBox
+            }
+        }
+    }
+    
+    FeedbackHelper --> AppController
+    FeedbackHelper --> AppView
+    'FeedbackDocument --> DesktopActions
+    'Assignment --> DesktopActions
+    'AppController --> UserPreferences
+    AppController --> Assignment
+    AppController --> AssignmentListener
+    AppController --> AssignmentReadOnly
+    'AppController --> FeedbackStyle
+    'AppController --> StudentId
+    'AboutDialog --> ApplicationMetadata
+    'AboutDialog --> Fonts
+    'AboutDialog --> LogoIcon
+    AppView --> AppController
+    'AppView --> UserPreferences
+    AppView --> FeedbackScreen
+    AppView --> HomeScreen
+    'AppView --> LogoIcon
+    CreateAssignmentScreen --> AppController
+    CreateAssignmentScreen --> Assignment
+    'CreateAssignmentScreen --> StudentId
+    CreateAssignmentScreen --> FeedbackScreen
+    'CreateAssignmentScreen --> BorderCreator
+    'CreateAssignmentScreen --> Fonts
+    'CreateAssignmentScreen --> LogoIcon
+    'HomeScreen --> ApplicationMetadata
+    'HomeScreen --> UserPreferences
+    HomeScreen --> FeedbackScreen
+    'HomeScreen --> BorderCreator
+    'HomeScreen --> Fonts
+    'HomeScreen --> LogoIcon
+    HomeScreen --> AppController
+    'BorderCreator --> UserPreferences
+    'LogoIcon --> FeedbackScreen
+    'GradeChart --> UserPreferences
+    'StudentList --> StudentId
+    'StatusBar --> BorderCreator
+    FeedbackScreen --> AppController
+    'FeedbackScreen --> UserPreferences
+    FeedbackScreen --> AssignmentListener
+    FeedbackScreen --> AssignmentReadOnly
+    'FeedbackScreen --> Phrase
+    'FeedbackScreen --> StudentId
+    FeedbackScreen --> AboutDialog
+    FeedbackScreen --> EditingPopupMenu
+    FeedbackScreen --> EditorPanel
+    FeedbackScreen --> PhraseType
+    FeedbackScreen --> PhrasesPanel
+    FeedbackScreen --> PhrasesSection
+    'FeedbackScreen --> LogoIcon
+    FeedbackScreen --> GradeChart
+    'PhraseBox --> Phrase
+    'PhraseBox --> BorderCreator
+    'PhraseBox --> Fonts
+    'PhrasesPanel --> Phrase
+    'CustomPhraseBox --> Phrase
+    'CustomPhraseBox --> Fonts
+    'PhraseEntryBox --> BorderCreator
+    'PhraseEntryBox --> Fonts
+    'PhrasesSection --> Phrase
+    'GradeBox --> BorderCreator
+    'EditorPanel --> StudentId
+    'EditorPanel --> BorderCreator
+    'EditorPanel --> Fonts
+    'FeedbackBox --> BorderCreator
+    'FeedbackBox --> Fonts
+
+    'Check all of these
+    SearchBox -- SearchBox.Listener
+    PhrasesPanel -- SearchBox
+    PhrasesPanel -- PhrasesTab
+    PhrasesTab -- PhraseEntryBox
+    PhrasesTab -- PhraseBox
+    
+@enduml
