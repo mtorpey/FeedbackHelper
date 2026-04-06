@@ -41,8 +41,8 @@ public class CustomPhraseBox extends PhraseBox {
         controls.setLayout(new BoxLayout(controls, BoxLayout.PAGE_AXIS));
 
         // Make arrow buttons
-        JButton up = new JButton("🡡");
-        JButton down = new JButton("🡣");
+        JButton up = new JButton("⮝");
+        JButton down = new JButton("⮟");
         up.setFont(Fonts.getTinyFont());
         down.setFont(Fonts.getTinyFont());
         up.addActionListener(e -> onReorderPhrase.accept(getPhraseText(), -1));
