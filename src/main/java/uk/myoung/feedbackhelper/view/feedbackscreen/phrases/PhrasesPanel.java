@@ -73,12 +73,7 @@ public class PhrasesPanel extends VerticalScrollablePanel {
      */
     public void addPhrase(Phrase phrase) {
         // Create the new box
-        PhraseBox phraseBox;
-        if (phraseType == PhraseType.FREQUENTLY_USED) {
-            phraseBox = PhraseBox.create(phrase, onInsertPhrase);
-        } else {
-            phraseBox = CustomPhraseBox.create(phrase, onInsertPhrase, onDeleteCustomPhrase, onReorderCustomPhrase);
-        }
+        PhraseBox phraseBox = createPhraseBox(phrase);
 
         // Insert it in the correct place in the list
         phraseBoxes.add(phraseBox);
@@ -90,6 +85,14 @@ public class PhrasesPanel extends VerticalScrollablePanel {
         int pos = phraseBoxes.indexOf(phraseBox);
         this.add(phraseBox, pos);
         this.update();
+    }
+
+    // Just make a new phrase box of the appropriate type
+    private PhraseBox createPhraseBox(Phrase phrase) {
+        if (phraseType == PhraseType.FREQUENTLY_USED) {
+            return PhraseBox.create(phrase, onInsertPhrase);
+        }
+        return CustomPhraseBox.create(phrase, onInsertPhrase, onDeleteCustomPhrase, onReorderCustomPhrase);
     }
 
     /**
@@ -136,11 +139,24 @@ public class PhrasesPanel extends VerticalScrollablePanel {
     }
 
     /**
-     * Clear the panel.
+     * Reset the panel with new contents.
      */
-    public void clear() {
+    public void reset(List<Phrase> phrases) {
+        // Remove old phrases
         this.removeAll();
         this.phraseBoxes.clear();
+
+        // Create all the phrase boxes
+        phrases.stream().map(this::createPhraseBox).forEach(phraseBoxes::add);
+
+        // Sort them
+        if (phraseType == PhraseType.FREQUENTLY_USED) {
+            phraseBoxes.sort(null);
+        }
+
+        // Put them all in the panel in order
+        phraseBoxes.forEach(this::add);
+
         this.update();
     }
 

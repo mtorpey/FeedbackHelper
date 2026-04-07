@@ -58,13 +58,15 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
     /**
      * Reset both phrases panels.
      */
-    public void resetPhrasesPanels() {
-        // Clear phrases
-        phrasesPanelsByType.values().forEach(PhrasesPanel::clear);
+    public void resetPhrasesPanels(List<Phrase> phrases, List<Phrase> customPhrases) {
+        // Reset both panels with the new phrases
+        phrasesPanelsByType.get(PhraseType.FREQUENTLY_USED).reset(phrases);
+        phrasesPanelsByType.get(PhraseType.CUSTOM).reset(customPhrases);
 
         // Enable phrase entry box
         tabs.forEach(PhrasesTab::enablePhraseEntryBox);
 
+        scrollToTop();
         update();
     }
 
@@ -88,9 +90,14 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
     }
 
     private void addPhraseToPanelForType(Phrase phrase, PhraseType type) {
-        this.phrasesPanelsByType.get(type).addPhrase(phrase);
-        this.searchBox.clear(); // new phrase added, so current search is over
-        tabs.forEach(PhrasesTab::scrollToTop); // scroll all phrases tabs to top (a bit of overkill)
+        phrasesPanelsByType.get(type).addPhrase(phrase);
+        searchBox.clear(); // new phrase added, so current search is over
+        scrollToTop();
+    }
+
+    /** Scroll phrases tabs to top (a bit of overkill). */
+    public void scrollToTop() {
+        tabs.forEach(PhrasesTab::scrollToTop); 
     }
 
     /**

@@ -478,12 +478,10 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Change to the new heading
         currentHeading = heading;
 
-        // Clear phrases
-        phrasesSection.resetPhrasesPanels();
-
-        // Add new phrases
-        assignment.getPhrasesForHeading(currentHeading).forEach(phrase -> handlePhraseAdded(heading, phrase));
-        assignment.getCustomPhrases(currentHeading).forEach(phrase -> handleCustomPhraseAdded(heading, phrase));
+        // Reset phrases to new heading
+        List<Phrase> phrases = assignment.getPhrasesForHeading(currentHeading);
+        List<Phrase> customPhrases = assignment.getCustomPhrases(currentHeading);
+        phrasesSection.resetPhrasesPanels(phrases, customPhrases);
     }
 
     private void updateFeedbackSection(String heading, String text) {
