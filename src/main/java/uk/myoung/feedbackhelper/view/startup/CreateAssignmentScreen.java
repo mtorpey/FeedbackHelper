@@ -277,7 +277,7 @@ public class CreateAssignmentScreen extends JFrame {
                 selectPathWithDialog(
                     studentListField.getText(),
                     JFileChooser.FILES_ONLY,
-                    "Choose a student manifest file...",
+                    "Choose a student list file...",
                     "Select"
                 ).toString()
             )
