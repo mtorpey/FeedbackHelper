@@ -26,6 +26,23 @@ public record StudentId(String id) implements Comparable<StudentId>, Serializabl
         }
     }
 
+    /**
+     * Returns the individual IDs of all members of this group.
+     *
+     * In most cases this will contain just one thing: this ID as a
+     * string. However, if this ID has the form "groupname=id+id+...+id" then it
+     * will return a list of all the individual IDs.
+     *
+     * This is a lightweight way to mark group assignments, allowing users to
+     * export identical feedback and grades for all members of a group.
+     */
+    public String[] getGroupMembers() {
+        if (id.matches(".*\\=.*\\+.*")) {
+            return id.split("\\=", 2)[1].split("\\+");
+        }
+        return new String[]{id};
+    }
+
     @Override
     public String toString() {
         return id;

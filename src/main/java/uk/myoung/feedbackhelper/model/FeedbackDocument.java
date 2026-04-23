@@ -118,10 +118,22 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
         sectionContents.remove(previousHeading);
     }
 
-    /** Export feedback to a text document in the given directory. */
+    /**
+     * Export feedback to text files in the given directory.
+     *
+     * Filename will be <studentid>.txt, and if the group assignment ID style is
+     * used this will export to multiple files (see StudentId::getGroupMembers).
+     */
     public void export(Path directory, FeedbackStyle style) throws IOException {
+        for (String id : getStudentId().getGroupMembers()) {
+            export(directory, style, id + ".txt");
+        }
+    }
+
+    /* Export this feedback document to the specified filename. */
+    private void export(Path directory, FeedbackStyle style, String filename) throws IOException {
         // Find the location
-        Path outFile = directory.resolve(getStudentId() + ".txt");
+        Path outFile = directory.resolve(filename);
 
         // Send to trash (safer than overwriting)
         DesktopActions.moveToTrashIfExists(outFile);

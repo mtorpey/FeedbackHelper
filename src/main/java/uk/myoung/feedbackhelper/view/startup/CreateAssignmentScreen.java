@@ -262,7 +262,8 @@ public class CreateAssignmentScreen extends JFrame {
         String tooltip = """
             Text file containing all the student IDs for this assignment, separated by commas or whitespace.
             MMS provides a suitable file for this: see "Download a template file to fill here" on MMS.
-            If no file is selected, the tool will attempt to guess the IDs from the assignment directory (above).""";
+            If no file is selected, the tool will attempt to guess the IDs from the assignment directory (above).
+            For group assignments, enter groups in the form "groupname=id+id+…+id".""";
         addLabelToConfigForm("Student list file:", tooltip);
 
         // Text field

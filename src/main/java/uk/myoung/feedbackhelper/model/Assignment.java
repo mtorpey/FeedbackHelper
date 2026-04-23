@@ -385,8 +385,11 @@ public class Assignment implements AssignmentReadOnly, Serializable {
         DesktopActions.moveToTrashIfExists(gradesFile);
         try (BufferedWriter writer = Files.newBufferedWriter(gradesFile)) {
             for (FeedbackDocument document : getFeedbackDocuments()) {
-                writer.write(document.getStudentId() + "," + document.getGrade());
-                writer.newLine();
+                // Use all member IDs (in case this is a group assignment).
+                for (String memberId : document.getStudentId().getGroupMembers()) {
+                    writer.write(memberId + "," + document.getGrade());
+                    writer.newLine();
+                }
             }
         }
     }
