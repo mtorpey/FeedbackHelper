@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.DefaultEditorKit;
@@ -46,6 +47,7 @@ public class AppView {
         applyUserTheme();
         applyFontScaling(UserPreferences.getScale());
         addMacKeyBindings();
+        setToolTipOptions();
 
         return view;
     }
@@ -149,5 +151,12 @@ public class AppView {
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK), DefaultEditorKit.copyAction);
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.META_DOWN_MASK), DefaultEditorKit.pasteAction);
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.META_DOWN_MASK), DefaultEditorKit.cutAction);
+    }
+
+    private static void setToolTipOptions() {
+        ToolTipManager toolTipManager = ToolTipManager.sharedInstance();
+        toolTipManager.setInitialDelay(0);        // show tooltips immediately
+        toolTipManager.setReshowDelay(0);         // reshow immediately if the mouse moves
+        toolTipManager.setDismissDelay(1000000);  // don't dismiss for a very long time
     }
 }
