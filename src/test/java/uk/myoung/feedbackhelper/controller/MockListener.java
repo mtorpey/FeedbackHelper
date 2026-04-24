@@ -55,6 +55,12 @@ public class MockListener implements AssignmentListener {
     }
 
     @Override
+    public void handleStudentLockChange(StudentId studentId, boolean lock) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleStudentLockChange'");
+    }
+
+    @Override
     public void handlePhraseAdded(String heading, Phrase phrase) {
         addEvent("phraseAdded", phrase.getPhraseAsString() + " to " + heading);
     }
