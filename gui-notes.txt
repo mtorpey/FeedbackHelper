@@ -1,3 +1,5 @@
+Containment of objects in the main feedback screen:
+
 FeedbackScreen
   JMenuBar
     JMenu*
