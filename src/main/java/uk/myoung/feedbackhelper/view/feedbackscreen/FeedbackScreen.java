@@ -546,7 +546,6 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
     @Override
     public void handleStudentLockChange(StudentId studentId, boolean locked) {
-        System.out.println("lock changed to " + locked);
         SwingUtilities.invokeLater(() -> {
             if (studentId == currentStudent) {
                 editorPanel.setLocked(locked);
