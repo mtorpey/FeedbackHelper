@@ -1,12 +1,14 @@
 FeedbackScreen
-  JFrame feedbackScreen
-    JMenuBar
-      JMenu*
-        JMenuItem*
-    JPanel feedbackScreenPanel
-      JSplitPane previewAndEditorSplitPane
-        JScrollPane previewPanelScrollPane
-          PreviewPanel
+  JMenuBar
+    JMenu*
+      JMenuItem*
+  JPanel feedbackScreenPanel
+    JSplitPane mainSplitPane
+      JSplitPane leftSplitPane
+        JPanel studentListPanel
+          JLabel progressSummary
+          JScrollPane
+            StudentList
         JScrollPane editorPanelScrollPane
           EditorPanel
             EditingPopupMenu
@@ -16,4 +18,4 @@ FeedbackScreen
           PhrasesTab*
             JScrollPane
               PhrasesPanel
-            PhraseEntryBox?
+            [PhraseEntryBox]

@@ -716,4 +716,14 @@ public class Assignment implements AssignmentReadOnly, Serializable {
     public List<Phrase> getPhrasesForHeading(String heading) {
         return phraseCounts.get(heading);
     }
+
+    @Override
+    public int numberOfStudents() {
+        return feedbackDocuments.size();
+    }
+
+    @Override
+    public int numberOfLockedStudents() {
+        return (int) feedbackDocuments.values().stream().filter(FeedbackDocument::isLocked).count();
+    }
 }

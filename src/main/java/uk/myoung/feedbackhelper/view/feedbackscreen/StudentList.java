@@ -29,28 +29,28 @@ public class StudentList extends JList<String> {
      * @param onSelectStudent Callback for when a student is selected.
      */
     public static StudentList create(Consumer<StudentId> onSelectStudent) {
-        var panel = new StudentList();
+        var studentList = new StudentList();
 
         // Set up the list model
-        panel.listModel = new DefaultListModel<String>();
-        panel.setModel(panel.listModel);
-        panel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        studentList.listModel = new DefaultListModel<String>();
+        studentList.setModel(studentList.listModel);
+        studentList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         // Set up data structures for the information that might be displayed
-        panel.students = new ArrayList<>();
-        panel.grades = new ArrayList<>();
-        panel.charCounts = new ArrayList<>();
-        panel.locked = new ArrayList<>();
+        studentList.students = new ArrayList<>();
+        studentList.grades = new ArrayList<>();
+        studentList.charCounts = new ArrayList<>();
+        studentList.locked = new ArrayList<>();
 
         // Handle list selection using the callback
-        panel.addListSelectionListener(e -> {
-            onSelectStudent.accept(panel.students.get(panel.getSelectedIndex()));
+        studentList.addListSelectionListener(e -> {
+            onSelectStudent.accept(studentList.students.get(studentList.getSelectedIndex()));
         });
 
         // Display!
-        panel.setVisible(true);
+        studentList.setVisible(true);
 
-        return panel;
+        return studentList;
     }
 
     /** Add the given student to the list. */
