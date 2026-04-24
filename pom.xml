@@ -181,3 +181,38 @@
     </plugins>
   </build>
 </project>
+
+<!--
+Maven commands to use
+
+mvn clean
+    Remove all built files
+mvn compile
+    Compile to class files for running locally
+mvn exec:java
+    Run the program locally
+mvn package
+    Create the executable jar for distribution
+mvn spotless:apply
+    Do linting checks and apply changes
+mvn test
+    Run the tests
+mvn versions:display-dependency-updates
+    Report outdated dependency versions in pom.xml
+mvn versions:display-plugin-updates
+    Report outdated plugin versions in pom.xml
+
+
+Probably don't need
+    
+mvn checkstyle:check
+    Aggressive style checker that we fail spectacularly
+mvn install
+    Installs to gloval maven thing (I don't know what this does)
+mvn spotless:check
+    Do linting checks
+mvn spotless:check -X
+    Do linting checks including tests
+mvn versions:use-latest-versions
+    Not sure
+-->
