@@ -10,7 +10,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -32,8 +32,7 @@ public class EditorPanel extends VerticalScrollablePanel {
     private JPanel feedbackBoxesPanel;
     private List<FeedbackBox> feedbackBoxes;
     private GradeBox gradeBox;
-    private JLabel markLabel;
-    private JButton markAsDoneButton;
+    private JCheckBox markAsDoneButton;
     private List<String> headings;
     private Map<String, FeedbackBox> headingAndFeedbackBox;
 
@@ -93,12 +92,8 @@ public class EditorPanel extends VerticalScrollablePanel {
         gradeBox = GradeBox.create(onUpdateGrade);
         footer.add(gradeBox);
 
-        // Label
-        markLabel = new JLabel("");
-        footer.add(markLabel);
-
         // Mark as done button
-        markAsDoneButton = new JButton("Mark as done");
+        markAsDoneButton = new JCheckBox("Mark as done");
         markAsDoneButton.addActionListener(l -> onToggleLock.run());
         footer.add(markAsDoneButton);
     }
@@ -266,7 +261,6 @@ public class EditorPanel extends VerticalScrollablePanel {
     public void setLocked(boolean locked) {
         feedbackBoxes.forEach(box -> box.setLocked(locked));
         gradeBox.setLocked(locked);
-        markLabel.setText(locked ? "✓" : "");
-        markAsDoneButton.setText(locked ? "Unlock" : "Mark as done");
+        markAsDoneButton.setSelected(locked);
     }
 }
