@@ -1,6 +1,7 @@
 package uk.myoung.feedbackhelper.view.feedbackscreen.editor;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -30,6 +32,8 @@ public class EditorPanel extends VerticalScrollablePanel {
     private JPanel feedbackBoxesPanel;
     private List<FeedbackBox> feedbackBoxes;
     private GradeBox gradeBox;
+    private JLabel markLabel;
+    private JButton markAsDoneButton;
     private List<String> headings;
     private Map<String, FeedbackBox> headingAndFeedbackBox;
 
@@ -48,7 +52,8 @@ public class EditorPanel extends VerticalScrollablePanel {
         Consumer<String> onSwitchSection,
         BiConsumer<String, String> onEditHeading,
         BiConsumer<String, String> onUpdateText,
-        Consumer<Double> onUpdateGrade
+        Consumer<Double> onUpdateGrade,
+        Runnable onToggleLock
     ) {
         EditorPanel panel = new EditorPanel(titleText, headings);
 
@@ -61,7 +66,7 @@ public class EditorPanel extends VerticalScrollablePanel {
         panel.setupTitle();
         panel.setupFeedbackBoxesPanel();
         panel.setupFeedbackBoxes(lineMarker, onSwitchSection, onEditHeading, onUpdateText);
-        panel.setupGradeBox(onUpdateGrade);
+        panel.setupFooter(onUpdateGrade, onToggleLock);
 
         // Set visibility
         panel.setVisible(true);
@@ -74,20 +79,28 @@ public class EditorPanel extends VerticalScrollablePanel {
         this.headings = headings;
     }
 
-    /**
-     * Setup the feedback boxes panel.
-     */
     private void setupFeedbackBoxesPanel() {
         this.feedbackBoxesPanel = new JPanel();
         this.feedbackBoxesPanel.setLayout(new BoxLayout(this.feedbackBoxesPanel, BoxLayout.PAGE_AXIS));
     }
 
-    /**
-     * Setup the grade box.
-     */
-    private void setupGradeBox(Consumer<Double> onUpdateGrade) {
-        this.gradeBox = GradeBox.create(onUpdateGrade);
-        this.add(this.gradeBox, BorderLayout.PAGE_END);
+    private void setupFooter(Consumer<Double> onUpdateGrade, Runnable onToggleLock) {
+        // Panel
+        JPanel footer = new JPanel(new FlowLayout());
+        add(footer, BorderLayout.PAGE_END);
+
+        // Grade box
+        gradeBox = GradeBox.create(onUpdateGrade);
+        footer.add(gradeBox);
+
+        // Label
+        markLabel = new JLabel("");
+        footer.add(markLabel);
+
+        // Mark as done button
+        markAsDoneButton = new JButton("Mark as done");
+        markAsDoneButton.addActionListener(l -> onToggleLock.run());
+        footer.add(markAsDoneButton);
     }
 
     /**
@@ -248,5 +261,12 @@ public class EditorPanel extends VerticalScrollablePanel {
             headingAndFeedbackBox.get(oldHeading).switchAway();
         }
         headingAndFeedbackBox.get(newHeading).switchTo();
+    }
+
+    public void setLocked(boolean locked) {
+        feedbackBoxes.forEach(box -> box.setLocked(locked));
+        gradeBox.setLocked(locked);
+        markLabel.setText(locked ? "✓" : "");
+        markAsDoneButton.setText(locked ? "Unlock" : "Mark as done");
     }
 }

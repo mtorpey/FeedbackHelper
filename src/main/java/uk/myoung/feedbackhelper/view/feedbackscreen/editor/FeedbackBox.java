@@ -349,4 +349,8 @@ public class FeedbackBox extends JPanel {
         text = text.trim();
         textArea.setText(text);
     }
+
+    public void setLocked(boolean locked) {
+        textArea.setEnabled(!locked);
+    }
 }

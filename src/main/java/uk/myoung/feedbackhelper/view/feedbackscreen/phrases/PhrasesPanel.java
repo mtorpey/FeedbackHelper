@@ -138,6 +138,10 @@ public class PhrasesPanel extends VerticalScrollablePanel {
         this.update();
     }
 
+    public void setLocked(boolean locked) {
+        phraseBoxes.forEach(b -> b.setLocked(locked));
+    }
+
     /**
      * Reset the panel with new contents.
      */

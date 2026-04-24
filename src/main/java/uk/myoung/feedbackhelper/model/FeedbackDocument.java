@@ -22,6 +22,7 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
     // Instance variables
     private StudentId studentId;
     private double grade;
+    private boolean locked;
 
     // headings should be the keys of sectionContents.
     // This way is easier than using a SequencedMap.
@@ -43,6 +44,7 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
         headings.forEach(heading -> sectionContents.put(heading, ""));
 
         this.grade = 0.0;
+        this.locked = false;
     }
 
     /**
@@ -87,6 +89,16 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
     /** Get the total number of characters in this document. */
     public long length() {
         return sectionContents.values().stream().mapToLong(String::length).sum();
+    }
+
+    /** Update whether this student's submission has been marked as done. */
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
+
+    /** Whether this student's submission has been marked as done. */
+    public boolean isLocked() {
+        return locked;
     }
 
     /**

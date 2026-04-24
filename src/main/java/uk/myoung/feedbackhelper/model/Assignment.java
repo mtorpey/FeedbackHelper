@@ -435,6 +435,18 @@ public class Assignment implements AssignmentReadOnly, Serializable {
         // Note: we don't automatically save here
     }
 
+    /**
+     * Update whether the given student's submission has been locked.
+     *
+     * This concept may be described in the UI as "Mark as done", and simply
+     * allows the user to indicate that they have finished working on the
+     * feedback and grade for this student. They can lock and unlock as needed.
+     */
+    public void setStudentLocked(StudentId studentId, boolean locked) {
+        feedbackDocuments.get(studentId).setLocked(locked);
+        notifyListeners(l -> l.handleStudentLockChange(studentId, locked));
+    }
+
     public void addStudent(StudentId studentId) {
         // Check for existing students with this ID.
         if (feedbackDocuments.containsKey(studentId)) {
@@ -675,6 +687,11 @@ public class Assignment implements AssignmentReadOnly, Serializable {
     @Override
     public double getGrade(StudentId studentId) {
         return feedbackDocuments.get(studentId).getGrade();
+    }
+
+    @Override
+    public boolean isStudentLocked(StudentId studentId) {
+        return feedbackDocuments.get(studentId).isLocked();
     }
 
     /** Get an anonymised list of grades. */

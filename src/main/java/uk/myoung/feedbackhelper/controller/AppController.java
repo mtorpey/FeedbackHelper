@@ -111,6 +111,11 @@ public class AppController {
         assignment.save();
     }
 
+    /** Update whether the given student's submission has been locked (marked as done). */
+    public void updateLocked(StudentId studentId, boolean locked) {
+        assignment.setStudentLocked(studentId, locked);
+    }
+
     /**
      * Attempt to add a new student with the given ID to the model.
      *

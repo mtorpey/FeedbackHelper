@@ -27,6 +27,8 @@ public interface AssignmentListener {
 
     void handleGradeUpdate(StudentId studentId, double grade);
 
+    void handleStudentLockChange(StudentId studentId, boolean locked);
+
     // NEW_PHRASE_MESSAGE = "newPhrase";
     void handlePhraseAdded(String heading, Phrase phrase);
 

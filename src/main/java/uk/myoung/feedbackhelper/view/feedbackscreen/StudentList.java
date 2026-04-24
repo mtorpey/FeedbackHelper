@@ -21,6 +21,7 @@ public class StudentList extends JList<String> {
     private List<StudentId> students;
     private List<Double> grades;
     private List<Long> charCounts;
+    private List<Boolean> locked;
 
     /**
      * Create and return a new object of this class, including setup.
@@ -39,6 +40,7 @@ public class StudentList extends JList<String> {
         panel.students = new ArrayList<>();
         panel.grades = new ArrayList<>();
         panel.charCounts = new ArrayList<>();
+        panel.locked = new ArrayList<>();
 
         // Handle list selection using the callback
         panel.addListSelectionListener(e -> {
@@ -52,7 +54,7 @@ public class StudentList extends JList<String> {
     }
 
     /** Add the given student to the list. */
-    public void addStudent(StudentId studentId, double grade, long charCount) {
+    public void addStudent(StudentId studentId, double grade, long charCount, boolean isLocked) {
         // Find insertion point
         int pos = -Collections.binarySearch(students, studentId) - 1;
 
@@ -60,14 +62,22 @@ public class StudentList extends JList<String> {
         students.add(pos, studentId);
         grades.add(pos, grade);
         charCounts.add(pos, charCount);
+        locked.add(pos, isLocked);
 
         // Add the item to the visible list
         listModel.add(pos, entryString(pos));
     }
 
     private String entryString(int pos) {
+        StringBuilder out = new StringBuilder();
+        
+        // Marked as done
+        if (locked.get(pos)) {
+            out.append("✓ ");
+        }
+        
         // Student ID
-        StringBuilder out = new StringBuilder(students.get(pos).toString());
+        out.append(students.get(pos).toString());
 
         // Grade
         double grade = grades.get(pos);
@@ -109,6 +119,18 @@ public class StudentList extends JList<String> {
     public void updateLength(StudentId studentId, long charCount) {
         int pos = Collections.binarySearch(students, studentId);
         charCounts.set(pos, charCount);
+        listModel.set(pos, entryString(pos));
+    }
+
+    /**
+     * Update whether a student is "marked as done" in the display.
+     *
+     * @param heading The heading of the preview box to update.
+     * @param locked Whether this submission is now locked.
+     */
+    public void updateLocked(StudentId studentId, boolean locked) {
+        int pos = Collections.binarySearch(students, studentId);
+        this.locked.set(pos, locked);
         listModel.set(pos, entryString(pos));
     }
 }

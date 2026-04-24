@@ -135,6 +135,10 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
         this.setVisible(contents.contains(query));
     }
 
+    public void setLocked(boolean locked) {
+        insertButton.setEnabled(!locked);
+    }
+
     /**
      * Get the maximum size of this object for display.
      *

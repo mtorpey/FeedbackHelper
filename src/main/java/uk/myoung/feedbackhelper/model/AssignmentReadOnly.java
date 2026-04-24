@@ -19,6 +19,7 @@ public interface AssignmentReadOnly {
     String getSectionContents(StudentId studentId, String heading);
     long getFeedbackLength(StudentId studentId);
     double getGrade(StudentId studentId);
+    boolean isStudentLocked(StudentId studentId);
     List<Double> getGradesList();
     List<Phrase> getCustomPhrases(String heading);
     List<Phrase> getPhrasesForHeading(String heading);

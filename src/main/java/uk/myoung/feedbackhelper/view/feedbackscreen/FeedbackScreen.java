@@ -209,7 +209,12 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
     private void setupStudentList() {
         previewPanel = StudentList.create(this::switchStudentIfNeeded);
         for (StudentId studentId : assignment.getStudentIds()) {
-            previewPanel.addStudent(studentId, assignment.getGrade(studentId), assignment.getFeedbackLength(studentId));
+            previewPanel.addStudent(
+                    studentId,
+                    assignment.getGrade(studentId),
+                    assignment.getFeedbackLength(studentId),
+                    assignment.isStudentLocked(studentId)
+            );
         }
 
         // Create scroll pane with this panel
@@ -243,7 +248,8 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
             this::switchSectionIfNeeded,
             controller::editHeading,
             this::updateFeedbackSection,
-            this::updateGrade
+            this::updateGrade,
+            this::toggleLock
         );
         this.editingPopupMenu = new EditingPopupMenu();
         this.editorPanel.registerPopupMenu(this.editingPopupMenu);
@@ -266,6 +272,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
             editorPanel.setSectionContents(heading, assignment.getSectionContents(currentStudent, heading));
         }
         editorPanel.setGrade(assignment.getGrade(currentStudent));
+        editorPanel.setLocked(assignment.isStudentLocked(currentStudent));
     }
 
     /**
@@ -449,6 +456,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         currentStudent = studentId;
         loadEditorPanelData();
         scrollEditorPaneToTop();
+        phrasesSection.setLocked(assignment.isStudentLocked(studentId));
 
         // Refresh UI
         this.previewPanel.repaint();
@@ -493,6 +501,11 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         controller.updateGrade(currentStudent, grade);
     }
 
+    private void toggleLock() {
+        boolean isLocked = assignment.isStudentLocked(currentStudent);
+        controller.updateLocked(currentStudent, !isLocked);
+    }
+
     private void insertPhrase(String phrase) {
         editorPanel.insertPhraseIntoFeedbackBox(currentHeading, phrase);
     }
@@ -532,6 +545,18 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
     }
 
     @Override
+    public void handleStudentLockChange(StudentId studentId, boolean locked) {
+        System.out.println("lock changed to " + locked);
+        SwingUtilities.invokeLater(() -> {
+            if (studentId == currentStudent) {
+                editorPanel.setLocked(locked);
+                phrasesSection.setLocked(locked);
+            }
+            previewPanel.updateLocked(studentId, locked);
+        });
+    }
+
+    @Override
     public void handlePhraseAdded(String heading, Phrase phrase) {
         SwingUtilities.invokeLater(() -> {
             if (currentHeading == heading) {
@@ -563,6 +588,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         SwingUtilities.invokeLater(() -> {
             if (currentHeading == heading) {
                 phrasesSection.addCustomPhraseToPanel(phrase);
+                phrasesSection.setLocked(assignment.isStudentLocked(currentStudent));
             } else {
                 Exception e = new Exception("This should never happen.");
                 e.printStackTrace();

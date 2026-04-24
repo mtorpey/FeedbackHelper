@@ -100,6 +100,10 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
         tabs.forEach(PhrasesTab::scrollToTop); 
     }
 
+    public void setLocked(boolean locked) {
+        phrasesPanelsByType.values().forEach(p -> p.setLocked(locked));
+    }
+
     /**
      * Remove a frequently used phrase from the appropriate panel.
      *

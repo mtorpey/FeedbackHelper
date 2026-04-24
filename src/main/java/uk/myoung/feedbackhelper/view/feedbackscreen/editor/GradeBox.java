@@ -90,4 +90,8 @@ public class GradeBox extends JPanel {
     public void setGrade(double grade) {
         this.chooser.setValue(grade);
     }
+
+    public void setLocked(boolean locked) {
+        chooser.setEnabled(!locked);
+    }
 }
