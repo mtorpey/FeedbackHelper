@@ -61,8 +61,8 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
     // Swing components
     private JSplitPane mainSplitPane;
     private JSplitPane leftSplitPane;
-    private JScrollPane previewPanelScrollPane;
-    private StudentList previewPanel;
+    private JScrollPane studentListScrollPane;
+    private StudentList studentList;
     private JScrollPane editorPanelScrollPane;
     private EditorPanel editorPanel;
     private StatusBar statusBar;
@@ -207,9 +207,9 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
      * Setup the student list and put it in the scroll pane, replacing any old panel that was there.
      */
     private void setupStudentList() {
-        previewPanel = StudentList.create(this::switchStudentIfNeeded);
+        studentList = StudentList.create(this::switchStudentIfNeeded);
         for (StudentId studentId : assignment.getStudentIds()) {
-            previewPanel.addStudent(
+            studentList.addStudent(
                     studentId,
                     assignment.getGrade(studentId),
                     assignment.getFeedbackLength(studentId),
@@ -218,11 +218,11 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         }
 
         // Create scroll pane with this panel
-        previewPanelScrollPane = new JScrollPane(previewPanel);
+        studentListScrollPane = new JScrollPane(studentList);
 
         // Re-add in case this is a reset
         if (leftSplitPane != null) {
-            leftSplitPane.setLeftComponent(previewPanelScrollPane);
+            leftSplitPane.setLeftComponent(studentListScrollPane);
         }
 
         // Start with the first one open if this is first time setup (they should be sorted)
@@ -231,7 +231,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         }
 
         // Select the current student
-        previewPanel.selectStudent(currentStudent);
+        studentList.selectStudent(currentStudent);
     }
 
     /**
@@ -312,7 +312,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
      * Setup the triple split pane that sits inside the JFrame and holds the main components.
      */
     private void setupSplitPanes() {
-        leftSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, previewPanelScrollPane, editorPanelScrollPane);
+        leftSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, studentListScrollPane, editorPanelScrollPane);
         mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplitPane, phrasesSection);
 
         leftSplitPane.setOneTouchExpandable(false);
@@ -417,8 +417,8 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         controller.updateFeedbackAndGrade(currentStudent, sections, grade); // This saves to disk.
 
         // Update the left panel with the latest data
-        previewPanel.updateGrade(currentStudent, grade);
-        previewPanel.updateLength(currentStudent, assignment.getFeedbackLength(currentStudent));
+        studentList.updateGrade(currentStudent, grade);
+        studentList.updateLength(currentStudent, assignment.getFeedbackLength(currentStudent));
     }
 
     private void addNewStudent() {
@@ -450,7 +450,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Wrap up from last student
         editorPanel.trimFeedbackBoxes();
         saveAssignmentForCurrentStudent();
-        previewPanel.updateGrade(currentStudent, assignment.getGrade(currentStudent));
+        studentList.updateGrade(currentStudent, assignment.getGrade(currentStudent));
 
         // Switch to new student
         currentStudent = studentId;
@@ -459,8 +459,8 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         phrasesSection.setLocked(assignment.isStudentLocked(studentId));
 
         // Refresh UI
-        this.previewPanel.repaint();
-        this.previewPanel.revalidate();
+        studentList.repaint();
+        studentList.revalidate();
     }
 
     /**
@@ -494,7 +494,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
     private void updateFeedbackSection(String heading, String text) {
         controller.updateFeedbackSection(currentStudent, heading, text);
-        previewPanel.updateLength(currentStudent, assignment.getFeedbackLength(currentStudent));
+        studentList.updateLength(currentStudent, assignment.getFeedbackLength(currentStudent));
     }
 
     private void updateGrade(double grade) {
@@ -534,14 +534,14 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
     public void handleNewStudent(StudentId studentId) {
         SwingUtilities.invokeLater(() -> {
             setupStudentList();
-            previewPanel.selectStudent(studentId);
+            studentList.selectStudent(studentId);
             switchStudent(studentId);
         });
     }
 
     @Override
     public void handleGradeUpdate(StudentId studentId, double grade) {
-        SwingUtilities.invokeLater(() -> previewPanel.updateGrade(studentId, grade));
+        SwingUtilities.invokeLater(() -> studentList.updateGrade(studentId, grade));
     }
 
     @Override
@@ -552,7 +552,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
                 editorPanel.setLocked(locked);
                 phrasesSection.setLocked(locked);
             }
-            previewPanel.updateLocked(studentId, locked);
+            studentList.updateLocked(studentId, locked);
         });
     }
 
