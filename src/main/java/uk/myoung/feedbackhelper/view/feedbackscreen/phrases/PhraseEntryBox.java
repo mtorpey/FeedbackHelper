@@ -77,4 +77,8 @@ public class PhraseEntryBox extends JPanel {
     public void enableButton() {
         submitButton.setEnabled(true);
     }
+
+    public void disableButton() {
+        submitButton.setEnabled(false);
+    }
 }

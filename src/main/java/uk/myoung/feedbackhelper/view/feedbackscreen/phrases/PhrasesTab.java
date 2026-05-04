@@ -6,6 +6,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 
+// TODO: subclass this for custom phrases tab, instead of this unbearable if-elseing.
 public class PhrasesTab extends JSplitPane {
 
     private JScrollPane scrollPane;
@@ -49,6 +50,12 @@ public class PhrasesTab extends JSplitPane {
     public void enablePhraseEntryBox() {
         if (phraseEntryBox != null) {
             phraseEntryBox.enableButton();
+        }
+    }
+
+    public void disablePhraseEntryBox() {
+        if (phraseEntryBox != null) {
+            phraseEntryBox.disableButton();
         }
     }
 

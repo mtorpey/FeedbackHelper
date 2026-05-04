@@ -482,6 +482,10 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         saveAssignmentForCurrentStudent();
         studentList.updateGrade(currentStudent, assignment.getGrade(currentStudent));
 
+        // Forget what section we were editing
+        currentHeading = null;
+        phrasesSection.clearPhrasesPanels();
+
         // Switch to new student
         currentStudent = studentId;
         loadEditorPanelData();

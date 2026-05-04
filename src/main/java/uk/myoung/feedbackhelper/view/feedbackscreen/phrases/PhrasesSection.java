@@ -70,6 +70,13 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
         update();
     }
 
+
+    /** Remove all the phrase boxes from both tabs. */
+    public void clearPhrasesPanels() {
+        resetPhrasesPanels(List.of(), List.of());
+        tabs.forEach(PhrasesTab::disablePhraseEntryBox);
+    }
+
     /**
      * Add a frequently used phrase to the appropriate panel.
      *
