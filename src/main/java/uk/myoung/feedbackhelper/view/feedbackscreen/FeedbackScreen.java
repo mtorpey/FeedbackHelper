@@ -585,8 +585,17 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
                 editorPanel.setLocked(locked);
                 phrasesSection.setLocked(locked);
             }
+
+            // Mark as locked
             studentList.updateLocked(studentId, locked);
             updateProgressSummary();
+
+            // Forget what section we were editing
+            currentHeading = null;
+            phrasesSection.clearPhrasesPanels();
+
+            // Save
+            saveAssignmentForCurrentStudent();
         });
     }
 
