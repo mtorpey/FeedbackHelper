@@ -312,6 +312,7 @@ public class FeedbackBox extends JPanel {
      * @param phrase The phrase to insert.
      */
     public void insertPhrase(String phrase) {
+        // TODO: insert after the bullet point at the current phrase
         // Insert phrase
         String text = textArea.getText();
         if (!text.endsWith(lineMarker)) {
@@ -320,7 +321,7 @@ public class FeedbackBox extends JPanel {
             }
             textArea.append(lineMarker);
         }
-        textArea.append(phrase + NEWLINE);
+        textArea.append(phrase);
 
         // Save new state
         updateFeedback();
