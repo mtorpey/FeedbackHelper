@@ -34,6 +34,9 @@ public class GradeChart {
      * @param grades All the grades achieved on this assignment.
      */
     public static void showGradeDistribution(String title, double[] grades) {
+        // Remove zero grades
+        grades = Arrays.stream(grades).filter(g -> g > 0).toArray();
+        
         // Calculate categories: just ints, or ints-and-halves if any half grades appear
         double step = allIntegerGrades(grades) ? 1.0 : 0.5;
 
