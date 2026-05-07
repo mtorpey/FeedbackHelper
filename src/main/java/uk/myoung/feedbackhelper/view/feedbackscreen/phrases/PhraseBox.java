@@ -57,7 +57,6 @@ public class PhraseBox extends JPanel implements Comparable<PhraseBox> {
     private void setupInsertButton(Consumer<String> onInsertPhrase) {
         insertButton = new JButton("⬅");
         insertButton.setFont(Fonts.getSubtitleFont());
-        insertButton.setToolTipText("Insert this phrase into the document.");
         insertButton.addActionListener(l -> onInsertPhrase.accept(phrase.getPhraseAsString()));
         add(insertButton, BorderLayout.LINE_START);
     }
