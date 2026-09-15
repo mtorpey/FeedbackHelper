@@ -1,6 +1,10 @@
 package uk.myoung.feedbackhelper.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -63,6 +67,7 @@ class AppControllerTest {
 
     @Nested
     class WithAssignmentCreated {
+
         // Test variables
         List<String> headings;
         List<StudentId> students;
@@ -134,7 +139,7 @@ class AppControllerTest {
         void saveLocation() throws InterruptedException {
             controller.saveAssignment();
             assignmentListener.joinAllThreads();
-            
+
             assertTrue(Files.isRegularFile(expectedFht));
         }
 
@@ -204,6 +209,7 @@ class AppControllerTest {
 
         @Nested
         class WithCustomPhrasesAdded {
+
             static final String GOOD_PHRASE = "A good attempt meeting nearly all requirements successfully.";
             static final String REASONABLE_PHRASE = "A reasonable attempt addressing some of the requirements.";
             static final String EXCEPTIONAL_PHRASE = "Exceptional achievement.";
@@ -279,18 +285,19 @@ class AppControllerTest {
                 assertEquals(EXCEPTIONAL_PHRASE, phrases.get(4).getPhraseAsString());
                 assertEquals(5, phrases.size());
             }
-
         }
 
         @Nested
         class LoadedNewAssignment {
+
             AppController loader;
             MockListener loadedAssignmentListener;
             AssignmentReadOnly loadedAssignment;
             StudentId student;
-            
+
             @BeforeEach
-            void modifySaveAndLoad() throws IOException, ClassNotFoundException, ClassCastException, InterruptedException {
+            void modifySaveAndLoad()
+                throws IOException, ClassNotFoundException, ClassCastException, InterruptedException {
                 // Modify and save
                 student = new StudentId(STUDENTS_STRINGS.get(2));
                 controller.updateFeedbackSection(student, "Report quality", EXAMPLE_TEXT);
@@ -323,10 +330,7 @@ class AppControllerTest {
             void hasCustomPhrase() {
                 List<Phrase> phrases = loadedAssignment.getCustomPhrases("Code");
                 assertEquals(1, phrases.size());
-                assertEquals(
-                    "Avoid magic variables.",
-                    phrases.get(0).getPhraseAsString()
-                );
+                assertEquals("Avoid magic variables.", phrases.get(0).getPhraseAsString());
             }
 
             @Test
@@ -339,8 +343,6 @@ class AppControllerTest {
                 String section = loadedAssignment.getSectionContents(student, "Report quality");
                 assertEquals(EXAMPLE_TEXT, section);
             }
-
-            
         }
     }
 }

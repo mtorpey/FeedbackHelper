@@ -70,7 +70,6 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
         update();
     }
 
-
     /** Remove all the phrase boxes from both tabs. */
     public void clearPhrasesPanels() {
         resetPhrasesPanels(List.of(), List.of());
@@ -104,7 +103,7 @@ public class PhrasesSection extends JPanel implements SearchBox.Listener {
 
     /** Scroll phrases tabs to top (a bit of overkill). */
     public void scrollToTop() {
-        tabs.forEach(PhrasesTab::scrollToTop); 
+        tabs.forEach(PhrasesTab::scrollToTop);
     }
 
     public void setLocked(boolean locked) {

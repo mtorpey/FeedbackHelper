@@ -40,7 +40,7 @@ public record StudentId(String id) implements Comparable<StudentId>, Serializabl
         if (id.matches(".*\\=.*\\+.*")) {
             return id.split("\\=", 2)[1].split("\\+");
         }
-        return new String[]{id};
+        return new String[] { id };
     }
 
     @Override

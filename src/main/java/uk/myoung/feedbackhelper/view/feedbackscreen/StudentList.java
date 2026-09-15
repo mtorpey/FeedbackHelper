@@ -70,12 +70,12 @@ public class StudentList extends JList<String> {
 
     private String entryString(int pos) {
         StringBuilder out = new StringBuilder();
-        
+
         // Marked as done
         if (locked.get(pos)) {
             out.append("✓ ");
         }
-        
+
         // Student ID
         out.append(students.get(pos).toString());
 

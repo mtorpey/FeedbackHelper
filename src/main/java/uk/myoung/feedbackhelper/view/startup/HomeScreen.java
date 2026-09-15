@@ -14,13 +14,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import uk.myoung.feedbackhelper.controller.AppController;
 import uk.myoung.feedbackhelper.infrastructure.ApplicationMetadata;
 import uk.myoung.feedbackhelper.infrastructure.UserPreferences;
 import uk.myoung.feedbackhelper.view.feedbackscreen.FeedbackScreen;
 import uk.myoung.feedbackhelper.view.style.BorderCreator;
 import uk.myoung.feedbackhelper.view.style.Fonts;
 import uk.myoung.feedbackhelper.view.style.LogoIcon;
-import uk.myoung.feedbackhelper.controller.AppController;
 
 /**
  * Welcome screen showing initial options.

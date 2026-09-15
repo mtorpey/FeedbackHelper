@@ -22,13 +22,13 @@ public class MockListener implements AssignmentListener {
     }
 
     private void addEvent(String type, String message) {
-        synchronized(events) {
+        synchronized (events) {
             events.add(new Event(type, message));
         }
     }
 
     public boolean hasEvent(String typePattern, String messagePattern) {
-        synchronized(events) {
+        synchronized (events) {
             return events.stream().anyMatch(e -> e.type().matches(typePattern) && e.message().matches(messagePattern));
         }
     }

@@ -219,10 +219,10 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         studentList = StudentList.create(this::switchStudentIfNeeded);
         for (StudentId studentId : assignment.getStudentIds()) {
             studentList.addStudent(
-                    studentId,
-                    assignment.getGrade(studentId),
-                    assignment.getFeedbackLength(studentId),
-                    assignment.isStudentLocked(studentId)
+                studentId,
+                assignment.getGrade(studentId),
+                assignment.getFeedbackLength(studentId),
+                assignment.isStudentLocked(studentId)
             );
         }
 

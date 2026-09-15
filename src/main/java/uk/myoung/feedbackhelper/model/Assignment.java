@@ -109,15 +109,18 @@ public class Assignment implements AssignmentReadOnly, Serializable {
      * files and deserialises to classes with the new package name if necessary.
      */
     private static class AssignmentInputStream extends ObjectInputStream {
+
         private static final Map<String, Class<?>> CLASS_UPDATE = Map.of(
             "model.Assignment", uk.myoung.feedbackhelper.model.Assignment.class,
             "model.FeedbackDocument", uk.myoung.feedbackhelper.model.FeedbackDocument.class,
             "model.FeedbackStyle", uk.myoung.feedbackhelper.model.FeedbackStyle.class,
             "model.StudentId", uk.myoung.feedbackhelper.model.StudentId.class
         );
+
         public AssignmentInputStream(InputStream in) throws IOException {
             super(in);
         }
+
         @Override
         protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
             String className = desc.getName();
