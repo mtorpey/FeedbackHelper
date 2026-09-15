@@ -1,5 +1,12 @@
 This file describes changes to FeedbackHelper since the initial release.
 
+5.5 (2026-09-15)
+  - "Mark as done" checkbox added, which locks assignments and updates a progress tracker.
+  - Rudimentary support for group assignments using IDs of the form "groupname=id+id+…+id".
+  - Various minor UI improvements.
+  - Various minor text editing improvements.
+  - Update dependency versions.
+
 5.4 (2026-04-07)
   - Use better supported Unicode arrows for custom phrase controls (MacOS was struggling).
   - Optimise population of phrase lists on switching sections, to avoid hanging.
