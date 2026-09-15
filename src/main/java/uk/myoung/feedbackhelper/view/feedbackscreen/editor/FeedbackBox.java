@@ -341,13 +341,13 @@ public class FeedbackBox extends JPanel {
         textArea.insert(lineMarker, caretPos);
     }
 
-    /** Trim the text in the box on leaving it. */
+    /** Trim the text in the box, removing any trailing line markers. */
     public void trimText() {
-        String text = textArea.getText();
-        while (text.endsWith(lineMarker)) {
-            text = text.substring(0, text.length() - lineMarker.length());
+        String marker = lineMarker.trim();
+        String text = textArea.getText().trim();
+        while (text.endsWith(marker)) {
+            text = text.substring(0, text.length() - marker.length()).trim();
         }
-        text = text.trim();
         textArea.setText(text);
     }
 
