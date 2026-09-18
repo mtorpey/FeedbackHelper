@@ -4,9 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-
 import javax.swing.BoxLayout;
-
 import uk.myoung.feedbackhelper.model.Phrase;
 import uk.myoung.feedbackhelper.view.VerticalScrollablePanel;
 

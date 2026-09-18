@@ -3,7 +3,6 @@ package uk.myoung.feedbackhelper.view.startup;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.nio.file.Path;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -13,7 +12,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 import uk.myoung.feedbackhelper.controller.AppController;
 import uk.myoung.feedbackhelper.infrastructure.ApplicationMetadata;
 import uk.myoung.feedbackhelper.infrastructure.UserPreferences;

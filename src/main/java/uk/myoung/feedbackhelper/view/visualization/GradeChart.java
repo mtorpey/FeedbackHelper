@@ -2,9 +2,7 @@ package uk.myoung.feedbackhelper.view.visualization;
 
 import java.awt.Dimension;
 import java.util.Arrays;
-
 import javax.swing.JFrame;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -16,7 +14,6 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-
 import uk.myoung.feedbackhelper.infrastructure.UserPreferences;
 
 /**

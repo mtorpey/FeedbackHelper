@@ -1,9 +1,10 @@
 package uk.myoung.feedbackhelper.view;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.nio.file.Path;
-
 import javax.swing.InputMap;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -13,10 +14,6 @@ import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.DefaultEditorKit;
-
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatLightLaf;
-
 import uk.myoung.feedbackhelper.controller.AppController;
 import uk.myoung.feedbackhelper.infrastructure.UserPreferences;
 import uk.myoung.feedbackhelper.view.feedbackscreen.FeedbackScreen;
@@ -155,8 +152,8 @@ public class AppView {
 
     private static void setToolTipOptions() {
         ToolTipManager toolTipManager = ToolTipManager.sharedInstance();
-        toolTipManager.setInitialDelay(0);        // show tooltips immediately
-        toolTipManager.setReshowDelay(0);         // reshow immediately if the mouse moves
-        toolTipManager.setDismissDelay(1000000);  // don't dismiss for a very long time
+        toolTipManager.setInitialDelay(0); // show tooltips immediately
+        toolTipManager.setReshowDelay(0); // reshow immediately if the mouse moves
+        toolTipManager.setDismissDelay(1000000); // don't dismiss for a very long time
     }
 }

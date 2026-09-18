@@ -8,14 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-
 import uk.myoung.feedbackhelper.model.StudentId;
 import uk.myoung.feedbackhelper.view.VerticalScrollablePanel;
 import uk.myoung.feedbackhelper.view.style.BorderCreator;

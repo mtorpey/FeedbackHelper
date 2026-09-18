@@ -1,7 +1,6 @@
 package uk.myoung.feedbackhelper.view.feedbackscreen;
 
 import javax.swing.JLabel;
-
 import uk.myoung.feedbackhelper.view.style.BorderCreator;
 
 public class StatusBar extends JLabel {

@@ -3,12 +3,10 @@ package uk.myoung.feedbackhelper.view.feedbackscreen.phrases;
 import java.awt.BorderLayout;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-
 import uk.myoung.feedbackhelper.model.Phrase;
 import uk.myoung.feedbackhelper.view.style.Fonts;
 

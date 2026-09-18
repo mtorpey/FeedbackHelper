@@ -3,7 +3,6 @@ package uk.myoung.feedbackhelper.controller;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
-
 import uk.myoung.feedbackhelper.infrastructure.UserPreferences;
 import uk.myoung.feedbackhelper.model.Assignment;
 import uk.myoung.feedbackhelper.model.AssignmentListener;
