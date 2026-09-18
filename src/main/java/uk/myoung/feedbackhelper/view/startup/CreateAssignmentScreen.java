@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.swing.JButton;
@@ -178,15 +179,12 @@ public class CreateAssignmentScreen extends JFrame {
         // Directory chooser
         JButton assignmentDirectoryChooser = new JButton("Select directory");
         assignmentDirectoryChooser.addActionListener(e ->
-            assignmentDirectoryField.setText(
-                selectPathWithDialog(
-                    assignmentDirectoryField.getText(),
-                    JFileChooser.DIRECTORIES_ONLY,
-                    "Select assignment directory...",
-                    "Submit"
-                ).toString()
-            )
-        );
+            selectPathWithDialog(
+                assignmentDirectoryField.getText(),
+                JFileChooser.DIRECTORIES_ONLY,
+                "Select assignment directory...",
+                "Submit"
+            ).ifPresent(path -> assignmentDirectoryField.setText(path.toString())));
         assignmentDirectoryChooser.setToolTipText(tooltip);
         addToConfigForm(assignmentDirectoryChooser);
     }
@@ -274,15 +272,12 @@ public class CreateAssignmentScreen extends JFrame {
         // Button
         JButton studentListFileButton = new JButton("Select file");
         studentListFileButton.addActionListener(e ->
-            studentListField.setText(
                 selectPathWithDialog(
                     studentListField.getText(),
                     JFileChooser.FILES_ONLY,
                     "Choose a student list file...",
                     "Select"
-                ).toString()
-            )
-        );
+                ).ifPresent(path -> assignmentDirectoryField.setText(path.toString())));
         studentListFileButton.setToolTipText(tooltip);
         addToConfigForm(studentListFileButton);
     }
@@ -382,7 +377,7 @@ public class CreateAssignmentScreen extends JFrame {
     }
 
     /** Prompt the user to pick a file, and return the result. */
-    private Path selectPathWithDialog(String startPath, int fileSelectionMode, String title, String submit) {
+    private Optional<Path> selectPathWithDialog(String startPath, int fileSelectionMode, String title, String submit) {
         // Open file chooser
         JFileChooser fileChooser = new JFileChooser(startPath);
         fileChooser.setFileSelectionMode(fileSelectionMode);
@@ -390,11 +385,10 @@ public class CreateAssignmentScreen extends JFrame {
 
         // Store the chosen file path
         int returnValue = fileChooser.showDialog(this, submit);
-        Path path = null;
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            path = fileChooser.getSelectedFile().toPath();
+            return Optional.of(fileChooser.getSelectedFile().toPath());
         }
-        return path;
+        return Optional.empty();
     }
 
     /**
