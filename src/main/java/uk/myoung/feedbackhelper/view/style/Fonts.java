@@ -1,7 +1,6 @@
 package uk.myoung.feedbackhelper.view.style;
 
 import java.awt.Font;
-
 import javax.swing.UIManager;
 
 /**

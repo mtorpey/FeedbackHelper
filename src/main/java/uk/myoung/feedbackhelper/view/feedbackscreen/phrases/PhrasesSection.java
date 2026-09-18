@@ -6,10 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-
 import uk.myoung.feedbackhelper.model.Phrase;
 
 /**

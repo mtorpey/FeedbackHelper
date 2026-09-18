@@ -2,7 +2,6 @@ package uk.myoung.feedbackhelper.view.style;
 
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
-
 import uk.myoung.feedbackhelper.infrastructure.UserPreferences;
 
 /**

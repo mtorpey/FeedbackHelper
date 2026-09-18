@@ -2,12 +2,10 @@ package uk.myoung.feedbackhelper.view.feedbackscreen.editor;
 
 import java.text.ParseException;
 import java.util.function.Consumer;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-
 import uk.myoung.feedbackhelper.view.style.BorderCreator;
 
 /**

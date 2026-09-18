@@ -1,7 +1,6 @@
 package uk.myoung.feedbackhelper.view.feedbackscreen.phrases;
 
 import java.util.function.Consumer;
-
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;

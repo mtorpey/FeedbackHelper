@@ -31,7 +31,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import uk.myoung.feedbackhelper.infrastructure.DesktopActions;
 
 /**
@@ -111,10 +110,14 @@ public class Assignment implements AssignmentReadOnly, Serializable {
     private static class AssignmentInputStream extends ObjectInputStream {
 
         private static final Map<String, Class<?>> CLASS_UPDATE = Map.of(
-            "model.Assignment", uk.myoung.feedbackhelper.model.Assignment.class,
-            "model.FeedbackDocument", uk.myoung.feedbackhelper.model.FeedbackDocument.class,
-            "model.FeedbackStyle", uk.myoung.feedbackhelper.model.FeedbackStyle.class,
-            "model.StudentId", uk.myoung.feedbackhelper.model.StudentId.class
+            "model.Assignment",
+            uk.myoung.feedbackhelper.model.Assignment.class,
+            "model.FeedbackDocument",
+            uk.myoung.feedbackhelper.model.FeedbackDocument.class,
+            "model.FeedbackStyle",
+            uk.myoung.feedbackhelper.model.FeedbackStyle.class,
+            "model.StudentId",
+            uk.myoung.feedbackhelper.model.StudentId.class
         );
 
         public AssignmentInputStream(InputStream in) throws IOException {

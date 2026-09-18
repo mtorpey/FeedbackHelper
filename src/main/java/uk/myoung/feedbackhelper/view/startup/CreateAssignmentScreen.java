@@ -13,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -27,7 +26,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
 import uk.myoung.feedbackhelper.controller.AppController;
 import uk.myoung.feedbackhelper.model.Assignment;
 import uk.myoung.feedbackhelper.model.StudentId;

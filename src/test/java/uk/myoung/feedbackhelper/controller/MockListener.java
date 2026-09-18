@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import uk.myoung.feedbackhelper.model.AssignmentListener;
 import uk.myoung.feedbackhelper.model.Phrase;
 import uk.myoung.feedbackhelper.model.StudentId;

@@ -2,7 +2,6 @@ package uk.myoung.feedbackhelper;
 
 import java.awt.Desktop;
 import java.nio.file.Path;
-
 import uk.myoung.feedbackhelper.controller.AppController;
 import uk.myoung.feedbackhelper.view.AppView;
 

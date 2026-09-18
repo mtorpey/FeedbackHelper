@@ -6,7 +6,6 @@ import java.awt.FlowLayout;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
@@ -16,7 +15,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-
 import uk.myoung.feedbackhelper.infrastructure.ApplicationMetadata;
 import uk.myoung.feedbackhelper.view.style.Fonts;
 import uk.myoung.feedbackhelper.view.style.LogoIcon;

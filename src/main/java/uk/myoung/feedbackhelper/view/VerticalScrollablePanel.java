@@ -3,7 +3,6 @@ package uk.myoung.feedbackhelper.view;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
-
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.Scrollable;
