@@ -2,18 +2,23 @@ package uk.myoung.feedbackhelper.view.feedbackscreen.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.undo.UndoManager;
 import uk.myoung.feedbackhelper.view.style.BorderCreator;
 import uk.myoung.feedbackhelper.view.style.Fonts;
 
@@ -217,6 +222,35 @@ public class FeedbackBox extends JPanel {
         this.textArea.setBorder(BorderCreator.textAreaBorder());
         // Set the caret colour (in some themes it might be hard to see)
         textArea.setCaretColor(textArea.getForeground());
+
+        UndoManager undoManager = new UndoManager();
+        this.textArea.getDocument().addUndoableEditListener(undoManager);
+        
+        // Instead of hard-coding "ctrl" we use getMenuShortcutKeyMask that would (hopefully)
+        // make ctrl+z shortcut consistent for all OS (i.e for MacOS ctrl+z would be cmd+z).
+        int shortcut = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+        this.textArea.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, shortcut), "Undo");
+        this.textArea.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, shortcut), "Redo");
+        this.textArea.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, shortcut | KeyEvent.SHIFT_DOWN_MASK), "Redo");
+
+        this.textArea.getActionMap().put("Undo", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (undoManager.canUndo()) {
+                    undoManager.undo();
+                    updateFeedback();
+                }
+            }
+        });
+        this.textArea.getActionMap().put("Redo", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (undoManager.canRedo()) {
+                    undoManager.redo();
+                    updateFeedback();
+                }
+            }
+        });
 
         // Listen for enter press
         this.textArea.addKeyListener(
