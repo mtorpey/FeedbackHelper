@@ -40,6 +40,7 @@ public class FeedbackBox extends JPanel {
     private JTextField headingField;
     private JButton headingButton;
     private JTextArea textArea;
+    private UndoManager undoManager;
 
     // Data instances
     private String heading;
@@ -223,7 +224,7 @@ public class FeedbackBox extends JPanel {
         // Set the caret colour (in some themes it might be hard to see)
         textArea.setCaretColor(textArea.getForeground());
 
-        UndoManager undoManager = new UndoManager();
+        this.undoManager = new UndoManager();
         this.textArea.getDocument().addUndoableEditListener(undoManager);
         
         // Instead of hard-coding "ctrl" we use getMenuShortcutKeyMask that would (hopefully)
@@ -327,6 +328,9 @@ public class FeedbackBox extends JPanel {
      */
     public void setContents(String data) {
         textArea.setText(data);
+        if (undoManager != null) {
+            undoManager.discardAllEdits();
+        }
     }
 
     /**
