@@ -182,7 +182,8 @@ public class CreateAssignmentScreen extends JFrame {
                 JFileChooser.DIRECTORIES_ONLY,
                 "Select assignment directory...",
                 "Submit"
-            ).ifPresent(path -> assignmentDirectoryField.setText(path.toString())));
+            ).ifPresent(path -> assignmentDirectoryField.setText(path.toString()))
+        );
         assignmentDirectoryChooser.setToolTipText(tooltip);
         addToConfigForm(assignmentDirectoryChooser);
     }
@@ -270,12 +271,13 @@ public class CreateAssignmentScreen extends JFrame {
         // Button
         JButton studentListFileButton = new JButton("Select file");
         studentListFileButton.addActionListener(e ->
-                selectPathWithDialog(
-                    studentListField.getText(),
-                    JFileChooser.FILES_ONLY,
-                    "Choose a student list file...",
-                    "Select"
-                ).ifPresent(path -> assignmentDirectoryField.setText(path.toString())));
+            selectPathWithDialog(
+                studentListField.getText(),
+                JFileChooser.FILES_ONLY,
+                "Choose a student list file...",
+                "Select"
+            ).ifPresent(path -> assignmentDirectoryField.setText(path.toString()))
+        );
         studentListFileButton.setToolTipText(tooltip);
         addToConfigForm(studentListFileButton);
     }
