@@ -2,18 +2,23 @@ package uk.myoung.feedbackhelper.view.feedbackscreen.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.undo.UndoManager;
 import uk.myoung.feedbackhelper.view.style.BorderCreator;
 import uk.myoung.feedbackhelper.view.style.Fonts;
 
@@ -35,6 +40,7 @@ public class FeedbackBox extends JPanel {
     private JTextField headingField;
     private JButton headingButton;
     private JTextArea textArea;
+    private UndoManager undoManager;
 
     // Data instances
     private String heading;
@@ -46,11 +52,14 @@ public class FeedbackBox extends JPanel {
     /**
      * Create and return a new object of this class, including setup.
      *
-     * @param heading The heading the feedback box is for.
-     * @param lineMarker The bullet point string to appear at the beginning of a new line.
-     * @param onSwitchSection Callback to be invoked when user selects a new section.
-     * @param onEditHeading Callback to be invoked when user edits a heading.
-     * @param onUpdateText Callback to be invoked when the text is updated by the user.
+     * @param heading         The heading the feedback box is for.
+     * @param lineMarker      The bullet point string to appear at the beginning of
+     *                        a new line.
+     * @param onSwitchSection Callback to be invoked when user selects a new
+     *                        section.
+     * @param onEditHeading   Callback to be invoked when user edits a heading.
+     * @param onUpdateText    Callback to be invoked when the text is updated by the
+     *                        user.
      */
     public static FeedbackBox create(
         String heading,
@@ -115,7 +124,7 @@ public class FeedbackBox extends JPanel {
      */
     private void setupPanel() {
         this.headingPanel = new JPanel(new BorderLayout());
-        //this.headingPanel.setBorder(BorderCreator.emptyBorder5Pixels());
+        // this.headingPanel.setBorder(BorderCreator.emptyBorder5Pixels());
 
         // Create components
         this.headingField = new JTextField(this.heading);
@@ -156,8 +165,8 @@ public class FeedbackBox extends JPanel {
         this.headingField.getDocument().addDocumentListener(
             new DocumentListener() {
                 public void changedUpdate(DocumentEvent e) {
-                    //String currentHeading = headingField.getText();
-                    //headingField.setColumns(currentHeading.length());
+                    // String currentHeading = headingField.getText();
+                    // headingField.setColumns(currentHeading.length());
                     headingPanel.revalidate();
                 }
 
@@ -217,6 +226,46 @@ public class FeedbackBox extends JPanel {
         this.textArea.setBorder(BorderCreator.textAreaBorder());
         // Set the caret colour (in some themes it might be hard to see)
         textArea.setCaretColor(textArea.getForeground());
+
+        this.undoManager = new UndoManager();
+        this.textArea.getDocument().addUndoableEditListener(undoManager);
+
+        // Instead of hard-coding "ctrl" we use getMenuShortcutKeyMask that would
+        // (hopefully)
+        // make ctrl+z shortcut consistent for all OS (i.e for MacOS ctrl+z would be
+        // cmd+z).
+        int shortcut = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+        this.textArea.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, shortcut), "Undo");
+        this.textArea.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, shortcut), "Redo");
+        this.textArea.getInputMap().put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_Z, shortcut | KeyEvent.SHIFT_DOWN_MASK),
+            "Redo"
+        );
+
+        this.textArea.getActionMap().put(
+            "Undo",
+            new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (undoManager.canUndo()) {
+                        undoManager.undo();
+                        updateFeedback();
+                    }
+                }
+            }
+        );
+        this.textArea.getActionMap().put(
+            "Redo",
+            new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (undoManager.canRedo()) {
+                        undoManager.redo();
+                        updateFeedback();
+                    }
+                }
+            }
+        );
 
         // Listen for enter press
         this.textArea.addKeyListener(
@@ -293,6 +342,9 @@ public class FeedbackBox extends JPanel {
      */
     public void setContents(String data) {
         textArea.setText(data);
+        if (undoManager != null) {
+            undoManager.discardAllEdits();
+        }
     }
 
     /**
@@ -339,14 +391,30 @@ public class FeedbackBox extends JPanel {
         textArea.insert(lineMarker, caretPos);
     }
 
-    /** Trim the text in the box, removing any trailing line markers. */
+    /** Trim the text in the box, removing any trailing line markers in place. */
     public void trimText() {
         String marker = lineMarker.trim();
-        String text = textArea.getText().trim();
+        String originalText = textArea.getText();
+        String text = originalText.trim();
         while (text.endsWith(marker)) {
             text = text.substring(0, text.length() - marker.length()).trim();
         }
-        textArea.setText(text);
+
+        if (!originalText.equals(text)) {
+            // if text is just empty, replace everything with ""
+            if (text.isEmpty()) {
+                textArea.replaceRange("", 0, originalText.length());
+            } else {
+                int start = originalText.indexOf(text);
+                int end = start + text.length();
+                if (end < originalText.length()) {
+                    textArea.replaceRange("", end, originalText.length());
+                }
+                if (start > 0) {
+                    textArea.replaceRange("", 0, start);
+                }
+            }
+        }
     }
 
     public void setLocked(boolean locked) {
