@@ -138,6 +138,15 @@ public class AppController {
         assignment.editHeading(previousHeading, newHeading);
     }
 
+    /**
+     * Delete a heading from the assignment.
+     *
+     * @param heading The heading to delete.
+     */
+    public void deleteHeading(String heading) {
+        assignment.deleteHeading(heading);
+    }
+
     /* USER EXPORTS AND OPERATIONS */
 
     /**

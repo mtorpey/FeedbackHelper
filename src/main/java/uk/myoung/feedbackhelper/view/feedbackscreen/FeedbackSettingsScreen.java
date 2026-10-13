@@ -5,7 +5,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -16,7 +16,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-
+import uk.myoung.feedbackhelper.controller.AppController;
 import uk.myoung.feedbackhelper.model.AssignmentReadOnly;
 import uk.myoung.feedbackhelper.view.style.BorderCreator;
 import uk.myoung.feedbackhelper.view.style.LogoIcon;
@@ -31,6 +31,7 @@ public class FeedbackSettingsScreen extends JFrame {
     private static final int GRID_WIDTH = 3;
 
     // Instance variables
+    private final AppController controller;
     private final AssignmentReadOnly assignment;
     private JPanel configFormPanel;
 
@@ -38,6 +39,7 @@ public class FeedbackSettingsScreen extends JFrame {
     private int gridBagCounter;
 
     // Components with user inputs
+    private DefaultListModel<String> headingsListModel;
     private JList<String> headingsList;
     private JButton editHeadersButton;
 
@@ -47,8 +49,8 @@ public class FeedbackSettingsScreen extends JFrame {
      * @param controller The controller.
      * @param assignment The assignment.
      */
-    public static FeedbackSettingsScreen create(AssignmentReadOnly assignment) {
-        FeedbackSettingsScreen screen = new FeedbackSettingsScreen(assignment);
+    public static FeedbackSettingsScreen create(AppController controller, AssignmentReadOnly assignment) {
+        FeedbackSettingsScreen screen = new FeedbackSettingsScreen(controller, assignment);
 
         // Set icon
         LogoIcon.applyIcon(screen);
@@ -69,8 +71,13 @@ public class FeedbackSettingsScreen extends JFrame {
         return screen;
     }
 
-    private FeedbackSettingsScreen(AssignmentReadOnly assignment) {
+    public static FeedbackSettingsScreen create(AssignmentReadOnly assignment) {
+        return create(null, assignment);
+    }
+
+    private FeedbackSettingsScreen(AppController controller, AssignmentReadOnly assignment) {
         super("Feedback settings");
+        this.controller = controller;
         this.assignment = assignment;
     }
 
@@ -95,11 +102,11 @@ public class FeedbackSettingsScreen extends JFrame {
 
         JPanel headingsPanel = new JPanel(new BorderLayout(SPACING, SPACING));
 
-        DefaultListModel<String> listModel = new DefaultListModel<>();
+        headingsListModel = new DefaultListModel<>();
         if (assignment != null) {
-            assignment.getHeadings().forEach(listModel::addElement);
+            assignment.getHeadings().forEach(headingsListModel::addElement);
         }
-        headingsList = new JList<>(listModel);
+        headingsList = new JList<>(headingsListModel);
         headingsList.setToolTipText(tooltip);
         headingsList.setBorder(BorderCreator.textAreaBorder());
 
@@ -109,7 +116,10 @@ public class FeedbackSettingsScreen extends JFrame {
 
         editHeadersButton = new JButton("Edit headers");
         editHeadersButton.setToolTipText("Edit assignment headers.");
-        editHeadersButton.addActionListener(e -> EditHeadersDialog.create(this, assignment));
+        editHeadersButton.addActionListener(e -> {
+            EditHeadersDialog.create(this, controller, assignment);
+            updateHeadings(assignment.getHeadings());
+        });
         headingsPanel.add(editHeadersButton, BorderLayout.SOUTH);
 
         addToConfigForm(headingsPanel, true, GRID_WIDTH);
@@ -127,22 +137,22 @@ public class FeedbackSettingsScreen extends JFrame {
     }
 
     /**
+     * Update the displayed headings in the list.
+     */
+    public void updateHeadings(List<String> headings) {
+        if (headingsListModel != null) {
+            headingsListModel.clear();
+            headings.forEach(headingsListModel::addElement);
+        }
+    }
+
+    /**
      * Add a label component to the config form, centered and spanning full width.
      */
     private void addLabelToConfigForm(String text, String tooltip) {
         JLabel label = new JLabel(text, SwingConstants.CENTER);
         label.setToolTipText(tooltip);
         addToConfigForm(label, GRID_WIDTH);
-    }
-
-    /** Add a component to the config form (the main part of the window). */
-    private void addToConfigForm(JComponent component) {
-        addToConfigForm(component, false);
-    }
-
-    /** Add a component to the config form (the main part of the window). */
-    private void addToConfigForm(JComponent component, boolean fill) {
-        addToConfigForm(component, fill, 1);
     }
 
     /** Add a component to the config form (the main part of the window). */
@@ -154,7 +164,7 @@ public class FeedbackSettingsScreen extends JFrame {
      * Add a component to the config form (the main part of the window).
      *
      * This allows the GridBagLayout to do its thing, and handles rows and columns.
-     * 
+     *
      * @param component The component to add
      * @param fill      Whether this component should be maximised horizontally
      * @param width     How many cells wide this should be

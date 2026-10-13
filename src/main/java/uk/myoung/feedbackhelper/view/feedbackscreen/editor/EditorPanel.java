@@ -149,19 +149,35 @@ public class EditorPanel extends VerticalScrollablePanel {
      * @param headings The headings of the feedback boxes to reset.
      */
     public void updateHeadings(List<String> newHeadings) {
-        for (int position = 0; position < headings.size(); position++) {
-            FeedbackBox feedbackBox = this.feedbackBoxes.get(position);
-            String previousHeading = headings.get(position);
+        if (newHeadings.size() == this.headings.size()) {
+            for (int position = 0; position < headings.size(); position++) {
+                FeedbackBox feedbackBox = this.feedbackBoxes.get(position);
+                String previousHeading = headings.get(position);
 
-            // Change the heading
-            String currentHeading = newHeadings.get(position);
-            this.headingAndFeedbackBox.remove(previousHeading);
-            this.headingAndFeedbackBox.put(currentHeading, feedbackBox);
-            feedbackBox.setHeading(currentHeading);
+                // Change the heading
+                String currentHeading = newHeadings.get(position);
+                this.headingAndFeedbackBox.remove(previousHeading);
+                this.headingAndFeedbackBox.put(currentHeading, feedbackBox);
+                feedbackBox.setHeading(currentHeading);
 
-            // Reconcile the heading interface
-            JTextField headingField = feedbackBox.getHeadingField();
-            headingField.setText(currentHeading);
+                // Reconcile the heading interface
+                JTextField headingField = feedbackBox.getHeadingField();
+                headingField.setText(currentHeading);
+            }
+        } else {
+            // Headings removed
+            List<String> removedHeadings = this.headings.stream()
+                .filter(h -> !newHeadings.contains(h))
+                .toList();
+            for (String removedHeading : removedHeadings) {
+                FeedbackBox feedbackBox = this.headingAndFeedbackBox.remove(removedHeading);
+                if (feedbackBox != null) {
+                    this.feedbackBoxes.remove(feedbackBox);
+                    this.feedbackBoxesPanel.remove(feedbackBox);
+                }
+            }
+            this.feedbackBoxesPanel.revalidate();
+            this.feedbackBoxesPanel.repaint();
         }
         this.headings = newHeadings;
     }
