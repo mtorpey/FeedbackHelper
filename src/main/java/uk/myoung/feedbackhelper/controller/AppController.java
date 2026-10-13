@@ -139,6 +139,19 @@ public class AppController {
     }
 
     /**
+     * Add a heading to the assignment.
+     *
+     * @param heading The heading to add.
+     */
+    public void addHeading(String heading) {
+        if (heading == null) {
+            return;
+        }
+        heading = heading.replaceAll("\n", "").trim();
+        assignment.addHeading(heading);
+    }
+
+    /**
      * Delete a heading from the assignment.
      *
      * @param heading The heading to delete.

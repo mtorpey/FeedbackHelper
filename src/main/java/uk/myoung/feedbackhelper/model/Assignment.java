@@ -513,9 +513,35 @@ public class Assignment implements AssignmentReadOnly, Serializable {
         computePhraseCounts();
 
         // Broadcast the change
-        notifyListeners(l -> l.handleHeadingsUpdated(headings));
+        notifyListeners(l -> l.handleHeadingsUpdated(List.copyOf(headings)));
 
         // Save to disk for good measure
+        save();
+    }
+
+    /**
+     * Add a heading to the assignment.
+     *
+     * @param heading The heading to add.
+     */
+    public void addHeading(String heading) throws IllegalArgumentException {
+        if (heading == null || heading.isBlank()) {
+            throw new IllegalArgumentException("Heading cannot be blank.");
+        }
+        if (headings.contains(heading)) {
+            throw new IllegalArgumentException("The heading '" + heading + "' already exists.");
+        }
+
+        headings.add(heading);
+
+        getFeedbackDocuments().forEach(doc -> doc.addHeading(heading));
+
+        customPhrases.put(heading, new ArrayList<>());
+
+        computePhraseCounts();
+
+        notifyListeners(l -> l.handleHeadingsUpdated(List.copyOf(headings)));
+
         save();
     }
 
@@ -540,7 +566,7 @@ public class Assignment implements AssignmentReadOnly, Serializable {
 
         computePhraseCounts();
 
-        notifyListeners(l -> l.handleHeadingsUpdated(headings));
+        notifyListeners(l -> l.handleHeadingsUpdated(List.copyOf(headings)));
 
         save();
     }

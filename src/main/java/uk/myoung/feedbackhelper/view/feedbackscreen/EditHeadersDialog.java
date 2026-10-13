@@ -3,6 +3,7 @@ package uk.myoung.feedbackhelper.view.feedbackscreen;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -13,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+
 import uk.myoung.feedbackhelper.controller.AppController;
 import uk.myoung.feedbackhelper.model.AssignmentReadOnly;
 import uk.myoung.feedbackhelper.view.style.BorderCreator;
@@ -96,6 +98,7 @@ public class EditHeadersDialog extends JDialog {
         closeButton = new JButton("Close");
 
         closeButton.addActionListener(e -> dispose());
+        addButton.addActionListener(e -> addHeader());
         deleteButton.addActionListener(e -> deleteSelectedHeader());
 
         buttonsPanel.add(addButton);
@@ -116,11 +119,10 @@ public class EditHeadersDialog extends JDialog {
 
         if (listModel.size() <= 1) {
             JOptionPane.showMessageDialog(
-                this,
-                "Cannot delete the only header.",
-                "Delete Header",
-                JOptionPane.WARNING_MESSAGE
-            );
+                    this,
+                    "Cannot delete the only header.",
+                    "Delete Header",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -135,12 +137,11 @@ public class EditHeadersDialog extends JDialog {
         }
 
         int choice = JOptionPane.showConfirmDialog(
-            this,
-            message,
-            "Delete Header",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.WARNING_MESSAGE
-        );
+                this,
+                message,
+                "Delete Header",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
 
         if (choice == JOptionPane.YES_OPTION) {
             controller.deleteHeading(heading);
@@ -151,5 +152,39 @@ public class EditHeadersDialog extends JDialog {
                 headersList.setSelectedIndex(Math.min(selectedIndex, listModel.size() - 1));
             }
         }
+    }
+
+    private void addHeader() {
+        String input = JOptionPane.showInputDialog(
+                this,
+                "Enter the new header name",
+                "Add Header",
+                JOptionPane.PLAIN_MESSAGE);
+        if (input == null) {
+            return;
+        }
+
+        String heading = input.trim();
+        if (heading.isBlank()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Header name cannot be blank.",
+                    "Add Header",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (listModel.contains(heading)) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "The header '" + heading + "' already exists.",
+                    "Add Header",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        controller.addHeading(heading);
+        listModel.addElement(heading);
+        headersList.setSelectedValue(heading, true);
     }
 }
