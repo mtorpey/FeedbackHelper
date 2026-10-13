@@ -34,8 +34,6 @@ public class EditHeadersDialog extends JDialog {
     private JButton addButton;
     private JButton renameButton;
     private JButton deleteButton;
-    private JButton moveUpButton;
-    private JButton moveDownButton;
     private JButton closeButton;
 
     /**
@@ -89,23 +87,20 @@ public class EditHeadersDialog extends JDialog {
         add(scrollPane, BorderLayout.CENTER);
 
         // Right: Buttons panel
-        JPanel buttonsPanel = new JPanel(new GridLayout(6, 1, 0, SPACING));
+        JPanel buttonsPanel = new JPanel(new GridLayout(4, 1, 0, SPACING));
         addButton = new JButton("Add");
         renameButton = new JButton("Rename");
         deleteButton = new JButton("Delete");
-        moveUpButton = new JButton("Move Up");
-        moveDownButton = new JButton("Move Down");
         closeButton = new JButton("Close");
 
         closeButton.addActionListener(e -> dispose());
         addButton.addActionListener(e -> addHeader());
+        renameButton.addActionListener(e -> renameSelectedHeader());
         deleteButton.addActionListener(e -> deleteSelectedHeader());
 
         buttonsPanel.add(addButton);
         buttonsPanel.add(renameButton);
         buttonsPanel.add(deleteButton);
-        buttonsPanel.add(moveUpButton);
-        buttonsPanel.add(moveDownButton);
         buttonsPanel.add(closeButton);
 
         add(buttonsPanel, BorderLayout.EAST);
@@ -183,8 +178,61 @@ public class EditHeadersDialog extends JDialog {
             return;
         }
 
-        controller.addHeading(heading);
+        if (controller != null) {
+            controller.addHeading(heading);
+        }
         listModel.addElement(heading);
         headersList.setSelectedValue(heading, true);
+    }
+
+    private void renameSelectedHeader() {
+        int selectedIndex = headersList.getSelectedIndex();
+        if (selectedIndex == -1) {
+            return;
+        }
+
+        String currentHeading = listModel.get(selectedIndex);
+
+        String input = (String) JOptionPane.showInputDialog(
+                this,
+                "Enter the new header name",
+                "Rename Header",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                currentHeading);
+        if (input == null) {
+            return;
+        }
+
+        String newHeading = input.trim();
+        if (newHeading.equals(currentHeading)) {
+            return;
+        }
+
+        if (newHeading.isBlank()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Header name cannot be blank.",
+                    "Rename Header",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (listModel.contains(newHeading)) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "The header '" + newHeading + "' already exists.",
+                    "Rename Header",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (controller != null) {
+            controller.editHeading(currentHeading, newHeading);
+        }
+
+        listModel.set(selectedIndex, newHeading);
+        headersList.setSelectedIndex(selectedIndex);
     }
 }
