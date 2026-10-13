@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -29,6 +30,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
+
 import uk.myoung.feedbackhelper.controller.AppController;
 import uk.myoung.feedbackhelper.infrastructure.UserPreferences;
 import uk.myoung.feedbackhelper.model.AssignmentListener;
@@ -157,6 +159,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         JMenu fileMenu = new JMenu("File");
         JMenuItem saveOption = new JMenuItem("Save assignment");
         JMenuItem addStudentOption = new JMenuItem("Add new student");
+        JMenuItem feedbackSettingsOption = new JMenuItem("Feedback settings");
         JMenuItem exportDocsOption = new JMenuItem("Export grades and feedback documents");
         JMenuItem visGradesOption = new JMenuItem("Visualise grades");
         JMenuItem exitOption = new JMenuItem("Exit");
@@ -174,6 +177,9 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Add student option
         addStudentOption.addActionListener(e -> addNewStudent());
 
+        // Feedback settings option
+        feedbackSettingsOption.addActionListener(e -> FeedbackSettingsScreen.create(assignment));
+
         // Export grades and documents option
         exportDocsOption.addActionListener(e -> controller.exportFeedbackAndGrades());
 
@@ -189,6 +195,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Add all options to menus
         fileMenu.add(saveOption);
         fileMenu.add(addStudentOption);
+        fileMenu.add(feedbackSettingsOption);
         fileMenu.add(exportDocsOption);
         fileMenu.add(visGradesOption);
         fileMenu.addSeparator();
