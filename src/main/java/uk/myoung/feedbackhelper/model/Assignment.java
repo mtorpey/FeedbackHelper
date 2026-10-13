@@ -540,7 +540,7 @@ public class Assignment implements AssignmentReadOnly, Serializable {
 
         computePhraseCounts();
 
-        notifyListeners(l -> l.handleHeadingsUpdated(List.copyOf(headings)));
+        notifyListeners(l -> l.handleHeadingsUpdated(headings));
 
         save();
     }
