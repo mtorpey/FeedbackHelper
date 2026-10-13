@@ -109,6 +109,7 @@ public class FeedbackSettingsScreen extends JFrame {
 
         editHeadersButton = new JButton("Edit headers");
         editHeadersButton.setToolTipText("Edit assignment headers.");
+        editHeadersButton.addActionListener(e -> EditHeadersDialog.create(this, assignment));
         headingsPanel.add(editHeadersButton, BorderLayout.SOUTH);
 
         addToConfigForm(headingsPanel, true, GRID_WIDTH);
