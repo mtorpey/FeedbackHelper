@@ -33,6 +33,11 @@ public class EditorPanel extends VerticalScrollablePanel {
     private JCheckBox markAsDoneButton;
     private List<String> headings;
     private Map<String, FeedbackBox> headingAndFeedbackBox;
+    private String lineMarker;
+    private Consumer<String> onSwitchSection;
+    private BiConsumer<String, String> onEditHeading;
+    private BiConsumer<String, String> onUpdateText;
+    private EditingPopupMenu editingPopupMenu;
 
     /**
      * Create and return a new object of this class, including setup.
@@ -53,6 +58,10 @@ public class EditorPanel extends VerticalScrollablePanel {
         Runnable onToggleLock
     ) {
         EditorPanel panel = new EditorPanel(titleText, headings);
+        panel.lineMarker = lineMarker;
+        panel.onSwitchSection = onSwitchSection;
+        panel.onEditHeading = onEditHeading;
+        panel.onUpdateText = onUpdateText;
 
         // Setup data structures
         panel.feedbackBoxes = new ArrayList<FeedbackBox>();
@@ -73,7 +82,7 @@ public class EditorPanel extends VerticalScrollablePanel {
 
     private EditorPanel(String titleText, List<String> headings) {
         this.titleText = titleText;
-        this.headings = headings;
+        this.headings = new ArrayList<>(headings);
     }
 
     private void setupFeedbackBoxesPanel() {
@@ -149,6 +158,17 @@ public class EditorPanel extends VerticalScrollablePanel {
      * @param headings The headings of the feedback boxes to reset.
      */
     public void updateHeadings(List<String> newHeadings) {
+        if (newHeadings.size() == this.headings.size()) {
+            renameHeadings(newHeadings);
+        } else if (newHeadings.size() < this.headings.size()) {
+            removeHeadings(newHeadings);
+        } else {
+            addHeadings(newHeadings);
+        }
+        this.headings = newHeadings;
+    }
+
+    private void renameHeadings(List<String> newHeadings) {
         for (int position = 0; position < headings.size(); position++) {
             FeedbackBox feedbackBox = this.feedbackBoxes.get(position);
             String previousHeading = headings.get(position);
@@ -163,7 +183,44 @@ public class EditorPanel extends VerticalScrollablePanel {
             JTextField headingField = feedbackBox.getHeadingField();
             headingField.setText(currentHeading);
         }
-        this.headings = newHeadings;
+    }
+
+    private void removeHeadings(List<String> newHeadings) {
+        List<String> removedHeadings = this.headings.stream()
+            .filter(h -> !newHeadings.contains(h))
+            .toList();
+        for (String removedHeading : removedHeadings) {
+            FeedbackBox feedbackBox = this.headingAndFeedbackBox.remove(removedHeading);
+            if (feedbackBox != null) {
+                this.feedbackBoxes.remove(feedbackBox);
+                this.feedbackBoxesPanel.remove(feedbackBox);
+            }
+        }
+        this.feedbackBoxesPanel.revalidate();
+        this.feedbackBoxesPanel.repaint();
+    }
+
+    private void addHeadings(List<String> newHeadings) {
+        List<String> addedHeadings = newHeadings.stream()
+            .filter(h -> !this.headings.contains(h))
+            .toList();
+        for (String addedHeading : addedHeadings) {
+            FeedbackBox feedbackBox = FeedbackBox.create(
+                addedHeading,
+                lineMarker,
+                onSwitchSection,
+                onEditHeading,
+                onUpdateText
+            );
+            if (editingPopupMenu != null) {
+                feedbackBox.registerPopupMenu(editingPopupMenu);
+            }
+            this.feedbackBoxes.add(feedbackBox);
+            this.headingAndFeedbackBox.put(addedHeading, feedbackBox);
+            this.feedbackBoxesPanel.add(feedbackBox);
+        }
+        this.feedbackBoxesPanel.revalidate();
+        this.feedbackBoxesPanel.repaint();
     }
 
     /**
@@ -172,6 +229,7 @@ public class EditorPanel extends VerticalScrollablePanel {
      * @param editingPopupMenu The editing menu to register with.
      */
     public void registerPopupMenu(EditingPopupMenu editingPopupMenu) {
+        this.editingPopupMenu = editingPopupMenu;
         this.feedbackBoxes.forEach(feedbackBox -> feedbackBox.registerPopupMenu(editingPopupMenu));
     }
 

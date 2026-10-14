@@ -25,4 +25,5 @@ public interface AssignmentReadOnly {
     List<Phrase> getPhrasesForHeading(String heading);
     int numberOfStudents();
     int numberOfLockedStudents();
+    int numberOfStudentsWithHeadingContent(String heading);
 }

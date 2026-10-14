@@ -130,6 +130,28 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
     }
 
     /**
+     * Adds one of the headings and its contents.
+     *
+     * This doesn't do any checks, which should be performed in Assignment::addHeading.
+     */
+    public void addHeading(String heading) {
+        if (!headings.contains(heading)) {
+            headings.add(heading);
+        }
+        sectionContents.put(heading, "");
+    }
+
+    /**
+     * Removes one of the headings and its contents.
+     *
+     * This doesn't do any checks, which should be performed in Assignment::deleteHeading.
+     */
+    public void removeHeading(String heading) {
+        headings.remove(heading);
+        sectionContents.remove(heading);
+    }
+
+    /**
      * Export feedback to text files in the given directory.
      *
      * Filename will be <studentid>.txt, and if the group assignment ID style is
