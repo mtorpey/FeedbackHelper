@@ -138,6 +138,38 @@ public class AppController {
         assignment.editHeading(previousHeading, newHeading);
     }
 
+    /**
+     * Add a heading to the assignment.
+     *
+     * @param heading The heading to add.
+     */
+    public void addHeading(String heading) {
+        if (heading == null) {
+            return;
+        }
+        heading = heading.replaceAll("\n", "").trim();
+        assignment.addHeading(heading);
+    }
+
+    /**
+     * Delete a heading from the assignment.
+     *
+     * @param heading The heading to delete.
+     */
+    public void deleteHeading(String heading) {
+        assignment.deleteHeading(heading);
+    }
+
+    /**
+     * Reorder a heading in the assignment.
+     *
+     * @param heading  The heading to reorder.
+     * @param movement The direction and distance to move (-1 for up, 1 for down).
+     */
+    public void reorderHeading(String heading, int movement) {
+        assignment.reorderHeading(heading, movement);
+    }
+
     /* USER EXPORTS AND OPERATIONS */
 
     /**

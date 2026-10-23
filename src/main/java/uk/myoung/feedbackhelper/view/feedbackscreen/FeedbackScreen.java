@@ -157,6 +157,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         JMenu fileMenu = new JMenu("File");
         JMenuItem saveOption = new JMenuItem("Save assignment");
         JMenuItem addStudentOption = new JMenuItem("Add new student");
+        JMenuItem feedbackSettingsOption = new JMenuItem("Feedback settings");
         JMenuItem exportDocsOption = new JMenuItem("Export grades and feedback documents");
         JMenuItem visGradesOption = new JMenuItem("Visualise grades");
         JMenuItem exitOption = new JMenuItem("Exit");
@@ -174,6 +175,9 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Add student option
         addStudentOption.addActionListener(e -> addNewStudent());
 
+        // Feedback settings option
+        feedbackSettingsOption.addActionListener(e -> FeedbackSettingsScreen.create(controller, assignment));
+
         // Export grades and documents option
         exportDocsOption.addActionListener(e -> controller.exportFeedbackAndGrades());
 
@@ -189,6 +193,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Add all options to menus
         fileMenu.add(saveOption);
         fileMenu.add(addStudentOption);
+        fileMenu.add(feedbackSettingsOption);
         fileMenu.add(exportDocsOption);
         fileMenu.add(visGradesOption);
         fileMenu.addSeparator();
