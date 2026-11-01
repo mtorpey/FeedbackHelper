@@ -125,6 +125,16 @@ public class AppController {
         assignment.addStudent(studentId);
     }
 
+    /**
+     * Attempt to add new students from a file to the model.
+     *
+     * @param file The file containing student IDs.
+     * @throws IOException if there is an error reading the file.
+     */
+    public void addStudentsFromFile(Path file) throws IOException {
+        assignment.addStudentsFromFile(file);
+    }
+
     /* HEADING MANAGEMENT METHODS */
 
     /**

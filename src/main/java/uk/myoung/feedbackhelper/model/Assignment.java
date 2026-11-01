@@ -467,6 +467,30 @@ public class Assignment implements AssignmentReadOnly, Serializable {
     }
 
     /**
+     * Add new students from a file.
+     *
+     * @param file The file containing student IDs.
+     * @throws IOException if an error occurs while reading the file.
+     */
+    public void addStudentsFromFile(Path file) throws IOException {
+        List<StudentId> studentIds = findStudentIdsFromFile(file);
+        List<StudentId> added = new ArrayList<>();
+        for (StudentId studentId : studentIds) {
+            if (!feedbackDocuments.containsKey(studentId)) {
+                feedbackDocuments.put(studentId, new FeedbackDocument(studentId, headings));
+                added.add(studentId);
+            }
+        }
+        if (added.isEmpty()) {
+            reportInfo("No new students found in file.");
+            return;
+        }
+        save();
+        notifyListeners(l -> l.handleNewStudent(added.get(0)));
+        reportInfo("Added " + added.size() + " new student" + (added.size() == 1 ? "" : "s") + ".");
+    }
+
+    /**
      * Change the name of a section, i.e. a heading.
      *
      * @param previousHeading A heading that currently exists in the assignment

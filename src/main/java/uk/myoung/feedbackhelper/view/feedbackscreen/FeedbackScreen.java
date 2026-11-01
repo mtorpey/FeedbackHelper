@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -48,6 +49,11 @@ import uk.myoung.feedbackhelper.view.visualization.GradeChart;
  * Main window for an assignment in progress, containing all components.
  */
 public class FeedbackScreen extends JFrame implements AssignmentListener {
+
+    private static final String STUDENT_LIST_TOOLTIP = """
+        Text file containing all the student IDs for this assignment, separated by commas or whitespace.
+        MMS provides a suitable file for this: see "Download a template file to fill here" on MMS.
+        For group assignments, enter groups in the form "groupname=id+id+…+id".""";
 
     // References to other parts of program
     private AssignmentReadOnly assignment;
@@ -156,7 +162,9 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Create the file menu and items
         JMenu fileMenu = new JMenu("File");
         JMenuItem saveOption = new JMenuItem("Save assignment");
-        JMenuItem addStudentOption = new JMenuItem("Add new student");
+        JMenu addStudentMenu = new JMenu("Add new student");
+        JMenuItem addSingleStudentOption = new JMenuItem("Add single student");
+        JMenuItem addStudentsFromFileOption = new JMenuItem("Add students as a file");
         JMenuItem feedbackSettingsOption = new JMenuItem("Feedback settings");
         JMenuItem exportDocsOption = new JMenuItem("Export grades and feedback documents");
         JMenuItem visGradesOption = new JMenuItem("Visualise grades");
@@ -172,8 +180,12 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Save option
         saveOption.addActionListener(e -> saveAssignmentForCurrentStudent());
 
-        // Add student option
-        addStudentOption.addActionListener(e -> addNewStudent());
+        // Add student options
+        addStudentsFromFileOption.setToolTipText(STUDENT_LIST_TOOLTIP);
+        addSingleStudentOption.addActionListener(e -> addNewStudent());
+        addStudentsFromFileOption.addActionListener(e -> addStudentsFromFile());
+        addStudentMenu.add(addSingleStudentOption);
+        addStudentMenu.add(addStudentsFromFileOption);
 
         // Feedback settings option
         feedbackSettingsOption.addActionListener(e -> FeedbackSettingsScreen.create(controller, assignment));
@@ -192,7 +204,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
         // Add all options to menus
         fileMenu.add(saveOption);
-        fileMenu.add(addStudentOption);
+        fileMenu.add(addStudentMenu);
         fileMenu.add(feedbackSettingsOption);
         fileMenu.add(exportDocsOption);
         fileMenu.add(visGradesOption);
@@ -456,10 +468,30 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
     private void addNewStudent() {
         String input = JOptionPane.showInputDialog(this, "Enter the new student id");
+        if (input == null || input.isBlank()) {
+            return;
+        }
         try {
-            controller.addNewStudent(input);
+            controller.addNewStudent(input.trim());
         } catch (IllegalArgumentException e) {
             handleError("Invalid student ID '" + input + "'.", e);
+        }
+    }
+
+    private void addStudentsFromFile() {
+        Path lastPath = UserPreferences.getLastOpenedAssignmentPath();
+        JFileChooser fileChooser = new JFileChooser(lastPath != null ? lastPath.toString() : null);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setDialogTitle("Choose a student list file...");
+        fileChooser.setToolTipText(STUDENT_LIST_TOOLTIP);
+        if (fileChooser.showDialog(this, "Select") == JFileChooser.APPROVE_OPTION
+                && fileChooser.getSelectedFile() != null) {
+            saveAssignmentForCurrentStudent();
+            try {
+                controller.addStudentsFromFile(fileChooser.getSelectedFile().toPath());
+            } catch (Exception e) {
+                handleError("Failed to add students from file", e);
+            }
         }
     }
 
