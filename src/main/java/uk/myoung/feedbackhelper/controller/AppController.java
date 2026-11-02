@@ -147,6 +147,15 @@ public class AppController {
         assignment.renameStudent(oldId, newStudentId);
     }
 
+    /**
+     * Delete a student from the assignment model.
+     *
+     * @param studentId The student ID to delete.
+     */
+    public void deleteStudent(StudentId studentId) {
+        assignment.deleteStudent(studentId);
+    }
+
     /* HEADING MANAGEMENT METHODS */
 
     /**

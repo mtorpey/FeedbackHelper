@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -30,6 +31,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
+
 import uk.myoung.feedbackhelper.controller.AppController;
 import uk.myoung.feedbackhelper.infrastructure.UserPreferences;
 import uk.myoung.feedbackhelper.model.AssignmentListener;
@@ -231,7 +233,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         updateProgressSummary();
 
         // Create student list
-        studentList = StudentList.create(this::switchStudentIfNeeded, this::editStudentName);
+        studentList = StudentList.create(this::switchStudentIfNeeded, this::editStudentName, this::removeStudent);
         for (StudentId studentId : assignment.getStudentIds()) {
             studentList.addStudent(
                 studentId,
@@ -256,8 +258,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
             currentStudent = assignment.getStudentIds().get(0);
         }
 
-        // Select the current student
-        studentList.selectStudent(currentStudent);
+            studentList.selectStudent(currentStudent);
     }
 
     private void updateProgressSummary() {
@@ -518,6 +519,29 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         }
     }
 
+    private void removeStudent(StudentId studentId) {
+        int confirm = JOptionPane.showConfirmDialog(
+            this,
+            "Are you sure you want to remove student '" + studentId + "'?",
+            "Remove Student",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE
+        );
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+        List<StudentId> ids = assignment.getStudentIds();
+        int idx = ids.indexOf(studentId);
+        if (ids.size() == 1) {
+            currentStudent = null;
+        } else if (idx == 0) {
+            currentStudent = ids.get(1);
+        } else {
+            currentStudent = ids.get(idx - 1);
+        }
+        controller.deleteStudent(studentId);
+    }
+
     private void addNewStudent() {
         String input = JOptionPane.showInputDialog(this, "Enter the new student id");
         if (input == null || input.isBlank()) {
@@ -657,6 +681,23 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
             setupStudentListPanel();
             studentList.selectStudent(studentId);
             switchStudent(studentId);
+        });
+    }
+
+    @Override
+    public void handleStudentDeleted(StudentId studentId) {
+        SwingUtilities.invokeLater(() -> {
+            setupStudentListPanel();
+            if (currentStudent != null) {
+                studentList.selectStudent(currentStudent);
+                switchStudent(currentStudent);
+            } else {
+                for (String heading : assignment.getHeadings()) {
+                    editorPanel.setSectionContents(heading, "");
+                }
+                editorPanel.setGrade(0.0);
+                editorPanel.setStudentId(null);
+            }
         });
     }
 

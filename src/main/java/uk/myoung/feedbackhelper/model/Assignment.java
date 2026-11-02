@@ -522,6 +522,21 @@ public class Assignment implements AssignmentReadOnly, Serializable {
     }
 
     /**
+     * Delete a student from the assignment.
+     *
+     * @param studentId The student ID to delete.
+     */
+    public void deleteStudent(StudentId studentId) {
+        if (!feedbackDocuments.containsKey(studentId)) {
+            return;
+        }
+        feedbackDocuments.remove(studentId);
+        save();
+        notifyListeners(l -> l.handleStudentDeleted(studentId));
+        reportInfo("Student '" + studentId + "' removed.");
+    }
+
+    /**
      * Change the name of a section, i.e. a heading.
      *
      * @param previousHeading A heading that currently exists in the assignment

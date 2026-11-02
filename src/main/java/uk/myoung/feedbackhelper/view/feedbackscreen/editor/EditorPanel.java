@@ -266,7 +266,7 @@ public class EditorPanel extends VerticalScrollablePanel {
     /** Update this panel to display the given student ID. */
     public void setStudentId(StudentId studentId) {
         this.studentSelected = studentId != null;
-        setTitleLabel(studentId.toString());
+        setTitleLabel(studentId != null ? studentId.toString() : this.titleText);
         gradeBox.enableChooser();
 
         // Refresh the UI

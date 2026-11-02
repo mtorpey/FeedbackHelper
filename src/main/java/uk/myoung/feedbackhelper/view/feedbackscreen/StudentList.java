@@ -1,5 +1,6 @@
 package uk.myoung.feedbackhelper.view.feedbackscreen;
 
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -9,7 +10,10 @@ import java.util.function.Consumer;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 
 import uk.myoung.feedbackhelper.model.StudentId;
 
@@ -30,38 +34,62 @@ public class StudentList extends JList<String> {
      *
      * @param onSelectStudent Callback for when a student is selected.
      * @param onEditStudent   Callback for when a student is double clicked to edit.
+     * @param onRemoveStudent Callback for when a student is removed.
      */
-    public static StudentList create(Consumer<StudentId> onSelectStudent, Consumer<StudentId> onEditStudent) {
+    public static StudentList create(
+        Consumer<StudentId> onSelectStudent,
+        Consumer<StudentId> onEditStudent,
+        Consumer<StudentId> onRemoveStudent
+    ) {
         var studentList = new StudentList();
 
-        // Set up the list model
         studentList.listModel = new DefaultListModel<String>();
         studentList.setModel(studentList.listModel);
         studentList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        // Set up data structures for the information that might be displayed
         studentList.students = new ArrayList<>();
         studentList.grades = new ArrayList<>();
         studentList.charCounts = new ArrayList<>();
         studentList.locked = new ArrayList<>();
 
-        // Handle list selection using the callback
-        studentList.addListSelectionListener(e -> {
-            onSelectStudent.accept(studentList.students.get(studentList.getSelectedIndex()));
-        });
+        studentList.addListSelectionListener(e -> onSelectStudent.accept(studentList.getSelectedStudent()));
+        studentList.setupPopupMenu(onEditStudent, onRemoveStudent);
 
-        studentList.addMouseListener(new MouseAdapter() {
+        studentList.setVisible(true);
+        return studentList;
+    }
+
+    private void setupPopupMenu(Consumer<StudentId> onEdit, Consumer<StudentId> onRemove) {
+        JPopupMenu menu = new JPopupMenu();
+
+        JMenuItem edit = new JMenuItem("Edit student ID");
+        edit.addActionListener(e -> onEdit.accept(getSelectedStudent()));
+
+        JMenuItem remove = new JMenuItem("Remove student");
+        remove.setForeground(Color.RED);
+        remove.addActionListener(e -> onRemove.accept(getSelectedStudent()));
+
+        menu.add(edit);
+        menu.add(remove);
+
+        addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2 ) {
-                    onEditStudent.accept(studentList.students.get(studentList.getSelectedIndex()));
+                if (e.getClickCount() == 2) {
+                    onEdit.accept(getSelectedStudent());
+                }
+            }
+
+            public void mouseReleased(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    setSelectedIndex(locationToIndex(e.getPoint()));
+                    menu.show(StudentList.this, e.getX(), e.getY());
                 }
             }
         });
+    }
 
-        // Display!
-        studentList.setVisible(true);
-
-        return studentList;
+    private StudentId getSelectedStudent() {
+        return students.get(getSelectedIndex());
     }
 
     /** Add the given student to the list. */
