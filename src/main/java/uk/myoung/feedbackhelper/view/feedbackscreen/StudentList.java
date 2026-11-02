@@ -1,12 +1,16 @@
 package uk.myoung.feedbackhelper.view.feedbackscreen;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
+
 import uk.myoung.feedbackhelper.model.StudentId;
 
 /**
@@ -25,8 +29,9 @@ public class StudentList extends JList<String> {
      * Create and return a new object of this class, including setup.
      *
      * @param onSelectStudent Callback for when a student is selected.
+     * @param onEditStudent   Callback for when a student is double clicked to edit.
      */
-    public static StudentList create(Consumer<StudentId> onSelectStudent) {
+    public static StudentList create(Consumer<StudentId> onSelectStudent, Consumer<StudentId> onEditStudent) {
         var studentList = new StudentList();
 
         // Set up the list model
@@ -43,6 +48,14 @@ public class StudentList extends JList<String> {
         // Handle list selection using the callback
         studentList.addListSelectionListener(e -> {
             onSelectStudent.accept(studentList.students.get(studentList.getSelectedIndex()));
+        });
+
+        studentList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2 ) {
+                    onEditStudent.accept(studentList.students.get(studentList.getSelectedIndex()));
+                }
+            }
         });
 
         // Display!

@@ -422,6 +422,9 @@ public class Assignment implements AssignmentReadOnly, Serializable {
      */
     public void updateFeedback(StudentId studentId, Map<String, String> headingsAndData) {
         FeedbackDocument document = feedbackDocuments.get(studentId);
+        if (document == null) {
+            return;
+        }
         for (String heading : headingsAndData.keySet()) {
             // Set the new text for this section
             String oldContents = document.getSectionContents(heading);
@@ -436,7 +439,11 @@ public class Assignment implements AssignmentReadOnly, Serializable {
 
     /** Update the grade in the model for the given student. */
     public void updateGrade(StudentId studentId, double grade) {
-        feedbackDocuments.get(studentId).setGrade(grade);
+        FeedbackDocument document = feedbackDocuments.get(studentId);
+        if (document == null) {
+            return;
+        }
+        document.setGrade(grade);
         notifyListeners(l -> l.handleGradeUpdate(studentId, grade));
         // Note: we don't automatically save here
     }
@@ -488,6 +495,30 @@ public class Assignment implements AssignmentReadOnly, Serializable {
         save();
         notifyListeners(l -> l.handleNewStudent(added.get(0)));
         reportInfo("Added " + added.size() + " new student" + (added.size() == 1 ? "" : "s") + ".");
+    }
+
+    /**
+     * Rename an existing student in the assignment.
+     *
+     * @param oldId The current student ID.
+     * @param newId The new student ID.
+     */
+    public void renameStudent(StudentId oldId, StudentId newId) throws IllegalArgumentException {
+        if (!feedbackDocuments.containsKey(oldId)) {
+            throw new IllegalArgumentException("Student '" + oldId + "' not found.");
+        }
+        if (oldId.equals(newId)) {
+            return;
+        }
+        if (feedbackDocuments.containsKey(newId)) {
+            throw new IllegalArgumentException("Student '" + newId + "' already exists.");
+        }
+        FeedbackDocument document = feedbackDocuments.remove(oldId);
+        document.setStudentId(newId);
+        feedbackDocuments.put(newId, document);
+        save();
+        notifyListeners(l -> l.handleNewStudent(newId));
+        reportInfo("Student '" + oldId + "' renamed to '" + newId + "'.");
     }
 
     /**

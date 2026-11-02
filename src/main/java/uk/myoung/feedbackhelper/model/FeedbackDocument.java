@@ -110,6 +110,15 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
     }
 
     /**
+     * Set the student ID of the feedback document.
+     *
+     * @param studentId The new student ID.
+     */
+    public void setStudentId(StudentId studentId) {
+        this.studentId = studentId;
+    }
+
+    /**
      * Get a list of headings used in the feedback document.
      *
      * @return a list of headings used in the feedback document.

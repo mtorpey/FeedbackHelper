@@ -135,6 +135,18 @@ public class AppController {
         assignment.addStudentsFromFile(file);
     }
 
+    /**
+     * Rename an existing student in the model.
+     *
+     * @param oldId The current student ID.
+     * @param newId The new student ID string.
+     * @throws IllegalArgumentException if newId is invalid.
+     */
+    public void renameStudent(StudentId oldId, String newId) throws IllegalArgumentException {
+        StudentId newStudentId = new StudentId(newId);
+        assignment.renameStudent(oldId, newStudentId);
+    }
+
     /* HEADING MANAGEMENT METHODS */
 
     /**

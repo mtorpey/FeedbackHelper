@@ -231,7 +231,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         updateProgressSummary();
 
         // Create student list
-        studentList = StudentList.create(this::switchStudentIfNeeded);
+        studentList = StudentList.create(this::switchStudentIfNeeded, this::editStudentName);
         for (StudentId studentId : assignment.getStudentIds()) {
             studentList.addStudent(
                 studentId,
@@ -464,6 +464,58 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Update the left panel with the latest data
         studentList.updateGrade(currentStudent, grade);
         studentList.updateLength(currentStudent, assignment.getFeedbackLength(currentStudent));
+    }
+
+    private void editStudentName(StudentId studentId) {
+        String input = (String) JOptionPane.showInputDialog(
+            this,
+            "Enter the new student ID",
+            "Rename Student",
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            null,
+            studentId.id()
+        );
+        if (input == null) {
+            return;
+        }
+        String newId = input.trim();
+        if (newId.equals(studentId.id())) {
+            return;
+        }
+        if (newId.isBlank()) {
+            JOptionPane.showMessageDialog(this, "Student ID cannot be blank.", "Rename Student", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int confirm = JOptionPane.showConfirmDialog(
+            this,
+            "Are you sure you want to rename this student?",
+            "Rename Student",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE
+        );
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+        saveAssignmentForCurrentStudent();
+        StudentId newStudentId;
+        try {
+            newStudentId = new StudentId(newId);
+        } catch (IllegalArgumentException e) {
+            handleError("Invalid student ID '" + newId + "'.", e);
+            return;
+        }
+        if (studentId.equals(currentStudent)) {
+            currentStudent = newStudentId;
+        }
+        try {
+            controller.renameStudent(studentId, newId);
+        } catch (IllegalArgumentException e) {
+            if (studentId.equals(currentStudent)) {
+                currentStudent = studentId;
+            }
+            handleError("Invalid student ID '" + newId + "'.", e);
+        }
     }
 
     private void addNewStudent() {
