@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -29,6 +31,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
+
 import uk.myoung.feedbackhelper.controller.AppController;
 import uk.myoung.feedbackhelper.infrastructure.UserPreferences;
 import uk.myoung.feedbackhelper.model.AssignmentListener;
@@ -48,6 +51,11 @@ import uk.myoung.feedbackhelper.view.visualization.GradeChart;
  * Main window for an assignment in progress, containing all components.
  */
 public class FeedbackScreen extends JFrame implements AssignmentListener {
+
+    private static final String STUDENT_LIST_TOOLTIP = """
+        Text file containing all the student IDs for this assignment, separated by commas or whitespace.
+        MMS provides a suitable file for this: see "Download a template file to fill here" on MMS.
+        For group assignments, enter groups in the form "groupname=id+id+…+id".""";
 
     // References to other parts of program
     private AssignmentReadOnly assignment;
@@ -156,7 +164,10 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Create the file menu and items
         JMenu fileMenu = new JMenu("File");
         JMenuItem saveOption = new JMenuItem("Save assignment");
-        JMenuItem addStudentOption = new JMenuItem("Add new student");
+        JMenu addStudentMenu = new JMenu("Add new student");
+        JMenuItem addSingleStudentOption = new JMenuItem("Add single student");
+        JMenuItem addStudentsFromFileOption = new JMenuItem("Add students as a file");
+        JMenuItem feedbackSettingsOption = new JMenuItem("Feedback settings");
         JMenuItem exportDocsOption = new JMenuItem("Export grades and feedback documents");
         JMenuItem visGradesOption = new JMenuItem("Visualise grades");
         JMenuItem exitOption = new JMenuItem("Exit");
@@ -171,8 +182,15 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         // Save option
         saveOption.addActionListener(e -> saveAssignmentForCurrentStudent());
 
-        // Add student option
-        addStudentOption.addActionListener(e -> addNewStudent());
+        // Add student options
+        addStudentsFromFileOption.setToolTipText(STUDENT_LIST_TOOLTIP);
+        addSingleStudentOption.addActionListener(e -> addNewStudent());
+        addStudentsFromFileOption.addActionListener(e -> addStudentsFromFile());
+        addStudentMenu.add(addSingleStudentOption);
+        addStudentMenu.add(addStudentsFromFileOption);
+
+        // Feedback settings option
+        feedbackSettingsOption.addActionListener(e -> FeedbackSettingsScreen.create(controller, assignment));
 
         // Export grades and documents option
         exportDocsOption.addActionListener(e -> controller.exportFeedbackAndGrades());
@@ -188,7 +206,8 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
 
         // Add all options to menus
         fileMenu.add(saveOption);
-        fileMenu.add(addStudentOption);
+        fileMenu.add(addStudentMenu);
+        fileMenu.add(feedbackSettingsOption);
         fileMenu.add(exportDocsOption);
         fileMenu.add(visGradesOption);
         fileMenu.addSeparator();
@@ -214,7 +233,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         updateProgressSummary();
 
         // Create student list
-        studentList = StudentList.create(this::switchStudentIfNeeded);
+        studentList = StudentList.create(this::switchStudentIfNeeded, this::editStudentName, this::removeStudents);
         for (StudentId studentId : assignment.getStudentIds()) {
             studentList.addStudent(
                 studentId,
@@ -239,8 +258,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
             currentStudent = assignment.getStudentIds().get(0);
         }
 
-        // Select the current student
-        studentList.selectStudent(currentStudent);
+            studentList.selectStudent(currentStudent);
     }
 
     private void updateProgressSummary() {
@@ -449,12 +467,117 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         studentList.updateLength(currentStudent, assignment.getFeedbackLength(currentStudent));
     }
 
+    private void editStudentName(StudentId studentId) {
+        String input = (String) JOptionPane.showInputDialog(
+            this,
+            "Enter the new student ID",
+            "Rename Student",
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            null,
+            studentId.id()
+        );
+        if (input == null) {
+            return;
+        }
+        String newId = input.trim();
+        if (newId.equals(studentId.id())) {
+            return;
+        }
+        if (newId.isBlank()) {
+            JOptionPane.showMessageDialog(this, "Student ID cannot be blank.", "Rename Student", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int confirm = JOptionPane.showConfirmDialog(
+            this,
+            "Are you sure you want to rename this student?",
+            "Rename Student",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE
+        );
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+        saveAssignmentForCurrentStudent();
+        StudentId newStudentId;
+        try {
+            newStudentId = new StudentId(newId);
+        } catch (IllegalArgumentException e) {
+            handleError("Invalid student ID '" + newId + "'.", e);
+            return;
+        }
+        if (studentId.equals(currentStudent)) {
+            currentStudent = newStudentId;
+        }
+        try {
+            controller.renameStudent(studentId, newId);
+        } catch (IllegalArgumentException e) {
+            if (studentId.equals(currentStudent)) {
+                currentStudent = studentId;
+            }
+            handleError("Invalid student ID '" + newId + "'.", e);
+        }
+    }
+
+    private void removeStudents(List<StudentId> studentsToRemove) {
+        if (studentsToRemove.isEmpty()) {
+            return;
+        }
+        String message = studentsToRemove.size() == 1
+            ? "Are you sure you want to remove student '" + studentsToRemove.get(0) + "'?"
+            : "Are you sure you want to remove these " + studentsToRemove.size() + " students?";
+        int confirm = JOptionPane.showConfirmDialog(
+            this,
+            message,
+            "Remove Student" + (studentsToRemove.size() > 1 ? "s" : ""),
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE
+        );
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+        if (studentsToRemove.contains(currentStudent)) {
+            List<StudentId> ids = assignment.getStudentIds();
+            int idx = ids.indexOf(currentStudent);
+            List<StudentId> remaining = ids.stream()
+                .filter(id -> !studentsToRemove.contains(id))
+                .toList();
+            if (remaining.isEmpty()) {
+                currentStudent = null;
+            } else {
+                int nextIdx = Math.min(idx, remaining.size() - 1);
+                currentStudent = remaining.get(nextIdx);
+            }
+        }
+        controller.deleteStudents(studentsToRemove);
+    }
+
     private void addNewStudent() {
         String input = JOptionPane.showInputDialog(this, "Enter the new student id");
+        if (input == null || input.isBlank()) {
+            return;
+        }
         try {
-            controller.addNewStudent(input);
+            controller.addNewStudent(input.trim());
         } catch (IllegalArgumentException e) {
             handleError("Invalid student ID '" + input + "'.", e);
+        }
+    }
+
+    private void addStudentsFromFile() {
+        Path lastPath = UserPreferences.getLastOpenedAssignmentPath();
+        JFileChooser fileChooser = new JFileChooser(lastPath != null ? lastPath.toString() : null);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setDialogTitle("Choose a student list file...");
+        fileChooser.setToolTipText(STUDENT_LIST_TOOLTIP);
+        if (fileChooser.showDialog(this, "Select") == JFileChooser.APPROVE_OPTION
+                && fileChooser.getSelectedFile() != null) {
+            saveAssignmentForCurrentStudent();
+            try {
+                controller.addStudentsFromFile(fileChooser.getSelectedFile().toPath());
+            } catch (Exception e) {
+                handleError("Failed to add students from file", e);
+            }
         }
     }
 
@@ -568,6 +691,23 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
             setupStudentListPanel();
             studentList.selectStudent(studentId);
             switchStudent(studentId);
+        });
+    }
+
+    @Override
+    public void handleStudentDeleted(StudentId studentId) {
+        SwingUtilities.invokeLater(() -> {
+            setupStudentListPanel();
+            if (currentStudent != null) {
+                studentList.selectStudent(currentStudent);
+                switchStudent(currentStudent);
+            } else {
+                for (String heading : assignment.getHeadings()) {
+                    editorPanel.setSectionContents(heading, "");
+                }
+                editorPanel.setGrade(0.0);
+                editorPanel.setStudentId(null);
+            }
         });
     }
 

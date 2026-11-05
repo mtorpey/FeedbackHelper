@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
 import uk.myoung.feedbackhelper.model.StudentId;
 import uk.myoung.feedbackhelper.view.VerticalScrollablePanel;
 import uk.myoung.feedbackhelper.view.style.BorderCreator;
@@ -33,6 +35,13 @@ public class EditorPanel extends VerticalScrollablePanel {
     private JCheckBox markAsDoneButton;
     private List<String> headings;
     private Map<String, FeedbackBox> headingAndFeedbackBox;
+    private String lineMarker;
+    private Consumer<String> onSwitchSection;
+    private BiConsumer<String, String> onEditHeading;
+    private BiConsumer<String, String> onUpdateText;
+    private EditingPopupMenu editingPopupMenu;
+    private boolean studentSelected;
+    private boolean locked;
 
     /**
      * Create and return a new object of this class, including setup.
@@ -53,6 +62,10 @@ public class EditorPanel extends VerticalScrollablePanel {
         Runnable onToggleLock
     ) {
         EditorPanel panel = new EditorPanel(titleText, headings);
+        panel.lineMarker = lineMarker;
+        panel.onSwitchSection = onSwitchSection;
+        panel.onEditHeading = onEditHeading;
+        panel.onUpdateText = onUpdateText;
 
         // Setup data structures
         panel.feedbackBoxes = new ArrayList<FeedbackBox>();
@@ -73,7 +86,7 @@ public class EditorPanel extends VerticalScrollablePanel {
 
     private EditorPanel(String titleText, List<String> headings) {
         this.titleText = titleText;
-        this.headings = headings;
+        this.headings = new ArrayList<>(headings);
     }
 
     private void setupFeedbackBoxesPanel() {
@@ -149,6 +162,38 @@ public class EditorPanel extends VerticalScrollablePanel {
      * @param headings The headings of the feedback boxes to reset.
      */
     public void updateHeadings(List<String> newHeadings) {
+        if (this.headings.equals(newHeadings)) {
+            return;
+        }
+        if (newHeadings.size() == this.headings.size()) {
+            if (this.headings.containsAll(newHeadings)) {
+                reorderHeadings(newHeadings);
+            } else {
+                renameHeadings(newHeadings);
+            }
+        } else if (newHeadings.size() < this.headings.size()) {
+            removeHeadings(newHeadings);
+        } else {
+            addHeadings(newHeadings);
+        }
+        this.headings = newHeadings;
+    }
+
+    private void reorderHeadings(List<String> newHeadings) {
+        this.feedbackBoxesPanel.removeAll();
+        this.feedbackBoxes.clear();
+        for (String heading : newHeadings) {
+            FeedbackBox feedbackBox = this.headingAndFeedbackBox.get(heading);
+            if (feedbackBox != null) {
+                this.feedbackBoxes.add(feedbackBox);
+                this.feedbackBoxesPanel.add(feedbackBox);
+            }
+        }
+        this.feedbackBoxesPanel.revalidate();
+        this.feedbackBoxesPanel.repaint();
+    }
+
+    private void renameHeadings(List<String> newHeadings) {
         for (int position = 0; position < headings.size(); position++) {
             FeedbackBox feedbackBox = this.feedbackBoxes.get(position);
             String previousHeading = headings.get(position);
@@ -163,7 +208,49 @@ public class EditorPanel extends VerticalScrollablePanel {
             JTextField headingField = feedbackBox.getHeadingField();
             headingField.setText(currentHeading);
         }
-        this.headings = newHeadings;
+    }
+
+    private void removeHeadings(List<String> newHeadings) {
+        List<String> removedHeadings = this.headings.stream()
+            .filter(h -> !newHeadings.contains(h))
+            .toList();
+        for (String removedHeading : removedHeadings) {
+            FeedbackBox feedbackBox = this.headingAndFeedbackBox.remove(removedHeading);
+            if (feedbackBox != null) {
+                this.feedbackBoxes.remove(feedbackBox);
+                this.feedbackBoxesPanel.remove(feedbackBox);
+            }
+        }
+        this.feedbackBoxesPanel.revalidate();
+        this.feedbackBoxesPanel.repaint();
+    }
+
+    private void addHeadings(List<String> newHeadings) {
+        List<String> addedHeadings = newHeadings.stream()
+            .filter(h -> !this.headings.contains(h))
+            .toList();
+        for (String addedHeading : addedHeadings) {
+            FeedbackBox feedbackBox = FeedbackBox.create(
+                addedHeading,
+                lineMarker,
+                onSwitchSection,
+                onEditHeading,
+                onUpdateText
+            );
+            if (editingPopupMenu != null) {
+                feedbackBox.registerPopupMenu(editingPopupMenu);
+            }
+            if (isStudentEditable()) {
+                feedbackBox.enableTextArea();
+            } else if (locked) {
+                feedbackBox.setLocked(true);
+            }
+            this.feedbackBoxes.add(feedbackBox);
+            this.headingAndFeedbackBox.put(addedHeading, feedbackBox);
+            this.feedbackBoxesPanel.add(feedbackBox);
+        }
+        this.feedbackBoxesPanel.revalidate();
+        this.feedbackBoxesPanel.repaint();
     }
 
     /**
@@ -172,12 +259,14 @@ public class EditorPanel extends VerticalScrollablePanel {
      * @param editingPopupMenu The editing menu to register with.
      */
     public void registerPopupMenu(EditingPopupMenu editingPopupMenu) {
+        this.editingPopupMenu = editingPopupMenu;
         this.feedbackBoxes.forEach(feedbackBox -> feedbackBox.registerPopupMenu(editingPopupMenu));
     }
 
     /** Update this panel to display the given student ID. */
     public void setStudentId(StudentId studentId) {
-        setTitleLabel(studentId.toString());
+        this.studentSelected = studentId != null;
+        setTitleLabel(studentId != null ? studentId.toString() : this.titleText);
         gradeBox.enableChooser();
 
         // Refresh the UI
@@ -193,6 +282,9 @@ public class EditorPanel extends VerticalScrollablePanel {
      */
     public void setSectionContents(String heading, String contents) {
         FeedbackBox box = headingAndFeedbackBox.get(heading);
+        if (box == null) {
+            return;
+        }
         box.setContents("");
         box.setContents(contents);
         box.enableTextArea(); // allow editing now a student is selected
@@ -218,7 +310,10 @@ public class EditorPanel extends VerticalScrollablePanel {
      * @param phrase The text to insert.
      */
     public void insertPhraseIntoFeedbackBox(String heading, String phrase) {
-        this.headingAndFeedbackBox.get(heading).insertPhrase(phrase);
+        FeedbackBox box = this.headingAndFeedbackBox.get(heading);
+        if (box != null) {
+            box.insertPhrase(phrase);
+        }
     }
 
     /**
@@ -251,14 +346,27 @@ public class EditorPanel extends VerticalScrollablePanel {
 
     public void switchSection(String oldHeading, String newHeading) {
         if (oldHeading != null) {
-            headingAndFeedbackBox.get(oldHeading).switchAway();
+            FeedbackBox oldBox = headingAndFeedbackBox.get(oldHeading);
+            if (oldBox != null) {
+                oldBox.switchAway();
+            }
         }
-        headingAndFeedbackBox.get(newHeading).switchTo();
+        if (newHeading != null) {
+            FeedbackBox newBox = headingAndFeedbackBox.get(newHeading);
+            if (newBox != null) {
+                newBox.switchTo();
+            }
+        }
     }
 
     public void setLocked(boolean locked) {
+        this.locked = locked;
         feedbackBoxes.forEach(box -> box.setLocked(locked));
         gradeBox.setLocked(locked);
         markAsDoneButton.setSelected(locked);
+    }
+
+    public boolean isStudentEditable() {
+        return studentSelected && !locked;
     }
 }

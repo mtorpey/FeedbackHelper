@@ -2,6 +2,7 @@ package uk.myoung.feedbackhelper.controller;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import uk.myoung.feedbackhelper.infrastructure.UserPreferences;
 import uk.myoung.feedbackhelper.model.Assignment;
@@ -125,6 +126,46 @@ public class AppController {
         assignment.addStudent(studentId);
     }
 
+    /**
+     * Attempt to add new students from a file to the model.
+     *
+     * @param file The file containing student IDs.
+     * @throws IOException if there is an error reading the file.
+     */
+    public void addStudentsFromFile(Path file) throws IOException {
+        assignment.addStudentsFromFile(file);
+    }
+
+    /**
+     * Rename an existing student in the model.
+     *
+     * @param oldId The current student ID.
+     * @param newId The new student ID string.
+     * @throws IllegalArgumentException if newId is invalid.
+     */
+    public void renameStudent(StudentId oldId, String newId) throws IllegalArgumentException {
+        StudentId newStudentId = new StudentId(newId);
+        assignment.renameStudent(oldId, newStudentId);
+    }
+
+    /**
+     * Delete a student from the assignment model.
+     *
+     * @param studentId The student ID to delete.
+     */
+    public void deleteStudent(StudentId studentId) {
+        assignment.deleteStudent(studentId);
+    }
+
+    /**
+     * Delete multiple students from the assignment model.
+     *
+     * @param studentIds The list of student IDs to delete.
+     */
+    public void deleteStudents(List<StudentId> studentIds) {
+        assignment.deleteStudents(studentIds);
+    }
+
     /* HEADING MANAGEMENT METHODS */
 
     /**
@@ -136,6 +177,38 @@ public class AppController {
     public void editHeading(String previousHeading, String newHeading) {
         newHeading = newHeading.replaceAll("\n", "").trim(); // Remove all new lines
         assignment.editHeading(previousHeading, newHeading);
+    }
+
+    /**
+     * Add a heading to the assignment.
+     *
+     * @param heading The heading to add.
+     */
+    public void addHeading(String heading) {
+        if (heading == null) {
+            return;
+        }
+        heading = heading.replaceAll("\n", "").trim();
+        assignment.addHeading(heading);
+    }
+
+    /**
+     * Delete a heading from the assignment.
+     *
+     * @param heading The heading to delete.
+     */
+    public void deleteHeading(String heading) {
+        assignment.deleteHeading(heading);
+    }
+
+    /**
+     * Reorder a heading in the assignment.
+     *
+     * @param heading  The heading to reorder.
+     * @param movement The direction and distance to move (-1 for up, 1 for down).
+     */
+    public void reorderHeading(String heading, int movement) {
+        assignment.reorderHeading(heading, movement);
     }
 
     /* USER EXPORTS AND OPERATIONS */
