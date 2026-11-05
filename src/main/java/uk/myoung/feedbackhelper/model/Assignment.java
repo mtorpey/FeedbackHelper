@@ -527,13 +527,19 @@ public class Assignment implements AssignmentReadOnly, Serializable {
      * @param studentId The student ID to delete.
      */
     public void deleteStudent(StudentId studentId) {
-        if (!feedbackDocuments.containsKey(studentId)) {
-            return;
-        }
-        feedbackDocuments.remove(studentId);
+        deleteStudents(List.of(studentId));
+    }
+
+    /**
+     * Delete multiple students from the assignment.
+     *
+     * @param studentIds The list of student IDs to delete.
+     */
+    public void deleteStudents(List<StudentId> studentIds) {
+        studentIds.forEach(feedbackDocuments::remove);
         save();
-        notifyListeners(l -> l.handleStudentDeleted(studentId));
-        reportInfo("Student '" + studentId + "' removed.");
+        notifyListeners(l -> l.handleStudentDeleted(null));
+        reportInfo("Removed " + studentIds.size() + " student" + (studentIds.size() == 1 ? "." : "s."));
     }
 
     /**

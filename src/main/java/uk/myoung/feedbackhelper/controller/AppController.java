@@ -2,6 +2,7 @@ package uk.myoung.feedbackhelper.controller;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import uk.myoung.feedbackhelper.infrastructure.UserPreferences;
 import uk.myoung.feedbackhelper.model.Assignment;
@@ -154,6 +155,15 @@ public class AppController {
      */
     public void deleteStudent(StudentId studentId) {
         assignment.deleteStudent(studentId);
+    }
+
+    /**
+     * Delete multiple students from the assignment model.
+     *
+     * @param studentIds The list of student IDs to delete.
+     */
+    public void deleteStudents(List<StudentId> studentIds) {
+        assignment.deleteStudents(studentIds);
     }
 
     /* HEADING MANAGEMENT METHODS */

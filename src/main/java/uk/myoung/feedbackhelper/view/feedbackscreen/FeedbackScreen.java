@@ -233,7 +233,7 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         updateProgressSummary();
 
         // Create student list
-        studentList = StudentList.create(this::switchStudentIfNeeded, this::editStudentName, this::removeStudent);
+        studentList = StudentList.create(this::switchStudentIfNeeded, this::editStudentName, this::removeStudents);
         for (StudentId studentId : assignment.getStudentIds()) {
             studentList.addStudent(
                 studentId,
@@ -519,27 +519,37 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         }
     }
 
-    private void removeStudent(StudentId studentId) {
+    private void removeStudents(List<StudentId> studentsToRemove) {
+        if (studentsToRemove.isEmpty()) {
+            return;
+        }
+        String message = studentsToRemove.size() == 1
+            ? "Are you sure you want to remove student '" + studentsToRemove.get(0) + "'?"
+            : "Are you sure you want to remove these " + studentsToRemove.size() + " students?";
         int confirm = JOptionPane.showConfirmDialog(
             this,
-            "Are you sure you want to remove student '" + studentId + "'?",
-            "Remove Student",
+            message,
+            "Remove Student" + (studentsToRemove.size() > 1 ? "s" : ""),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE
         );
         if (confirm != JOptionPane.YES_OPTION) {
             return;
         }
-        List<StudentId> ids = assignment.getStudentIds();
-        int idx = ids.indexOf(studentId);
-        if (ids.size() == 1) {
-            currentStudent = null;
-        } else if (idx == 0) {
-            currentStudent = ids.get(1);
-        } else {
-            currentStudent = ids.get(idx - 1);
+        if (studentsToRemove.contains(currentStudent)) {
+            List<StudentId> ids = assignment.getStudentIds();
+            int idx = ids.indexOf(currentStudent);
+            List<StudentId> remaining = ids.stream()
+                .filter(id -> !studentsToRemove.contains(id))
+                .toList();
+            if (remaining.isEmpty()) {
+                currentStudent = null;
+            } else {
+                int nextIdx = Math.min(idx, remaining.size() - 1);
+                currentStudent = remaining.get(nextIdx);
+            }
         }
-        controller.deleteStudent(studentId);
+        controller.deleteStudents(studentsToRemove);
     }
 
     private void addNewStudent() {
