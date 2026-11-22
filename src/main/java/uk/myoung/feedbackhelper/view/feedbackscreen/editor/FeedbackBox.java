@@ -8,6 +8,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import javax.swing.AbstractAction;
@@ -16,6 +17,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.undo.UndoManager;
+import uk.myoung.feedbackhelper.model.SpellCheckReadOnly;
+import uk.myoung.feedbackhelper.model.SpellCheckReadOnly.Misspelling;
 import uk.myoung.feedbackhelper.view.style.BorderCreator;
 import uk.myoung.feedbackhelper.view.style.Fonts;
 
@@ -32,6 +35,7 @@ public class FeedbackBox extends JPanel {
     private JTextField headingField;
     private JTextArea textArea;
     private UndoManager undoManager;
+    private SpellCheckHighlighter spellCheckHighlighter;
 
     // Data instances
     private String heading;
@@ -50,19 +54,24 @@ public class FeedbackBox extends JPanel {
      * @param onEditHeading   Callback to be invoked when user edits a heading.
      * @param onUpdateText    Callback to be invoked when the text is updated by the
      *                        user.
+     * @param spellChecker    Read-only spell checker model (may be null).
      */
     public static FeedbackBox create(
         String heading,
         String lineMarker,
         Consumer<String> onSwitchSection,
         BiConsumer<String, String> onEditHeading,
-        BiConsumer<String, String> onUpdateText
+        BiConsumer<String, String> onUpdateText,
+        SpellCheckReadOnly spellChecker
     ) {
         FeedbackBox box = new FeedbackBox(heading, lineMarker, onSwitchSection, onEditHeading, onUpdateText);
 
         // Setup components
         box.setupPanel();
         box.setupTextArea();
+        if (spellChecker != null) {
+            box.spellCheckHighlighter = SpellCheckHighlighter.attach(box.textArea, spellChecker);
+        }
 
         // Layout components from top to bottom on this panel
         box.setLayout(new BorderLayout());
@@ -219,7 +228,19 @@ public class FeedbackBox extends JPanel {
     public void enableTextArea() {
         textArea.setEditable(true);
         textArea.setFocusable(true);
+        if (spellCheckHighlighter != null) {
+            spellCheckHighlighter.refresh();
+        }
         repaint();
+    }
+
+    public Optional<Misspelling> getMisspellingAt(int offset) {
+        return spellCheckHighlighter == null ? Optional.empty() : spellCheckHighlighter.getMisspellingAt(offset);
+    }
+
+    public void replaceText(int start, int end, String replacement) {
+        textArea.replaceRange(replacement, start, end);
+        updateFeedback();
     }
 
     /** Called by view when the user switches from this box to another one. */

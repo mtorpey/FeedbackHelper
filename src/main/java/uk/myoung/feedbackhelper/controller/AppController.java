@@ -9,6 +9,8 @@ import uk.myoung.feedbackhelper.model.Assignment;
 import uk.myoung.feedbackhelper.model.AssignmentListener;
 import uk.myoung.feedbackhelper.model.AssignmentReadOnly;
 import uk.myoung.feedbackhelper.model.FeedbackStyle;
+import uk.myoung.feedbackhelper.model.SpellCheckReadOnly;
+import uk.myoung.feedbackhelper.model.SpellChecker;
 import uk.myoung.feedbackhelper.model.StudentId;
 
 /**
@@ -18,6 +20,27 @@ public class AppController {
 
     // Instance variables
     private Assignment assignment;
+    private final SpellChecker spellChecker;
+
+    public AppController() {
+        this.spellChecker = SpellChecker.createDefault();
+        this.spellChecker.setEnabled(UserPreferences.isSpellCheckEnabled());
+        UserPreferences.getCustomDictionaryWords().forEach(this.spellChecker::addCustomWord);
+    }
+
+    public SpellCheckReadOnly getSpellChecker() {
+        return spellChecker;
+    }
+
+    public void setSpellCheckEnabled(boolean enabled) {
+        spellChecker.setEnabled(enabled);
+        UserPreferences.setSpellCheckEnabled(enabled);
+    }
+
+    public void addWordToDictionary(String word) {
+        spellChecker.addCustomWord(word);
+        UserPreferences.setCustomDictionaryWords(spellChecker.getCustomWords());
+    }
 
     /**
      * Register the given view as a listener of the model.

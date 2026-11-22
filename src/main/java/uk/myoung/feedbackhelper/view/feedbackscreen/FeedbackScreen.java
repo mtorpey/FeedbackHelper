@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -295,9 +296,10 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
             controller::editHeading,
             this::updateFeedbackSection,
             this::updateGrade,
-            this::toggleLock
+            this::toggleLock,
+            controller.getSpellChecker()
         );
-        this.editingPopupMenu = new EditingPopupMenu();
+        this.editingPopupMenu = new EditingPopupMenu(controller.getSpellChecker(), controller::addWordToDictionary);
         this.editorPanel.registerPopupMenu(this.editingPopupMenu);
 
         // Set the document data
@@ -385,6 +387,14 @@ public class FeedbackScreen extends JFrame implements AssignmentListener {
         JMenuItem zoomOption = new JMenuItem("Zoom level");
         zoomOption.addActionListener(e -> showZoomDialog());
         preferencesMenu.add(zoomOption);
+
+        // Toggle spell check
+        JCheckBoxMenuItem spellCheckOption = new JCheckBoxMenuItem(
+            "Spell check",
+            controller.getSpellChecker().isEnabled()
+        );
+        spellCheckOption.addActionListener(e -> controller.setSpellCheckEnabled(spellCheckOption.isSelected()));
+        preferencesMenu.add(spellCheckOption);
 
         return preferencesMenu;
     }

@@ -1,14 +1,19 @@
 package uk.myoung.feedbackhelper.infrastructure;
 
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Set;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 public abstract class UserPreferences {
 
     public static final String THEME = "theme";
     public static final String SCALE = "scale";
     public static final String LAST_OPENED_ASSIGNMENT_PATH = "lastOpenedAssignmentPath";
+    public static final String SPELL_CHECK_ENABLED = "spellCheckEnabled";
+    public static final String CUSTOM_DICTIONARY_WORDS = "customDictionaryWords";
 
     private static String NODE_NAME = "FeedbackHelper-5";
     private static Preferences prefs = Preferences.userRoot().node(NODE_NAME);
@@ -53,5 +58,28 @@ public abstract class UserPreferences {
 
     public static void setScale(float value) {
         prefs.put(SCALE, Float.toString(value));
+    }
+
+    public static boolean isSpellCheckEnabled() {
+        return prefs.getBoolean(SPELL_CHECK_ENABLED, true);
+    }
+
+    public static void setSpellCheckEnabled(boolean enabled) {
+        prefs.putBoolean(SPELL_CHECK_ENABLED, enabled);
+    }
+
+    public static Set<String> getCustomDictionaryWords() {
+        String raw = prefs.get(CUSTOM_DICTIONARY_WORDS, "");
+        if (raw.isBlank()) {
+            return Set.of();
+        }
+        return Arrays.stream(raw.split("\n"))
+            .map(String::trim)
+            .filter(w -> !w.isEmpty())
+            .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public static void setCustomDictionaryWords(Set<String> words) {
+        prefs.put(CUSTOM_DICTIONARY_WORDS, String.join("\n", words));
     }
 }

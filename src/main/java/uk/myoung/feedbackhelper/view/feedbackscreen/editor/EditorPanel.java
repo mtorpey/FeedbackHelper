@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import uk.myoung.feedbackhelper.model.SpellCheckReadOnly;
 import uk.myoung.feedbackhelper.model.StudentId;
 import uk.myoung.feedbackhelper.view.VerticalScrollablePanel;
 import uk.myoung.feedbackhelper.view.style.BorderCreator;
@@ -40,6 +41,7 @@ public class EditorPanel extends VerticalScrollablePanel {
     private BiConsumer<String, String> onEditHeading;
     private BiConsumer<String, String> onUpdateText;
     private EditingPopupMenu editingPopupMenu;
+    private SpellCheckReadOnly spellChecker;
     private boolean studentSelected;
     private boolean locked;
 
@@ -59,13 +61,15 @@ public class EditorPanel extends VerticalScrollablePanel {
         BiConsumer<String, String> onEditHeading,
         BiConsumer<String, String> onUpdateText,
         Consumer<Double> onUpdateGrade,
-        Runnable onToggleLock
+        Runnable onToggleLock,
+        SpellCheckReadOnly spellChecker
     ) {
         EditorPanel panel = new EditorPanel(titleText, headings);
         panel.lineMarker = lineMarker;
         panel.onSwitchSection = onSwitchSection;
         panel.onEditHeading = onEditHeading;
         panel.onUpdateText = onUpdateText;
+        panel.spellChecker = spellChecker;
 
         // Setup data structures
         panel.feedbackBoxes = new ArrayList<FeedbackBox>();
@@ -145,7 +149,8 @@ public class EditorPanel extends VerticalScrollablePanel {
                 lineMarker,
                 onSwitchSection,
                 onEditHeading,
-                onUpdateText
+                onUpdateText,
+                spellChecker
             );
             this.feedbackBoxes.add(feedbackBox);
             this.headingAndFeedbackBox.put(heading, feedbackBox);
@@ -235,7 +240,8 @@ public class EditorPanel extends VerticalScrollablePanel {
                 lineMarker,
                 onSwitchSection,
                 onEditHeading,
-                onUpdateText
+                onUpdateText,
+                spellChecker
             );
             if (editingPopupMenu != null) {
                 feedbackBox.registerPopupMenu(editingPopupMenu);
