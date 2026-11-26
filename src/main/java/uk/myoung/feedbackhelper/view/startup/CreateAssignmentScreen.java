@@ -276,7 +276,7 @@ public class CreateAssignmentScreen extends JFrame {
                 JFileChooser.FILES_ONLY,
                 "Choose a student list file...",
                 "Select"
-            ).ifPresent(path -> assignmentDirectoryField.setText(path.toString()))
+            ).ifPresent(path -> studentListField.setText(path.toString()))
         );
         studentListFileButton.setToolTipText(tooltip);
         addToConfigForm(studentListFileButton);

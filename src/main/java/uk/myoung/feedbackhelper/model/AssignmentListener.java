@@ -25,6 +25,8 @@ public interface AssignmentListener {
 
     void handleNewStudent(StudentId studentId);
 
+    void handleStudentDeleted(StudentId studentId);
+
     void handleGradeUpdate(StudentId studentId, double grade);
 
     void handleStudentLockChange(StudentId studentId, boolean locked);

@@ -110,6 +110,15 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
     }
 
     /**
+     * Set the student ID of the feedback document.
+     *
+     * @param studentId The new student ID.
+     */
+    public void setStudentId(StudentId studentId) {
+        this.studentId = studentId;
+    }
+
+    /**
      * Get a list of headings used in the feedback document.
      *
      * @return a list of headings used in the feedback document.
@@ -127,6 +136,28 @@ public class FeedbackDocument implements Serializable, Comparable<FeedbackDocume
         // Note: headings should be a reference to an external list, so should be up to date already
         sectionContents.put(newHeading, sectionContents.get(previousHeading));
         sectionContents.remove(previousHeading);
+    }
+
+    /**
+     * Adds one of the headings and its contents.
+     *
+     * This doesn't do any checks, which should be performed in Assignment::addHeading.
+     */
+    public void addHeading(String heading) {
+        if (!headings.contains(heading)) {
+            headings.add(heading);
+        }
+        sectionContents.put(heading, "");
+    }
+
+    /**
+     * Removes one of the headings and its contents.
+     *
+     * This doesn't do any checks, which should be performed in Assignment::deleteHeading.
+     */
+    public void removeHeading(String heading) {
+        headings.remove(heading);
+        sectionContents.remove(heading);
     }
 
     /**

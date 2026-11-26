@@ -8,17 +8,17 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import javax.swing.AbstractAction;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.undo.UndoManager;
+import uk.myoung.feedbackhelper.model.SpellCheckReadOnly;
+import uk.myoung.feedbackhelper.model.SpellCheckReadOnly.Misspelling;
 import uk.myoung.feedbackhelper.view.style.BorderCreator;
 import uk.myoung.feedbackhelper.view.style.Fonts;
 
@@ -30,23 +30,17 @@ public class FeedbackBox extends JPanel {
     // Class variable
     private static final int ENTER_KEY = 10;
     private static final String NEWLINE = "\n";
-    private static final String EDIT_SYMBOL = "✎";
-    private static final String FINISH_SYMBOL = "✔";
-    private static final String EDIT_TOOLTIP = "Edit the title of this section.";
-    private static final String FINISH_TOOLTIP = "Finish editing this title.";
-
     // Swing instances
     private JPanel headingPanel;
     private JTextField headingField;
-    private JButton headingButton;
     private JTextArea textArea;
     private UndoManager undoManager;
+    private SpellCheckHighlighter spellCheckHighlighter;
 
     // Data instances
     private String heading;
     private String lineMarker;
     private Consumer<String> onSwitchSection;
-    private BiConsumer<String, String> onEditHeading;
     private BiConsumer<String, String> onUpdateText;
 
     /**
@@ -60,19 +54,24 @@ public class FeedbackBox extends JPanel {
      * @param onEditHeading   Callback to be invoked when user edits a heading.
      * @param onUpdateText    Callback to be invoked when the text is updated by the
      *                        user.
+     * @param spellChecker    Read-only spell checker model (may be null).
      */
     public static FeedbackBox create(
         String heading,
         String lineMarker,
         Consumer<String> onSwitchSection,
         BiConsumer<String, String> onEditHeading,
-        BiConsumer<String, String> onUpdateText
+        BiConsumer<String, String> onUpdateText,
+        SpellCheckReadOnly spellChecker
     ) {
         FeedbackBox box = new FeedbackBox(heading, lineMarker, onSwitchSection, onEditHeading, onUpdateText);
 
         // Setup components
         box.setupPanel();
         box.setupTextArea();
+        if (spellChecker != null) {
+            box.spellCheckHighlighter = SpellCheckHighlighter.attach(box.textArea, spellChecker);
+        }
 
         // Layout components from top to bottom on this panel
         box.setLayout(new BorderLayout());
@@ -99,7 +98,6 @@ public class FeedbackBox extends JPanel {
         this.heading = heading;
         this.lineMarker = lineMarker;
         this.onSwitchSection = onSwitchSection;
-        this.onEditHeading = onEditHeading;
         this.onUpdateText = onUpdateText;
     }
 
@@ -124,84 +122,17 @@ public class FeedbackBox extends JPanel {
      */
     private void setupPanel() {
         this.headingPanel = new JPanel(new BorderLayout());
-        // this.headingPanel.setBorder(BorderCreator.emptyBorder5Pixels());
 
         // Create components
         this.headingField = new JTextField(this.heading);
-        this.headingButton = new JButton(EDIT_SYMBOL);
 
         // Set heading font
         headingField.setFont(Fonts.getSubtitleFont());
-        headingButton.setFont(Fonts.getSubtitleFont());
-        headingButton.setToolTipText(EDIT_TOOLTIP);
+        headingField.setOpaque(false);
+        headingField.setBorder(BorderCreator.emptyBorderSmall());
 
         // Add to the panel
         this.headingPanel.add(this.headingField, BorderLayout.WEST);
-        this.headingPanel.add(this.headingButton, BorderLayout.EAST);
-
-        // Create a function consumer
-        Consumer<Boolean> edit = state -> {
-            headingField.setEditable(state);
-            headingField.setOpaque(state);
-            headingField.setFocusable(state);
-            headingField.repaint();
-
-            // Set editable
-            if (state) {
-                headingButton.setText(FINISH_SYMBOL);
-                headingButton.setToolTipText(FINISH_TOOLTIP);
-                headingField.setBorder(BorderCreator.textAreaBorder());
-            } else {
-                // Stop editing
-                headingButton.setText(EDIT_SYMBOL);
-                headingButton.setToolTipText(EDIT_TOOLTIP);
-                headingField.setBorder(BorderCreator.emptyBorderSmall());
-            }
-
-            headingPanel.revalidate();
-        };
-
-        // Listen to changed text field
-        this.headingField.getDocument().addDocumentListener(
-            new DocumentListener() {
-                public void changedUpdate(DocumentEvent e) {
-                    // String currentHeading = headingField.getText();
-                    // headingField.setColumns(currentHeading.length());
-                    headingPanel.revalidate();
-                }
-
-                public void removeUpdate(DocumentEvent e) {
-                    changedUpdate(e);
-                }
-
-                public void insertUpdate(DocumentEvent e) {
-                    changedUpdate(e);
-                }
-            }
-        );
-
-        // Listen to renaming heading sections
-        this.headingButton.addActionListener(a -> {
-            if (headingButton.getText().equals(FINISH_SYMBOL)) {
-                edit.accept(false);
-
-                // Update heading
-                String currentHeading = getHeading();
-                String newHeading = headingField.getText();
-
-                if (!currentHeading.equals(newHeading)) {
-                    // Change heading
-                    setHeading(newHeading);
-                    // Save new heading
-                    onEditHeading.accept(currentHeading, newHeading);
-                }
-            } else {
-                edit.accept(true);
-            }
-        });
-
-        // Disable the editable header
-        edit.accept(false);
     }
 
     /**
@@ -297,7 +228,19 @@ public class FeedbackBox extends JPanel {
     public void enableTextArea() {
         textArea.setEditable(true);
         textArea.setFocusable(true);
+        if (spellCheckHighlighter != null) {
+            spellCheckHighlighter.refresh();
+        }
         repaint();
+    }
+
+    public Optional<Misspelling> getMisspellingAt(int offset) {
+        return spellCheckHighlighter == null ? Optional.empty() : spellCheckHighlighter.getMisspellingAt(offset);
+    }
+
+    public void replaceText(int start, int end, String replacement) {
+        textArea.replaceRange(replacement, start, end);
+        updateFeedback();
     }
 
     /** Called by view when the user switches from this box to another one. */
